@@ -1,0 +1,453 @@
+---
+title: "French MTPL GLM Walkthrough"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 8,
+  fig.height = 5
+)
+
+source("mtpl_glm_analysis.R")
+results <- run_mtpl_analysis()
+checks <- results$checks
+flags <- results$flags
+holdout_summary <- results$holdout_summary
+example_policies <- results$example_policies
+gas_summary <- results$gas_summary
+age_summary <- results$age_summary
+
+get_check <- function(name) {
+  unname(checks$value[checks$metric == name])
+}
+
+format_eur <- function(x) {
+  paste0("EUR ", format(round(x, 0), big.mark = ",", scientific = FALSE))
+}
+
+low_freq <- example_policies["Lower-risk example", "pred_frequency_annual"]
+low_sev <- example_policies["Lower-risk example", "pred_severity"]
+low_premium <- example_policies["Lower-risk example", "pred_pure_premium"]
+
+typical_freq <- example_policies["Typical example", "pred_frequency_annual"]
+typical_sev <- example_policies["Typical example", "pred_severity"]
+typical_premium <- example_policies["Typical example", "pred_pure_premium"]
+
+high_freq <- example_policies["Higher-risk example", "pred_frequency_annual"]
+high_sev <- example_policies["Higher-risk example", "pred_severity"]
+high_premium <- example_policies["Higher-risk example", "pred_pure_premium"]
+
+diesel_premium <- gas_summary$pred_pure_premium[gas_summary$Gas == "Diesel"]
+regular_premium <- gas_summary$pred_pure_premium[gas_summary$Gas == "Regular"]
+
+young_premium <- age_summary$pred_pure_premium[age_summary$DriverAgeBand == "[17,25]"]
+old_premium <- age_summary$pred_pure_premium[age_summary$DriverAgeBand == "(70,Inf]"]
+
+practical_comparison <- data.frame(
+  comparison = c(
+    "Higher-risk vs lower-risk example",
+    "Age 17-25 vs age 70+",
+    "Diesel vs Regular"
+  ),
+  ratio = c(
+    high_premium / low_premium,
+    young_premium / old_premium,
+    diesel_premium / regular_premium
+  ),
+  row.names = NULL
+)
+```
+
+# Executive Results
+
+I wrote this notebook in the same order I actually worked through the project. I started by loading the data, then I checked whether it looked sane, then I fit a simple baseline, then I dealt with the parts that looked off, and finally I translated the results into a pricing story that feels intuitive.
+
+The headline results are:
+
+- average predicted annual claim frequency is `r sprintf("%.2f%%", 100 * mean(results$pure_premium$pred_frequency_annual))`
+- average predicted claim severity is `r format_eur(mean(results$pure_premium$pred_severity))`
+- average predicted pure premium is `r format_eur(mean(results$pure_premium$pred_pure_premium))` per policy-year
+- holdout aggregate frequency is very close: `r round(get_check("holdout_observed_claims"), 0)` observed claims versus `r round(get_check("holdout_predicted_claims"), 1)` predicted
+- raw severity underpredicts holdout mean severity by about `r sprintf("%.1f%%", 100 * (get_check("holdout_predicted_mean_severity") / get_check("holdout_observed_mean_severity") - 1))`
+- capped severity sensitivity is much tighter: `r format_eur(get_check("holdout_observed_capped_mean_severity"))` observed versus `r format_eur(get_check("holdout_predicted_capped_mean_severity"))` predicted
+
+At a high level, what I found feels pretty intuitive. Younger drivers and some higher-frequency segments come out as more expensive. The severity side is a little messier because the claim amounts have a heavy tail, so I tried to be honest about that instead of pretending the model was cleaner than it really is.
+
+# Step 1: Load The Data And Confirm The Shape
+
+I started with the simplest possible base-`R` import.
+
+```{r step1-code, eval=FALSE}
+freq <- read.csv("freMTPLfreq.csv", stringsAsFactors = FALSE)
+sev <- read.csv("freMTPLsev.csv", stringsAsFactors = FALSE)
+
+nrow(freq)
+nrow(sev)
+```
+
+Then I checked that the dataset size matched what I expected after loading.
+
+```{r step1-results}
+checks[checks$metric %in% c("policy_rows_raw", "claim_rows_raw"), ]
+```
+
+What I took from this:
+
+- This looked right immediately.
+- I have `r format(get_check("policy_rows_raw"), big.mark = ",", scientific = FALSE)` policy rows and `r format(get_check("claim_rows_raw"), big.mark = ",", scientific = FALSE)` claim rows.
+- That lines up with the dataset description, so I did not see any sign of a bad import, broken delimiter, or accidental filtering.
+
+# Step 2: Clean Only What We Need
+
+I wanted this to feel like a believable actuarial baseline, not a giant preprocessing project, so I kept the cleaning deliberately light.
+
+```{r step2-code, eval=FALSE}
+freq <- freq[complete.cases(freq[, c(
+  "PolicyID", "ClaimNb", "Exposure", "Power", "CarAge",
+  "DriverAge", "Brand", "Gas", "Region", "Density"
+)]), ]
+freq <- freq[freq$Exposure > 0, ]
+freq$logDensity <- log1p(freq$Density)
+
+sev <- sev[complete.cases(sev[, c("PolicyID", "ClaimAmount")]), ]
+sev <- sev[sev$ClaimAmount > 0, ]
+```
+
+```{r step2-results}
+checks[checks$metric %in% c(
+  "policy_rows_raw",
+  "policy_rows_after_cleaning",
+  "claim_rows_raw",
+  "claim_rows_after_cleaning"
+), ]
+```
+
+What I took from this:
+
+- Nothing alarming happened here.
+- I did not lose any rows in the light cleaning pass, which is a good sign for a clean benchmark dataset.
+- I log-transformed `Density` because raw population density is highly skewed and a plain linear effect would be hard to defend.
+
+# Step 3: Build A Train/Holdout Split
+
+Before fitting anything, I created one fixed train/holdout split at the policy level, stratified on whether the policy had any claims.
+
+```{r step3-code, eval=FALSE}
+train_flag <- stratified_split(as.integer(freq$ClaimNb > 0), seed = 20260423)
+freq$split <- ifelse(train_flag, "train", "holdout")
+
+sev_model_data <- merge(
+  sev,
+  freq[, c("PolicyID", "split", "Power", "CarAge", "DriverAge",
+           "Brand", "Gas", "Region", "Density", "logDensity")],
+  by = "PolicyID",
+  sort = FALSE
+)
+```
+
+```{r step3-results}
+checks[checks$metric %in% c(
+  "train_policies",
+  "holdout_policies",
+  "train_claim_rows",
+  "holdout_claim_rows"
+), ]
+```
+
+What I took from this:
+
+- This also looked fine.
+- The split keeps a large training sample and a meaningful holdout sample.
+- Most importantly, claims stay attached to the same policy split, so there is no leakage from a policy's claims into both training and validation.
+
+# Step 4: Fit The First Frequency Model
+
+For the first frequency model, I went with the classical starting point: a Poisson GLM with a log link and an exposure offset.
+
+```{r step4-code, eval=FALSE}
+freq_fit <- glm(
+  ClaimNb ~ Power + CarAge + DriverAge + Brand + Gas + Region + logDensity,
+  family = poisson(link = "log"),
+  data = freq_train,
+  offset = log(Exposure)
+)
+```
+
+Then I checked whether it was at least directionally right on unseen data.
+
+```{r step4-results}
+holdout_summary[holdout_summary$metric %in% c(
+  "Observed claims",
+  "Predicted claims",
+  "Observed annual frequency",
+  "Predicted annual frequency",
+  "Frequency dispersion"
+), ]
+```
+
+```{r step4-frequency-plot}
+freq_deciles <- results$frequency_deciles
+plot(
+  x = seq_len(nrow(freq_deciles)),
+  y = freq_deciles$observed_frequency,
+  type = "b",
+  pch = 19,
+  xaxt = "n",
+  xlab = "Holdout annual predicted-frequency decile",
+  ylab = "Annual frequency",
+  main = "Frequency calibration on holdout"
+)
+axis(1, at = seq_len(nrow(freq_deciles)), labels = freq_deciles$decile, las = 2, cex.axis = 0.7)
+lines(seq_len(nrow(freq_deciles)), freq_deciles$predicted_frequency, type = "b", pch = 17, col = "firebrick")
+legend("topleft", legend = c("Observed", "Predicted"), col = c("black", "firebrick"), lty = 1, pch = c(19, 17), bty = "n")
+```
+
+What I took from this:
+
+- The good news is that aggregate holdout frequency is excellent: `r round(get_check("holdout_observed_claims"), 0)` observed versus `r round(get_check("holdout_predicted_claims"), 1)` predicted.
+- The less good news is that dispersion is `r round(get_check("frequency_dispersion"), 2)`, which is too high for a clean Poisson inference story.
+- So my basic frequency signal looked useful, but the plain Poisson standard errors were too optimistic.
+- To me, that felt like a normal insurance-modeling issue, not a sign that the whole model was failing.
+
+# Step 5: Fix Frequency Inference With Quasi-Poisson
+
+I did not want to overreact and blow up the scope. The narrow fix was to keep the Poisson mean structure for prediction and use quasi-Poisson as the more honest inference check.
+
+```{r step5-code, eval=FALSE}
+freq_quasi_fit <- glm(
+  ClaimNb ~ Power + CarAge + DriverAge + Brand + Gas + Region + logDensity,
+  family = quasipoisson(link = "log"),
+  data = freq_train,
+  offset = log(Exposure)
+)
+```
+
+```{r step5-results}
+round(results$top_frequency_effects_quasi, 4)
+```
+
+What I took from this:
+
+- This is where the frequency story started to feel more credible.
+- The main directional findings survived the quasi-Poisson adjustment, but some marginal effects became less certain once I acknowledged the extra variance.
+- The most stable takeaway still feels practical rather than theoretical:
+  - Regular fuel has lower predicted claim frequency than Diesel in this dataset.
+  - Some Japanese/Korean brand groups show lower claim frequency.
+  - Several higher power levels carry higher expected frequency.
+- I do not read these as causal claims. I read them as pricing signals.
+
+# Step 6: Fit The First Severity Model
+
+For severity, I stuck with the classical simple choice: a Gamma GLM with a log link on positive claim amounts.
+
+```{r step6-code, eval=FALSE}
+sev_fit <- glm(
+  ClaimAmount ~ Power + CarAge + DriverAge + Brand + Gas + Region + logDensity,
+  family = Gamma(link = "log"),
+  data = sev_train
+)
+```
+
+```{r step6-results}
+holdout_summary[holdout_summary$metric %in% c(
+  "Observed mean severity",
+  "Predicted mean severity"
+), ]
+```
+
+```{r step6-severity-effects}
+round(results$top_severity_effects, 4)
+```
+
+What I took from this:
+
+- This is where the first baseline started to feel less comfortable.
+- Holdout mean severity is `r format_eur(get_check("holdout_observed_mean_severity"))`, while the raw Gamma model predicts `r format_eur(get_check("holdout_predicted_mean_severity"))`.
+- That is not catastrophic, but it is weak enough that I do not want to pretend the raw severity model is perfectly calibrated.
+- The coefficient table also looks noisy, which is exactly what I would expect when a heavy-tailed severity distribution is being fit with a simple GLM.
+
+# Step 7: Check The Tail And Add A Capped-Loss Sensitivity
+
+Instead of throwing the model away, I tried to ask a better question: is the model bad everywhere, or is it mostly getting pulled around by a handful of very large losses?
+
+The simplest stock-`R` sensitivity was to cap training severities at the 99.5th percentile and refit the Gamma model.
+
+```{r step7-code, eval=FALSE}
+severity_cap <- as.numeric(quantile(sev_train$ClaimAmount, probs = 0.995))
+sev_train$ClaimAmountCapped <- pmin(sev_train$ClaimAmount, severity_cap)
+sev_holdout$ClaimAmountCapped <- pmin(sev_holdout$ClaimAmount, severity_cap)
+
+sev_capped_fit <- glm(
+  ClaimAmountCapped ~ Power + CarAge + DriverAge + Brand + Gas + Region + logDensity,
+  family = Gamma(link = "log"),
+  data = sev_train
+)
+```
+
+```{r step7-results}
+holdout_summary[holdout_summary$metric %in% c(
+  "Observed mean severity",
+  "Predicted mean severity",
+  "Observed capped mean severity",
+  "Predicted capped mean severity"
+), ]
+```
+
+```{r step7-cap}
+results$severity_cap
+```
+
+```{r step7-influence}
+head(round(results$severity_cooks_top, 4), 10)
+```
+
+```{r step7-capped-effects}
+round(results$top_severity_effects_capped, 4)
+```
+
+What I took from this:
+
+- This step told me the real story.
+- The cap is `r format_eur(results$severity_cap)`.
+- Raw holdout severity is off, but capped holdout severity is much tighter: `r format_eur(get_check("holdout_observed_capped_mean_severity"))` observed versus `r format_eur(get_check("holdout_predicted_capped_mean_severity"))` predicted.
+- That tells me the model is doing a more reasonable job on the body of the loss distribution than the raw mean alone suggests.
+- In practice, I would describe the severity issue as tail sensitivity, not as a totally useless model.
+
+# Step 8: Combine Frequency And Severity Into Pure Premium
+
+Once I had the two pieces fit, I annualized expected frequency and multiplied by expected severity.
+
+```{r step8-code, eval=FALSE}
+annualized_policies$Exposure <- 1
+annualized_policies$pred_frequency_annual <- predict(freq_fit, newdata = annualized_policies, type = "response")
+annualized_policies$pred_severity <- predict(sev_fit, newdata = annualized_policies, type = "response")
+annualized_policies$pred_pure_premium <- annualized_policies$pred_frequency_annual * annualized_policies$pred_severity
+```
+
+```{r step8-quantiles}
+round(quantile(results$pure_premium$pred_pure_premium, probs = c(0.1, 0.25, 0.5, 0.75, 0.9, 0.95)), 2)
+```
+
+```{r step8-hist}
+hist(
+  results$pure_premium$pred_pure_premium,
+  breaks = 40,
+  main = "Predicted annual pure premium",
+  xlab = "Expected claim cost per policy-year",
+  col = "gray80",
+  border = "white"
+)
+```
+
+What I took from this:
+
+- The average pure premium is `r format_eur(mean(results$pure_premium$pred_pure_premium))` per policy-year.
+- The 10th, 50th, and 90th percentiles are roughly `r format_eur(quantile(results$pure_premium$pred_pure_premium, 0.10))`, `r format_eur(quantile(results$pure_premium$pred_pure_premium, 0.50))`, and `r format_eur(quantile(results$pure_premium$pred_pure_premium, 0.90))`.
+- That spread feels meaningful, but not so extreme that the model looks unhinged.
+
+# Step 9: Check Whether The Segmentation Makes Practical Sense
+
+This is the part I care about most. A model can fit okay statistically and still tell a pricing story that feels silly. So I looked at a few segment summaries and example policyholders to see whether the outputs made intuitive sense.
+
+## Age And Fuel Type Summaries
+
+```{r step9-age}
+age_summary
+```
+
+```{r step9-gas}
+gas_summary
+```
+
+What I took from this:
+
+- Driver age behaves the way I would expect.
+- The model predicts pure premium of `r format_eur(young_premium)` for ages 17-25 and `r format_eur(old_premium)` for ages 70+, which is a ratio of `r round(young_premium / old_premium, 2)` to 1.
+- That feels intuitive to me: younger drivers tend to have higher claim frequency, and in this model they also carry somewhat higher severity.
+- Fuel type shows a smaller but still meaningful difference: Diesel is about `r round(diesel_premium / regular_premium, 2)` times the pure premium of Regular.
+- I would not tell a causal story there. My guess is that fuel type is acting as a proxy for vehicle usage or mix.
+
+## Example Policyholders
+
+```{r step9-examples}
+example_display <- example_policies
+numeric_cols <- vapply(example_display, is.numeric, logical(1))
+example_display[numeric_cols] <- round(example_display[numeric_cols], 3)
+example_display
+```
+
+```{r step9-ratios}
+practical_comparison
+```
+
+What I took from this:
+
+- The lower-risk example has predicted pure premium `r format_eur(low_premium)`.
+- The typical example has predicted pure premium `r format_eur(typical_premium)`.
+- The higher-risk example has predicted pure premium `r format_eur(high_premium)`.
+- The higher-risk example is about `r round(high_premium / low_premium, 2)` times the lower-risk example.
+
+Why does that happen in practice?
+
+- The higher-risk example is worse on frequency and severity at the same time.
+- Its annual predicted frequency is `r sprintf("%.2f%%", 100 * high_freq)` versus `r sprintf("%.2f%%", 100 * low_freq)` for the lower-risk example.
+- Its predicted severity is `r format_eur(high_sev)` versus `r format_eur(low_sev)`.
+- So it is not "paying more" because of one weird coefficient. It is paying more because the model expects both more claims and more expensive claims.
+
+Why does that broadly make sense?
+
+- The higher-risk example is younger.
+- It sits in a region with a higher modeled frequency profile.
+- Its brand group and overall feature mix push severity upward as well.
+- The lower-risk example, by contrast, has an older driver, lower expected frequency, and lower expected severity.
+
+That is the way I would explain this to a non-technical person: not by reciting coefficient tables, but by showing how predicted claim count and predicted claim size combine into a higher expected annual cost.
+
+# What Checked Out, What Did Not, And What I Changed
+
+What checked out for me:
+
+- dataset dimensions matched expectations
+- light cleaning did not expose data-quality problems
+- holdout aggregate frequency was very strong
+- age segmentation makes intuitive sense
+- pure premium spread across policies looks believable
+
+What did not check out cleanly:
+
+- Poisson dispersion was too high for a naive inference story
+- raw Gamma severity underpredicted holdout mean severity
+- raw severity coefficients looked noisy because of the heavy tail
+
+What I changed:
+
+- kept Poisson predictions but used quasi-Poisson to interpret frequency effects more honestly
+- kept the raw Gamma baseline but added a capped-loss sensitivity to separate body-of-loss signal from extreme-tail noise
+- rewrote the notebook around the actual modeling sequence so the reader can see the problem, the fix, and the practical implication in order
+
+# What The Results Mean In Practice
+
+I am not treating this as a final customer pricing model. What this notebook produces is expected claim cost per policy-year. In practice, that means:
+
+- a policyholder costs more when the model expects them to claim more often
+- a policyholder also costs more when, conditional on a claim, the model expects their claims to cost more
+- the cleanest and most stable story in this notebook is on claim frequency
+- severity adds signal, but that part of the story should be described more cautiously because large claims move it around
+
+For this dataset, the practical headline feels pretty simple:
+
+- younger drivers are materially more expensive risks in expected-loss terms
+- some vehicle or usage proxies like fuel type and brand group matter as well
+- the final premium differences are driven by the product of frequency and severity, not by one coefficient in isolation
+
+# Limitations
+
+- This is a side-project GLM baseline, not a production tariff.
+- I am reading the model as association-based, not causal.
+- The severity model still reacts to tail behavior even after the sensitivity check.
+- Claim amounts may reflect convention-based French claims handling, which affects how I should interpret severity.
+- If I were taking this further, the next steps would be richer treatment of overdispersion, more formal tail handling, and stronger governance review.
