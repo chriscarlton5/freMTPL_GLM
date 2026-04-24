@@ -1,0 +1,257 @@
+---
+title: "French MTPL GLM vs LightGBM Comparison"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 8,
+  fig.height = 5
+)
+
+source("mtpl_gbm_analysis.R")
+results <- run_mtpl_gbm_analysis()
+
+checks <- results$checks
+frequency_comparison <- results$frequency_comparison
+severity_comparison <- results$severity_comparison
+pure_premium_comparison <- results$pure_premium_comparison
+
+get_check <- function(name) {
+  unname(checks$value[checks$metric == name])
+}
+
+format_eur <- function(x) {
+  paste0("EUR ", format(round(x, 0), big.mark = ",", scientific = FALSE))
+}
+
+format_pct <- function(x) {
+  sprintf("%.2f%%", 100 * x)
+}
+
+round_table <- function(df, digits = 4) {
+  df <- as.data.frame(df)
+  numeric_cols <- vapply(df, is.numeric, logical(1))
+  df[numeric_cols] <- lapply(df[numeric_cols], round, digits)
+  df
+}
+
+freq_gbm_gini <- frequency_comparison$pricing_lift_gini[frequency_comparison$model == "LightGBM"]
+freq_glm_gini <- frequency_comparison$pricing_lift_gini[frequency_comparison$model == "GLM"]
+
+pure_gbm_gini <- pure_premium_comparison$pricing_lift_gini[
+  pure_premium_comparison$model == "LightGBM" &
+    pure_premium_comparison$target == "Raw severity pure premium"
+]
+pure_glm_gini <- pure_premium_comparison$pricing_lift_gini[
+  pure_premium_comparison$model == "GLM" &
+    pure_premium_comparison$target == "Raw severity pure premium"
+]
+```
+
+# Executive Result
+
+The actuarial objective is to estimate expected annual loss cost:
+
+```text
+expected annual pure premium = expected annual claim frequency * expected claim severity
+```
+
+The GLM is the benchmark. LightGBM is the challenger. The useful question is not whether the boosted model produces a nicer metric in isolation; it is whether it improves risk segmentation, calibration, or interaction discovery enough to justify the extra complexity.
+
+On this holdout split:
+
+- frequency Gini is `r round(freq_glm_gini, 4)` for the GLM and `r round(freq_gbm_gini, 4)` for LightGBM
+- raw pure premium Gini is `r round(pure_glm_gini, 4)` for the GLM and `r round(pure_gbm_gini, 4)` for LightGBM
+- the severity cap used for the sensitivity view is `r format_eur(results$severity_cap)`
+
+```{r executive-model-value}
+knitr::kable(results$model_value)
+```
+
+# Data And Split
+
+This comparison reuses the same policy-level train/holdout split from the GLM project. That matters because the goal is a fair challenger comparison, not a new experiment with a different split.
+
+```{r data-checks}
+knitr::kable(round_table(checks))
+```
+
+The leakage checks should be zero. The observed-loss reconciliation gap should also be zero because pure premium validation depends on matching policy-level losses back to the severity file.
+
+# Modeling Setup
+
+The GLM benchmark stays actuarially classical:
+
+- Poisson frequency with an exposure offset
+- Gamma severity on positive claim rows
+- pure premium derived as frequency times severity
+
+The LightGBM challenger mirrors that structure:
+
+- Poisson objective on annual claim frequency, weighted by exposure
+- Gamma objective for raw severity
+- Gamma objective for 99.5% capped severity
+- pure premium derived from the frequency model and severity model
+
+The holdout set is not used for tuning. LightGBM uses a small validation split inside the training set with early stopping.
+
+```{r tuning-results}
+tuning_all <- rbind(
+  cbind(component = "Frequency", results$tuning$frequency),
+  cbind(component = "Raw severity", results$tuning$severity),
+  cbind(component = "Capped severity", results$tuning$capped_severity)
+)
+knitr::kable(round_table(tuning_all))
+```
+
+# Frequency
+
+Frequency is usually the cleanest place for this dataset to show signal. The key actuarial checks are aggregate calibration, error on annual frequency, and whether the model ranks higher-frequency risks better.
+
+```{r frequency-comparison}
+knitr::kable(round_table(frequency_comparison))
+```
+
+```{r frequency-decile-plot}
+freq_deciles <- results$frequency_deciles
+ylim <- range(c(freq_deciles$observed_annual_frequency, freq_deciles$predicted_annual_frequency), na.rm = TRUE)
+plot(
+  NULL,
+  xlim = c(1, 10),
+  ylim = ylim,
+  xlab = "Predicted frequency decile",
+  ylab = "Annual frequency",
+  main = "Holdout Frequency Calibration"
+)
+for (model_name in unique(freq_deciles$model)) {
+  rows <- freq_deciles[freq_deciles$model == model_name, ]
+  line_col <- ifelse(model_name == "GLM", "gray40", "firebrick")
+  points(rows$decile, rows$observed_annual_frequency, pch = 16, col = line_col)
+  lines(rows$decile, rows$predicted_annual_frequency, type = "b", pch = 17, col = line_col)
+}
+legend("topleft", legend = unique(freq_deciles$model), col = c("gray40", "firebrick"), pch = 17, bty = "n")
+```
+
+# Severity
+
+Severity is harder because claim amounts are heavy-tailed. The raw model is still useful to inspect, but the capped sensitivity is a more stable view of typical claim severity behavior.
+
+```{r severity-comparison}
+knitr::kable(round_table(severity_comparison))
+```
+
+```{r severity-decile-plot}
+sev_deciles <- results$severity_deciles[results$severity_deciles$target == "Capped severity", ]
+ylim <- range(c(sev_deciles$observed_mean, sev_deciles$predicted_mean), na.rm = TRUE)
+plot(
+  NULL,
+  xlim = c(1, 10),
+  ylim = ylim,
+  xlab = "Predicted capped severity decile",
+  ylab = "Mean capped severity",
+  main = "Holdout Capped Severity Calibration"
+)
+for (model_name in unique(sev_deciles$model)) {
+  rows <- sev_deciles[sev_deciles$model == model_name, ]
+  line_col <- ifelse(model_name == "GLM", "gray40", "firebrick")
+  points(rows$decile, rows$observed_mean, pch = 16, col = line_col)
+  lines(rows$decile, rows$predicted_mean, type = "b", pch = 17, col = line_col)
+}
+legend("topleft", legend = unique(sev_deciles$model), col = c("gray40", "firebrick"), pch = 17, bty = "n")
+```
+
+# Pure Premium
+
+Pure premium is the business target. At the policy level, observed annual loss cost is noisy because most policies have zero claim cost, but aggregate calibration and decile ranking are still useful.
+
+```{r pure-premium-comparison}
+knitr::kable(round_table(pure_premium_comparison))
+```
+
+```{r pure-premium-decile-plot}
+pp_deciles <- results$pure_premium_deciles[results$pure_premium_deciles$target == "Raw severity pure premium", ]
+ylim <- range(c(pp_deciles$observed_loss_cost, pp_deciles$predicted_loss_cost), na.rm = TRUE)
+plot(
+  NULL,
+  xlim = c(1, 10),
+  ylim = ylim,
+  xlab = "Predicted pure premium decile",
+  ylab = "Annual loss cost",
+  main = "Holdout Pure Premium Calibration"
+)
+for (model_name in unique(pp_deciles$model)) {
+  rows <- pp_deciles[pp_deciles$model == model_name, ]
+  line_col <- ifelse(model_name == "GLM", "gray40", "firebrick")
+  points(rows$decile, rows$observed_loss_cost, pch = 16, col = line_col)
+  lines(rows$decile, rows$predicted_loss_cost, type = "b", pch = 17, col = line_col)
+}
+legend("topleft", legend = unique(pp_deciles$model), col = c("gray40", "firebrick"), pch = 17, bty = "n")
+```
+
+# Feature Importance
+
+Feature importance is not a rate indication. I am using it as a diagnostic for which rating variables the challenger model used most heavily.
+
+```{r feature-importance, results='asis'}
+cat("## Frequency\n\n")
+print(knitr::kable(head(round_table(results$importance$frequency), 10)))
+cat("\n\n## Raw Severity\n\n")
+print(knitr::kable(head(round_table(results$importance$severity), 10)))
+cat("\n\n## Capped Severity\n\n")
+print(knitr::kable(head(round_table(results$importance$capped_severity), 10)))
+```
+
+# Partial Dependence
+
+Partial dependence gives a compact view of nonlinear patterns that a plain GLM may not capture directly.
+
+```{r partial-dependence}
+pdp <- results$pdp
+for (target_name in unique(pdp$target)) {
+  target_rows <- pdp[pdp$target == target_name, ]
+  features <- unique(target_rows$feature)
+  old_par <- par(mfrow = c(length(features), 1), mar = c(4, 4, 2, 1))
+  for (feature_name in features) {
+    rows <- target_rows[target_rows$feature == feature_name, ]
+    plot(
+      seq_len(nrow(rows)),
+      rows$mean_prediction,
+      type = "b",
+      xaxt = "n",
+      xlab = feature_name,
+      ylab = "Mean prediction",
+      main = paste(target_name, feature_name)
+    )
+    axis(1, at = seq_len(nrow(rows)), labels = rows$value, las = 2, cex.axis = 0.7)
+  }
+  par(old_par)
+}
+```
+
+# Interaction Views
+
+These tables are not a production interaction search. They are a sanity check for whether the boosted model is finding patterns worth considering as future GLM feature engineering.
+
+```{r interactions, results='asis'}
+cat("## DriverAge x CarAge\n\n")
+print(knitr::kable(round_table(results$interactions$driver_car_age)))
+cat("\n\n## Power x Brand\n\n")
+print(knitr::kable(round_table(results$interactions$power_brand)))
+cat("\n\n## Region x logDensity\n\n")
+print(knitr::kable(round_table(results$interactions$region_density)))
+```
+
+# Conclusion
+
+The final question is whether LightGBM adds actuarial value beyond the GLM. The right answer depends on the combined evidence:
+
+- ranking: frequency and pure premium Gini
+- calibration: aggregate and decile observed-versus-predicted results
+- stability: raw severity versus capped severity
+- interpretability: importance, partial dependence, and interaction views
+
+If LightGBM improves ranking or exposes useful nonlinear structure, it is a good challenger model and feature-discovery tool. If the improvements are marginal, the simpler GLM remains the better primary actuarial model for this project.
