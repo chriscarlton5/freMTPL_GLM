@@ -134,6 +134,20 @@ load_gbm_model_data <- function(data_dir = ".", seed = 20260423) {
   )
 }
 
+add_capped_loss_columns <- function(freq_df, sev_df, severity_cap) {
+  sev_capped <- sev_df[, c("PolicyID", "ClaimAmount")]
+  sev_capped$ClaimAmountCapped <- pmin(sev_capped$ClaimAmount, severity_cap)
+  capped_by_policy <- aggregate(ClaimAmountCapped ~ PolicyID, data = sev_capped, FUN = sum)
+  names(capped_by_policy)[2] <- "ObservedLossCapped"
+
+  freq_df$ObservedLossCapped <- capped_by_policy$ObservedLossCapped[
+    match(freq_df$PolicyID, capped_by_policy$PolicyID)
+  ]
+  freq_df$ObservedLossCapped[is.na(freq_df$ObservedLossCapped)] <- 0
+  freq_df$ObservedLossCappedAnnual <- freq_df$ObservedLossCapped / freq_df$Exposure
+  freq_df
+}
+
 train_lgb_grid <- function(train_df, valid_df, label, weight, objective, metric_name,
                            grid, seed, nrounds = 350, early_stopping_rounds = 25) {
   required_gbm_package()
@@ -274,31 +288,35 @@ severity_metrics <- function(df, actual_col, glm_pred_col, gbm_pred_col, label) 
   )
 }
 
-pure_premium_metrics <- function(df, glm_pp_col, gbm_pp_col, label) {
+pure_premium_metrics <- function(df, glm_pp_col, gbm_pp_col, label,
+                                 observed_loss_col = "ObservedLoss",
+                                 observed_loss_annual_col = "ObservedLossAnnual") {
+  observed_loss <- df[[observed_loss_col]]
+  observed_loss_annual <- df[[observed_loss_annual_col]]
   data.frame(
     target = label,
     model = c("GLM", "LightGBM"),
-    observed_total_loss = sum(df$ObservedLoss),
+    observed_total_loss = sum(observed_loss),
     predicted_total_loss = c(
       sum(df[[glm_pp_col]] * df$Exposure),
       sum(df[[gbm_pp_col]] * df$Exposure)
     ),
-    observed_loss_cost = sum(df$ObservedLoss) / sum(df$Exposure),
+    observed_loss_cost = sum(observed_loss) / sum(df$Exposure),
     predicted_loss_cost = c(
       sum(df[[glm_pp_col]] * df$Exposure) / sum(df$Exposure),
       sum(df[[gbm_pp_col]] * df$Exposure) / sum(df$Exposure)
     ),
     weighted_mae_annual_loss_cost = c(
-      weighted_mae(df$ObservedLossAnnual, df[[glm_pp_col]], df$Exposure),
-      weighted_mae(df$ObservedLossAnnual, df[[gbm_pp_col]], df$Exposure)
+      weighted_mae(observed_loss_annual, df[[glm_pp_col]], df$Exposure),
+      weighted_mae(observed_loss_annual, df[[gbm_pp_col]], df$Exposure)
     ),
     weighted_rmse_annual_loss_cost = c(
-      weighted_rmse(df$ObservedLossAnnual, df[[glm_pp_col]], df$Exposure),
-      weighted_rmse(df$ObservedLossAnnual, df[[gbm_pp_col]], df$Exposure)
+      weighted_rmse(observed_loss_annual, df[[glm_pp_col]], df$Exposure),
+      weighted_rmse(observed_loss_annual, df[[gbm_pp_col]], df$Exposure)
     ),
     pricing_lift_gini = c(
-      ordered_lorenz_gini(df$ObservedLoss, df[[glm_pp_col]], df$Exposure),
-      ordered_lorenz_gini(df$ObservedLoss, df[[gbm_pp_col]], df$Exposure)
+      ordered_lorenz_gini(observed_loss, df[[glm_pp_col]], df$Exposure),
+      ordered_lorenz_gini(observed_loss, df[[gbm_pp_col]], df$Exposure)
     ),
     row.names = NULL
   )
@@ -335,9 +353,10 @@ severity_deciles <- function(df, score_col, actual_col, pred_col, model_name, ta
   )
 }
 
-pure_premium_deciles <- function(df, score_col, pp_col, model_name, target_name) {
+pure_premium_deciles <- function(df, score_col, pp_col, model_name, target_name,
+                                 observed_loss_col = "ObservedLoss") {
   decile <- safe_quantile_groups(df[[score_col]])
-  observed_loss <- tapply(df$ObservedLoss, decile, sum)
+  observed_loss <- tapply(df[[observed_loss_col]], decile, sum)
   predicted_loss <- tapply(df[[pp_col]] * df$Exposure, decile, sum)
   exposure <- tapply(df$Exposure, decile, sum)
   data.frame(
@@ -446,6 +465,10 @@ run_mtpl_gbm_analysis <- function(data_dir = ".", seed = 20260423) {
   sev_holdout <- data$sev_holdout
 
   severity_cap <- glm_results$severity_cap
+  data$freq <- add_capped_loss_columns(data$freq, data$sev, severity_cap)
+  freq_train <- add_capped_loss_columns(freq_train, data$sev, severity_cap)
+  freq_holdout <- add_capped_loss_columns(freq_holdout, data$sev, severity_cap)
+
   sev_train$ClaimAmountCapped <- pmin(sev_train$ClaimAmount, severity_cap)
   sev_holdout$ClaimAmountCapped <- pmin(sev_holdout$ClaimAmount, severity_cap)
 
@@ -534,7 +557,14 @@ run_mtpl_gbm_analysis <- function(data_dir = ".", seed = 20260423) {
   )
   pure_premium_comparison <- rbind(
     pure_premium_metrics(freq_holdout, "glm_pred_pure_premium", "gbm_pred_pure_premium", "Raw severity pure premium"),
-    pure_premium_metrics(freq_holdout, "glm_pred_pure_premium_capped", "gbm_pred_pure_premium_capped", "Capped severity pure premium")
+    pure_premium_metrics(
+      freq_holdout,
+      "glm_pred_pure_premium_capped",
+      "gbm_pred_pure_premium_capped",
+      "Capped severity pure premium",
+      observed_loss_col = "ObservedLossCapped",
+      observed_loss_annual_col = "ObservedLossCappedAnnual"
+    )
   )
 
   frequency_decile_summary <- rbind(
@@ -552,8 +582,22 @@ run_mtpl_gbm_analysis <- function(data_dir = ".", seed = 20260423) {
   pure_premium_decile_summary <- rbind(
     pure_premium_deciles(freq_holdout, "glm_pred_pure_premium", "glm_pred_pure_premium", "GLM", "Raw severity pure premium"),
     pure_premium_deciles(freq_holdout, "gbm_pred_pure_premium", "gbm_pred_pure_premium", "LightGBM", "Raw severity pure premium"),
-    pure_premium_deciles(freq_holdout, "glm_pred_pure_premium_capped", "glm_pred_pure_premium_capped", "GLM", "Capped severity pure premium"),
-    pure_premium_deciles(freq_holdout, "gbm_pred_pure_premium_capped", "gbm_pred_pure_premium_capped", "LightGBM", "Capped severity pure premium")
+    pure_premium_deciles(
+      freq_holdout,
+      "glm_pred_pure_premium_capped",
+      "glm_pred_pure_premium_capped",
+      "GLM",
+      "Capped severity pure premium",
+      observed_loss_col = "ObservedLossCapped"
+    ),
+    pure_premium_deciles(
+      freq_holdout,
+      "gbm_pred_pure_premium_capped",
+      "gbm_pred_pure_premium_capped",
+      "LightGBM",
+      "Capped severity pure premium",
+      observed_loss_col = "ObservedLossCapped"
+    )
   )
 
   importance <- list(
@@ -593,6 +637,7 @@ run_mtpl_gbm_analysis <- function(data_dir = ".", seed = 20260423) {
       "train_holdout_policy_leakage",
       "gbm_fit_validation_policy_leakage",
       "observed_loss_reconciliation_gap",
+      "capped_observed_loss_reconciliation_gap",
       "severity_cap_99_5"
     ),
     value = c(
@@ -611,6 +656,7 @@ run_mtpl_gbm_analysis <- function(data_dir = ".", seed = 20260423) {
       length(intersect(freq_train$PolicyID, freq_holdout$PolicyID)),
       length(intersect(freq_fit$PolicyID, freq_valid$PolicyID)),
       sum(data$freq$ObservedLoss) - sum(data$sev$ClaimAmount),
+      sum(data$freq$ObservedLossCapped) - sum(pmin(data$sev$ClaimAmount, severity_cap)),
       severity_cap
     ),
     row.names = NULL
@@ -661,6 +707,11 @@ run_mtpl_gbm_analysis <- function(data_dir = ".", seed = 20260423) {
     interactions = interaction_tables,
     model_value = model_value,
     severity_cap = severity_cap,
+    gbm_models = list(
+      frequency = frequency_gbm$model,
+      severity = severity_gbm$model,
+      capped_severity = capped_severity_gbm$model
+    ),
     holdout_predictions = freq_holdout,
     severity_holdout_predictions = sev_holdout
   )

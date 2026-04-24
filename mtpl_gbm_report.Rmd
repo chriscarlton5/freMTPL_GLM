@@ -124,6 +124,17 @@ synthesis_severity_comparison <- results$synthesis_severity_comparison
 synthesis_pure_premium_comparison <- results$synthesis_pure_premium_comparison
 business_impact <- results$synthesis_business_impact
 high_risk_decile_summary <- results$high_risk_decile_summary
+validation_design <- results$validation_design
+calibration_factors <- results$calibration_factors
+calibrated_pure_premium_comparison <- results$calibrated_pure_premium_comparison
+validation_calibrated_pure_premium_comparison <- results$validation_calibrated_pure_premium_comparison
+holdout_candidate_metrics <- results$holdout_candidate_metrics
+candidate_acceptance <- results$candidate_acceptance
+candidate_high_risk_decile_summary <- results$candidate_high_risk_decile_summary
+final_recommendation <- results$final_recommendation
+selected_blend <- results$selected_blend
+isotonic_status <- results$isotonic_status
+raw_ae_deciles <- results$raw_ae_deciles
 
 synth_freq_glm <- comparison_row(synthesis_frequency_comparison, "Baseline GLM")
 synth_freq_enhanced <- comparison_row(synthesis_frequency_comparison, "Enhanced GLM")
@@ -131,6 +142,8 @@ synth_freq_gbm <- comparison_row(synthesis_frequency_comparison, "LightGBM")
 synth_raw_pp_glm <- comparison_row(synthesis_pure_premium_comparison, "Baseline GLM", "Raw severity pure premium")
 synth_raw_pp_enhanced <- comparison_row(synthesis_pure_premium_comparison, "Enhanced GLM", "Raw severity pure premium")
 synth_raw_pp_gbm <- comparison_row(synthesis_pure_premium_comparison, "LightGBM", "Raw severity pure premium")
+cal_raw_pp_enhanced <- comparison_row(calibrated_pure_premium_comparison, "Enhanced GLM calibrated", "Raw severity pure premium")
+cal_raw_pp_gbm <- comparison_row(calibrated_pure_premium_comparison, "LightGBM calibrated", "Raw severity pure premium")
 
 enhanced_freq_gini_delta <- synth_freq_enhanced$pricing_lift_gini - synth_freq_glm$pricing_lift_gini
 enhanced_freq_gini_rel_delta <- enhanced_freq_gini_delta / synth_freq_glm$pricing_lift_gini
@@ -139,6 +152,10 @@ enhanced_raw_pp_gini_rel_delta <- enhanced_raw_pp_gini_delta / synth_raw_pp_glm$
 enhanced_raw_pp_gap <- (synth_raw_pp_enhanced$predicted_loss_cost - synth_raw_pp_enhanced$observed_loss_cost) / synth_raw_pp_enhanced$observed_loss_cost
 baseline_raw_pp_gap <- (synth_raw_pp_glm$predicted_loss_cost - synth_raw_pp_glm$observed_loss_cost) / synth_raw_pp_glm$observed_loss_cost
 gbm_raw_pp_gap <- (synth_raw_pp_gbm$predicted_loss_cost - synth_raw_pp_gbm$observed_loss_cost) / synth_raw_pp_gbm$observed_loss_cost
+cal_enhanced_raw_pp_gap <- cal_raw_pp_enhanced$calibration_gap
+cal_gbm_raw_pp_gap <- cal_raw_pp_gbm$calibration_gap
+retained_candidate_count <- sum(candidate_acceptance$decision == "Retained")
+selected_model <- final_recommendation$selected_model[1]
 
 top_capture <- function(model_name) {
   high_risk_decile_summary$observed_loss_capture_share[high_risk_decile_summary$model == model_name]
@@ -165,6 +182,8 @@ On this holdout split, the useful result is mixed but informative:
 - LightGBM is slightly worse on aggregate frequency calibration, predicting `r num(freq_gbm$predicted_claims, 1)` claims, but it improves frequency ranking from Gini `r round(freq_glm_gini, 4)` to `r round(freq_gbm_gini, 4)`
 - raw pure premium Gini improves from `r round(pure_glm_gini, 4)` for the GLM to `r round(pure_gbm_gini, 4)` for LightGBM, a `r pct(raw_pp_gini_rel_delta)` relative lift
 - LightGBM underpredicts aggregate pure premium more than the GLM, so its value is stronger as a segmentation and feature-discovery model than as an unadjusted pricing level
+- the validation-selected enhanced GLM is now selected on internal validation, not final holdout
+- validation-based calibration was tested, but `r retained_candidate_count` calibrated candidates passed the final holdout gates; the selected final model remains `r selected_model`
 - the severity cap used for the sensitivity view is `r format_eur(results$severity_cap)`
 
 ```{r executive-model-value}
@@ -185,6 +204,12 @@ knitr::kable(round_table(checks))
 
 The leakage checks should be zero. The observed-loss reconciliation gap should also be zero because pure premium validation depends on matching policy-level losses back to the severity file.
 
+The synthesis layer now uses three roles. The fit sample estimates the GBM and candidate enhanced GLMs. The internal validation sample selects enhanced GLM terms, estimates calibration factors, triggers the isotonic candidate, and selects the blend weight. The final holdout is reserved for acceptance or rejection.
+
+```{r validation-design}
+knitr::kable(validation_design)
+```
+
 # Modeling Setup
 
 The GLM benchmark stays actuarially classical:
@@ -200,7 +225,7 @@ The LightGBM challenger mirrors that structure:
 - Gamma objective for 99.5% capped severity
 - pure premium derived from the frequency model and severity model
 
-The holdout set is not used for tuning. LightGBM uses a small validation split inside the training set with early stopping.
+The final holdout set is not used for tuning or synthesis selection. LightGBM uses the internal validation split for early stopping, and the GBM-to-GLM synthesis uses that same internal validation split for term selection and calibration trials.
 
 ```{r tuning-results}
 tuning_all <- rbind(
@@ -285,6 +310,8 @@ Pure premium shows the tradeoff most clearly. The observed holdout loss cost is 
 
 That looks bad if we only care about the unadjusted aggregate level. But the ranking story moves the other way: raw pure premium Gini improves from `r round(raw_pp_glm$pricing_lift_gini, 4)` to `r round(raw_pp_gbm$pricing_lift_gini, 4)`, a `r pct(raw_pp_gini_rel_delta)` relative improvement. This is exactly the distinction an insurer would care about. The GLM gives a more defensible base pricing level; the GBM gives stronger segmentation signal that could identify underpriced and overpriced groups.
 
+The capped pure-premium rows now compare capped severity predictions against capped observed loss, not raw observed loss. That keeps the sensitivity view internally consistent: raw pure premium remains the business target, while capped pure premium is a stability check on body-of-loss behavior.
+
 ```{r pure-premium-decile-plot}
 pp_deciles <- results$pure_premium_deciles[results$pure_premium_deciles$target == "Raw severity pure premium", ]
 ylim <- range(c(pp_deciles$observed_loss_cost, pp_deciles$predicted_loss_cost), na.rm = TRUE)
@@ -367,7 +394,7 @@ The decision logic was:
 - use the GBM as a diagnostic model, not as the final pricing model
 - test spline terms where PDP and importance suggested nonlinear continuous effects
 - test only the interaction families reviewed in the GBM section
-- keep an enhanced GLM term only when it improved the relevant holdout metric without creating an unacceptable calibration deterioration
+- keep an enhanced GLM term only when it improved the relevant internal-validation metric without creating an unacceptable calibration deterioration
 - document rejected terms directly
 
 ```{r gbm-learning-summary}
@@ -376,7 +403,7 @@ knitr::kable(results$gbm_learning_summary)
 
 The enhanced GLM candidate set was intentionally small. I tested natural splines for `DriverAge`, `CarAge`, and `logDensity`, plus three interaction families: `DriverAgeBand x CarAgeBand`, `Power x Brand`, and `Region x DensityBand`.
 
-For frequency, the primary selection metric is pricing lift Gini because the GBM's strongest contribution was ranking and segmentation. For severity, the primary selection metric is MAE because the severity problem is tail-sensitive and aggregate mean calibration alone is too volatile.
+For frequency, the primary selection metric is pricing lift Gini because the GBM's strongest contribution was ranking and segmentation. For severity, the primary selection metric is MAE because the severity problem is tail-sensitive and aggregate mean calibration alone is too volatile. The important governance change is that these decisions are made on the internal validation sample, while the final holdout is reserved for acceptance testing.
 
 ```{r synthesis-term-decisions}
 term_decisions_display <- results$term_decisions
@@ -392,11 +419,7 @@ knitr::kable(term_decisions_display)
 knitr::kable(results$enhanced_formulas)
 ```
 
-The result is a selective synthesis rather than a blind import of all GBM complexity:
-
-- frequency accepted the continuous splines, `Power x Brand`, and `Region x DensityBand`
-- raw severity accepted only the continuous splines
-- capped severity rejected all tested additions, so it stayed at the baseline GLM structure
+The result is a selective synthesis rather than a blind import of all GBM complexity. The table above is the source of truth: accepted terms are retained because they improved the internal-validation objective, and rejected terms are left out even if they looked plausible in the GBM diagnostic views.
 
 ```{r synthesis-checks}
 knitr::kable(round_table(results$synthesis_checks))
@@ -447,18 +470,69 @@ business_impact_display[business_impact_display$metric %in% c(
 knitr::kable(round_table(business_impact_display))
 ```
 
+# Calibration Trial
+
+Calibration was tested after the validation-selected enhanced GLM was built. The calibration approach is intentionally component-level: frequency, raw severity, and capped severity each get their own validation-estimated scalar for each model. That makes the source of bias visible instead of hiding everything inside one pure-premium multiplier.
+
+```{r calibration-factors}
+knitr::kable(round_table(calibration_factors))
+```
+
+On the internal validation sample, these factors did what they were supposed to do: they improved aggregate raw pure-premium level and lowered MAE for the calibrated candidates.
+
+```{r validation-calibrated-pure-premium}
+knitr::kable(round_table(validation_calibrated_pure_premium_comparison))
+```
+
+The final holdout tells a different story. Raw holdout losses are materially heavier than validation losses, so the validation-estimated raw severity factors reduce the raw pure-premium level too much. This is exactly why the holdout should not be used for selection and why calibration needs an explicit acceptance gate.
+
+```{r holdout-calibrated-pure-premium}
+knitr::kable(round_table(calibrated_pure_premium_comparison))
+```
+
+The isotonic candidate was treated as experimental. It was only attempted because validation decile A/E bias was non-uniform.
+
+```{r isotonic-status}
+knitr::kable(round_table(isotonic_status))
+```
+
+The blend was selected on validation from a grid of enhanced-GLM and LightGBM calibrated pure premiums. In this run, the selected validation blend puts `r pct(selected_blend$alpha_enhanced)` weight on the enhanced GLM and `r pct(selected_blend$alpha_lightgbm)` weight on LightGBM.
+
+```{r selected-blend}
+knitr::kable(round_table(selected_blend))
+```
+
+The final acceptance table is deliberately strict. A calibrated candidate must improve final holdout absolute aggregate raw pure-premium calibration versus the uncalibrated enhanced GLM, preserve segmentation Gini, and keep MAE within the 1% tolerance. None of the calibrated candidates passed all gates, so the calibrated model changes are documented but not retained as the final pricing view.
+
+```{r candidate-acceptance}
+acceptance_display <- candidate_acceptance
+acceptance_display$validation_calibration_gap <- sprintf("%.1f%%", 100 * acceptance_display$validation_calibration_gap)
+acceptance_display$holdout_calibration_gap <- sprintf("%.1f%%", 100 * acceptance_display$holdout_calibration_gap)
+knitr::kable(round_table(acceptance_display))
+```
+
+```{r final-recommendation}
+knitr::kable(final_recommendation)
+```
+
+The raw pure-premium A/E deciles below are the practical diagnostic an actuary would want next. They show that even when aggregate calibration is not retained, the calibrated and blended candidates remain useful for diagnosing where the model is over- or under-estimating.
+
+```{r raw-ae-deciles}
+ae_display <- raw_ae_deciles
+ae_display$actual_to_expected <- round(ae_display$actual_to_expected, 3)
+knitr::kable(round_table(ae_display))
+```
+
 # Conclusion
 
-The final question is whether LightGBM adds actuarial value beyond the GLM, and whether that value can be synthesized back into a transparent actuarial model. My answer is yes, but with a clear split between ranking value and calibration value.
+The final question is whether LightGBM adds actuarial value beyond the GLM, and whether that value can be synthesized back into a transparent actuarial model. My answer is yes for segmentation and feature discovery, but no for an automatic calibrated pricing level.
 
 The baseline GLM is still the clean benchmark. It is simple, easy to explain, and strong on aggregate frequency calibration. On holdout frequency, it predicts `r num(freq_glm$predicted_claims, 1)` claims against `r num(freq_glm$observed_claims, 0)` observed. The GBM showed that the baseline GLM was smoothing over useful segmentation signal, especially in frequency and pure premium ranking.
 
-The enhanced GLM captures a meaningful part of that GBM signal. Frequency Gini rises from `r round(synth_freq_glm$pricing_lift_gini, 4)` for the baseline GLM to `r round(synth_freq_enhanced$pricing_lift_gini, 4)` for the enhanced GLM. Raw pure premium Gini rises from `r round(synth_raw_pp_glm$pricing_lift_gini, 4)` to `r round(synth_raw_pp_enhanced$pricing_lift_gini, 4)`. That improvement comes from explicit, reviewable terms: continuous splines for nonlinear feature shape, plus selected frequency interactions for `Power x Brand` and `Region x DensityBand`.
+The validation-selected enhanced GLM captures a meaningful part of that GBM signal. Frequency Gini rises from `r round(synth_freq_glm$pricing_lift_gini, 4)` for the baseline GLM to `r round(synth_freq_enhanced$pricing_lift_gini, 4)` for the enhanced GLM. Raw pure premium Gini rises from `r round(synth_raw_pp_glm$pricing_lift_gini, 4)` to `r round(synth_raw_pp_enhanced$pricing_lift_gini, 4)`. That improvement comes from explicit, reviewable terms selected on internal validation rather than final holdout.
 
-The tradeoff is calibration. The enhanced GLM does not improve aggregate raw loss-cost calibration; it predicts `r format_eur(synth_raw_pp_enhanced$predicted_loss_cost)` versus `r format_eur(synth_raw_pp_enhanced$observed_loss_cost)` observed. LightGBM is even more undercalibrated as a direct pricing level. Severity remains the limiting component: LightGBM improves severity MAE, but neither GBM nor the enhanced GLM solves the heavy-tail problem.
+The calibration trial is the most important actuarial lesson in this version. Validation-based component scalars improved validation fit, but they did not validate on final raw holdout. The enhanced GLM calibrated raw pure premium gap was `r pct(cal_enhanced_raw_pp_gap)` on holdout versus `r pct(enhanced_raw_pp_gap)` before calibration, and the calibrated LightGBM gap was `r pct(cal_gbm_raw_pp_gap)`. Because none of the calibrated candidates passed the acceptance gates, the selected final model remains `r selected_model`.
 
-The business impact of synthesis is strongest in portfolio segmentation. The enhanced GLM's top predicted pure-premium decile captures `r pct(top_capture("Enhanced GLM"))` of observed holdout loss, versus `r pct(top_capture("Baseline GLM"))` for the baseline GLM. That is a material improvement for pricing review and underwriting triage, even though an aggregate calibration adjustment would still be required before using the model as a direct rate level.
+Severity remains the limiting component. The capped pure-premium sensitivity is now evaluated against capped observed loss and reconciles cleanly, but raw pure premium remains exposed to large-loss volatility. A real client-ready pricing analysis would need broader resampling, out-of-time validation if available, large-loss treatment, and actuarial rate-level governance before using the model as a direct indication.
 
-My recommendation is to keep the enhanced GLM as the transparent synthesis model, keep LightGBM as the challenger and discovery layer, and treat aggregate loss-cost calibration as a separate actuarial adjustment. The synthesis improves the baseline GLM where the GBM was strongest: ranking, segmentation, and identifying high-loss pockets. It does not eliminate the need for severity caution or calibration governance.
-
-For this side project, the strongest final story is not "GBM beats GLM." It is "GBM revealed nonlinear and interaction signal, and a selective enhanced GLM captured a meaningful share of that signal while preserving transparency."
+For this side project, the strongest final story is now sharper: "GBM revealed nonlinear and interaction signal; a validation-selected enhanced GLM captured useful segmentation signal transparently; and a disciplined calibration trial was rejected when it failed final holdout validation."

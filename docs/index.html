@@ -374,6 +374,11 @@ LightGBM, a 67.3% relative lift</li>
 <li>LightGBM underpredicts aggregate pure premium more than the GLM, so
 its value is stronger as a segmentation and feature-discovery model than
 as an unadjusted pricing level</li>
+<li>the validation-selected enhanced GLM is now selected on internal
+validation, not final holdout</li>
+<li>validation-based calibration was tested, but 0 calibrated candidates
+passed the final holdout gates; the selected final model remains
+Uncalibrated enhanced GLM</li>
 <li>the severity cap used for the sensitivity view is EUR 36,876</li>
 </ul>
 <pre class="r"><code>knitr::kable(results$model_value)</code></pre>
@@ -544,6 +549,10 @@ comparison, not a new experiment with a different split.</p>
 <td align="right">0.0</td>
 </tr>
 <tr class="even">
+<td align="left">capped_observed_loss_reconciliation_gap</td>
+<td align="right">0.0</td>
+</tr>
+<tr class="odd">
 <td align="left">severity_cap_99_5</td>
 <td align="right">36876.2</td>
 </tr>
@@ -552,6 +561,51 @@ comparison, not a new experiment with a different split.</p>
 <p>The leakage checks should be zero. The observed-loss reconciliation
 gap should also be zero because pure premium validation depends on
 matching policy-level losses back to the severity file.</p>
+<p>The synthesis layer now uses three roles. The fit sample estimates
+the GBM and candidate enhanced GLMs. The internal validation sample
+selects enhanced GLM terms, estimates calibration factors, triggers the
+isotonic candidate, and selects the blend weight. The final holdout is
+reserved for acceptance or rejection.</p>
+<pre class="r"><code>knitr::kable(validation_design)</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="13%" />
+<col width="73%" />
+<col width="6%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">sample</th>
+<th align="left">role</th>
+<th align="right">policies</th>
+<th align="right">claim_rows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GBM/GLM fit</td>
+<td align="left">Fit LightGBM models and candidate enhanced GLM
+terms.</td>
+<td align="right">264427</td>
+<td align="right">10348</td>
+</tr>
+<tr class="even">
+<td align="left">Internal validation</td>
+<td align="left">Early stopping, enhanced-term selection, component
+calibration, isotonic trigger, and blend-weight selection.</td>
+<td align="right">66108</td>
+<td align="right">2593</td>
+</tr>
+<tr class="odd">
+<td align="left">Final holdout</td>
+<td align="left">Final untouched measurement for
+acceptance/rejection.</td>
+<td align="right">82634</td>
+<td align="right">3240</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="modeling-setup" class="section level1">
 <h1>Modeling Setup</h1>
@@ -570,8 +624,10 @@ exposure</li>
 <li>pure premium derived from the frequency model and severity
 model</li>
 </ul>
-<p>The holdout set is not used for tuning. LightGBM uses a small
-validation split inside the training set with early stopping.</p>
+<p>The final holdout set is not used for tuning or synthesis selection.
+LightGBM uses the internal validation split for early stopping, and the
+GBM-to-GLM synthesis uses that same internal validation split for term
+selection and calibration trials.</p>
 <pre class="r"><code>tuning_all &lt;- rbind(
   cbind(component = &quot;Frequency&quot;, results$tuning$frequency),
   cbind(component = &quot;Raw severity&quot;, results$tuning$severity),
@@ -976,7 +1032,7 @@ but aggregate calibration and decile ranking are still useful.</p>
 <td align="right">167.9057</td>
 <td align="right">143.0116</td>
 <td align="right">297.5093</td>
-<td align="right">20356.92</td>
+<td align="right">20356.924</td>
 <td align="right">0.2366</td>
 </tr>
 <tr class="even">
@@ -987,30 +1043,30 @@ but aggregate calibration and decile ranking are still useful.</p>
 <td align="right">167.9057</td>
 <td align="right">126.5173</td>
 <td align="right">281.5507</td>
-<td align="right">20355.91</td>
+<td align="right">20355.907</td>
 <td align="right">0.3957</td>
 </tr>
 <tr class="odd">
 <td align="left">Capped severity pure premium</td>
 <td align="left">GLM</td>
-<td align="right">7783378</td>
+<td align="right">5269717</td>
 <td align="right">5345122</td>
-<td align="right">167.9057</td>
+<td align="right">113.6802</td>
 <td align="right">115.3068</td>
-<td align="right">272.1049</td>
-<td align="right">20357.01</td>
-<td align="right">0.2128</td>
+<td align="right">217.8793</td>
+<td align="right">1756.129</td>
+<td align="right">0.1440</td>
 </tr>
 <tr class="even">
 <td align="left">Capped severity pure premium</td>
 <td align="left">LightGBM</td>
-<td align="right">7783378</td>
+<td align="right">5269717</td>
 <td align="right">5214071</td>
-<td align="right">167.9057</td>
+<td align="right">113.6802</td>
 <td align="right">112.4798</td>
-<td align="right">268.9606</td>
-<td align="right">20356.23</td>
-<td align="right">0.3907</td>
+<td align="right">214.7351</td>
+<td align="right">1755.198</td>
+<td align="right">0.2091</td>
 </tr>
 </tbody>
 </table>
@@ -1024,6 +1080,11 @@ improves from 0.2366 to 0.3957, a 67.3% relative improvement. This is
 exactly the distinction an insurer would care about. The GLM gives a
 more defensible base pricing level; the GBM gives stronger segmentation
 signal that could identify underpriced and overpriced groups.</p>
+<p>The capped pure-premium rows now compare capped severity predictions
+against capped observed loss, not raw observed loss. That keeps the
+sensitivity view internally consistent: raw pure premium remains the
+business target, while capped pure premium is a stability check on
+body-of-loss behavior.</p>
 <pre class="r"><code>pp_deciles &lt;- results$pure_premium_deciles[results$pure_premium_deciles$target == &quot;Raw severity pure premium&quot;, ]
 ylim &lt;- range(c(pp_deciles$observed_loss_cost, pp_deciles$predicted_loss_cost), na.rm = TRUE)
 plot(
@@ -1845,8 +1906,9 @@ model</li>
 <li>test spline terms where PDP and importance suggested nonlinear
 continuous effects</li>
 <li>test only the interaction families reviewed in the GBM section</li>
-<li>keep an enhanced GLM term only when it improved the relevant holdout
-metric without creating an unacceptable calibration deterioration</li>
+<li>keep an enhanced GLM term only when it improved the relevant
+internal-validation metric without creating an unacceptable calibration
+deterioration</li>
 <li>document rejected terms directly</li>
 </ul>
 <pre class="r"><code>knitr::kable(results$gbm_learning_summary)</code></pre>
@@ -1854,7 +1916,7 @@ metric without creating an unacceptable calibration deterioration</li>
 <colgroup>
 <col width="8%" />
 <col width="56%" />
-<col width="34%" />
+<col width="35%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1867,8 +1929,8 @@ metric without creating an unacceptable calibration deterioration</li>
 <tr class="odd">
 <td align="left">Frequency ranking</td>
 <td align="left">Yes, frequency Gini improved meaningfully.</td>
-<td align="left">Test enhanced frequency GLM terms against holdout
-ranking and calibration.</td>
+<td align="left">Test enhanced frequency GLM terms against internal
+validation ranking and calibration.</td>
 </tr>
 <tr class="even">
 <td align="left">Pure premium ranking</td>
@@ -1881,7 +1943,7 @@ GBM ranking signal while retaining GLM transparency.</td>
 <td align="left">No. Severity remains tail-sensitive, so raw and capped
 views should both be shown.</td>
 <td align="left">Keep raw and capped severity views separate and require
-holdout MAE/RMSE support before adding complexity.</td>
+validation MAE/RMSE support before adding complexity.</td>
 </tr>
 <tr class="even">
 <td align="left">Candidate nonlinear shapes</td>
@@ -1909,7 +1971,9 @@ natural splines for <code>DriverAge</code>, <code>CarAge</code>, and
 because the GBM’s strongest contribution was ranking and segmentation.
 For severity, the primary selection metric is MAE because the severity
 problem is tail-sensitive and aggregate mean calibration alone is too
-volatile.</p>
+volatile. The important governance change is that these decisions are
+made on the internal validation sample, while the final holdout is
+reserved for acceptance testing.</p>
 <pre class="r"><code>term_decisions_display &lt;- results$term_decisions
 term_decisions_display$primary_metric_before &lt;- round(term_decisions_display$primary_metric_before, 4)
 term_decisions_display$primary_metric_after &lt;- round(term_decisions_display$primary_metric_after, 4)
@@ -1917,20 +1981,22 @@ term_decisions_display$primary_metric_delta &lt;- round(term_decisions_display$p
 term_decisions_display$calibration_gap_before &lt;- sprintf(&quot;%.1f%%&quot;, 100 * term_decisions_display$calibration_gap_before)
 term_decisions_display$calibration_gap_after &lt;- sprintf(&quot;%.1f%%&quot;, 100 * term_decisions_display$calibration_gap_after)
 knitr::kable(term_decisions_display)</code></pre>
-<table>
+<table style="width:100%;">
 <colgroup>
-<col width="8%" />
-<col width="28%" />
+<col width="7%" />
+<col width="9%" />
+<col width="25%" />
 <col width="4%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
 <col width="11%" />
-<col width="11%" />
-<col width="11%" />
-<col width="12%" />
-<col width="11%" />
+<col width="10%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="left">component</th>
+<th align="left">selection_sample</th>
 <th align="left">candidate</th>
 <th align="left">decision</th>
 <th align="right">primary_metric_before</th>
@@ -1943,136 +2009,148 @@ knitr::kable(term_decisions_display)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">Frequency</td>
+<td align="left">Internal validation</td>
 <td align="left">Natural splines for DriverAge, CarAge, and
 logDensity</td>
 <td align="left">Accepted</td>
-<td align="right">0.1466</td>
-<td align="right">0.1746</td>
-<td align="right">0.0280</td>
-<td align="left">-0.2%</td>
-<td align="left">-0.3%</td>
+<td align="right">0.1772</td>
+<td align="right">0.1971</td>
+<td align="right">0.0199</td>
+<td align="left">0.2%</td>
+<td align="left">0.0%</td>
 </tr>
 <tr class="even">
 <td align="left">Frequency</td>
+<td align="left">Internal validation</td>
 <td align="left">DriverAgeBand x CarAgeBand</td>
 <td align="left">Rejected</td>
-<td align="right">0.1746</td>
-<td align="right">0.1740</td>
-<td align="right">-0.0005</td>
-<td align="left">-0.3%</td>
-<td align="left">-0.4%</td>
+<td align="right">0.1971</td>
+<td align="right">0.1963</td>
+<td align="right">-0.0008</td>
+<td align="left">0.0%</td>
+<td align="left">0.0%</td>
 </tr>
 <tr class="odd">
 <td align="left">Frequency</td>
+<td align="left">Internal validation</td>
 <td align="left">Power x Brand</td>
-<td align="left">Accepted</td>
-<td align="right">0.1746</td>
-<td align="right">0.1778</td>
-<td align="right">0.0032</td>
-<td align="left">-0.3%</td>
-<td align="left">-0.4%</td>
+<td align="left">Rejected</td>
+<td align="right">0.1971</td>
+<td align="right">0.1892</td>
+<td align="right">-0.0080</td>
+<td align="left">0.0%</td>
+<td align="left">0.1%</td>
 </tr>
 <tr class="even">
 <td align="left">Frequency</td>
+<td align="left">Internal validation</td>
 <td align="left">Region x DensityBand</td>
-<td align="left">Accepted</td>
-<td align="right">0.1778</td>
-<td align="right">0.1802</td>
-<td align="right">0.0023</td>
-<td align="left">-0.4%</td>
-<td align="left">-0.4%</td>
+<td align="left">Rejected</td>
+<td align="right">0.1971</td>
+<td align="right">0.1975</td>
+<td align="right">0.0004</td>
+<td align="left">0.0%</td>
+<td align="left">0.1%</td>
 </tr>
 <tr class="odd">
 <td align="left">Raw severity</td>
+<td align="left">Internal validation</td>
 <td align="left">Natural splines for DriverAge, CarAge, and
 logDensity</td>
 <td align="left">Accepted</td>
-<td align="right">2285.0922</td>
-<td align="right">2282.7473</td>
-<td align="right">-2.3450</td>
-<td align="left">-15.8%</td>
-<td align="left">-16.1%</td>
+<td align="right">1707.5826</td>
+<td align="right">1690.8566</td>
+<td align="right">-16.7260</td>
+<td align="left">16.9%</td>
+<td align="left">16.0%</td>
 </tr>
 <tr class="even">
 <td align="left">Raw severity</td>
+<td align="left">Internal validation</td>
 <td align="left">DriverAgeBand x CarAgeBand</td>
 <td align="left">Rejected</td>
-<td align="right">2282.7473</td>
-<td align="right">2298.2154</td>
-<td align="right">15.4682</td>
-<td align="left">-16.1%</td>
-<td align="left">-15.8%</td>
+<td align="right">1690.8566</td>
+<td align="right">1711.5358</td>
+<td align="right">20.6792</td>
+<td align="left">16.0%</td>
+<td align="left">16.3%</td>
 </tr>
 <tr class="odd">
 <td align="left">Raw severity</td>
+<td align="left">Internal validation</td>
 <td align="left">Power x Brand</td>
 <td align="left">Rejected</td>
-<td align="right">2282.7473</td>
-<td align="right">2292.7965</td>
-<td align="right">10.0492</td>
-<td align="left">-16.1%</td>
-<td align="left">-16.2%</td>
+<td align="right">1690.8566</td>
+<td align="right">1704.0185</td>
+<td align="right">13.1619</td>
+<td align="left">16.0%</td>
+<td align="left">15.3%</td>
 </tr>
 <tr class="even">
 <td align="left">Raw severity</td>
+<td align="left">Internal validation</td>
 <td align="left">Region x DensityBand</td>
 <td align="left">Rejected</td>
-<td align="right">2282.7473</td>
-<td align="right">2290.1496</td>
-<td align="right">7.4024</td>
-<td align="left">-16.1%</td>
-<td align="left">-16.0%</td>
+<td align="right">1690.8566</td>
+<td align="right">1700.0886</td>
+<td align="right">9.2320</td>
+<td align="left">16.0%</td>
+<td align="left">15.6%</td>
 </tr>
 <tr class="odd">
 <td align="left">Capped severity</td>
+<td align="left">Internal validation</td>
 <td align="left">Natural splines for DriverAge, CarAge, and
 logDensity</td>
+<td align="left">Accepted</td>
+<td align="right">1207.9891</td>
+<td align="right">1205.5298</td>
+<td align="right">-2.4593</td>
+<td align="left">1.8%</td>
+<td align="left">1.7%</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity</td>
+<td align="left">Internal validation</td>
+<td align="left">DriverAgeBand x CarAgeBand</td>
 <td align="left">Rejected</td>
-<td align="right">1224.1941</td>
-<td align="right">1225.3577</td>
-<td align="right">1.1636</td>
-<td align="left">1.3%</td>
+<td align="right">1205.5298</td>
+<td align="right">1206.1458</td>
+<td align="right">0.6160</td>
+<td align="left">1.7%</td>
+<td align="left">1.6%</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity</td>
+<td align="left">Internal validation</td>
+<td align="left">Power x Brand</td>
+<td align="left">Rejected</td>
+<td align="right">1205.5298</td>
+<td align="right">1214.5910</td>
+<td align="right">9.0612</td>
+<td align="left">1.7%</td>
 <td align="left">1.4%</td>
 </tr>
 <tr class="even">
 <td align="left">Capped severity</td>
-<td align="left">DriverAgeBand x CarAgeBand</td>
-<td align="left">Rejected</td>
-<td align="right">1224.1941</td>
-<td align="right">1228.3929</td>
-<td align="right">4.1988</td>
-<td align="left">1.3%</td>
-<td align="left">1.3%</td>
-</tr>
-<tr class="odd">
-<td align="left">Capped severity</td>
-<td align="left">Power x Brand</td>
-<td align="left">Rejected</td>
-<td align="right">1224.1941</td>
-<td align="right">1229.3057</td>
-<td align="right">5.1116</td>
-<td align="left">1.3%</td>
-<td align="left">1.2%</td>
-</tr>
-<tr class="even">
-<td align="left">Capped severity</td>
+<td align="left">Internal validation</td>
 <td align="left">Region x DensityBand</td>
 <td align="left">Rejected</td>
-<td align="right">1224.1941</td>
-<td align="right">1225.7684</td>
-<td align="right">1.5742</td>
-<td align="left">1.3%</td>
-<td align="left">1.3%</td>
+<td align="right">1205.5298</td>
+<td align="right">1212.6907</td>
+<td align="right">7.1609</td>
+<td align="left">1.7%</td>
+<td align="left">1.5%</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code>knitr::kable(results$enhanced_formulas)</code></pre>
 <table>
 <colgroup>
-<col width="6%" />
+<col width="7%" />
 <col width="76%" />
-<col width="12%" />
-<col width="4%" />
+<col width="10%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2087,9 +2165,8 @@ logDensity</td>
 <td align="left">Frequency</td>
 <td align="left">ClaimNb ~ Power + Brand + Gas + Region +
 splines::ns(DriverAge, df = 4) + splines::ns(CarAge, df = 4) +
-splines::ns(logDensity, df = 4) + Power:Brand + Region:DensityBand +
-offset(LogExposure)</td>
-<td align="left">Power:Brand, Region:DensityBand</td>
+splines::ns(logDensity, df = 4) + offset(LogExposure)</td>
+<td align="left">None</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
@@ -2103,21 +2180,18 @@ splines::ns(logDensity, df = 4)</td>
 <tr class="odd">
 <td align="left">Capped severity</td>
 <td align="left">ClaimAmountCapped ~ Power + Brand + Gas + Region +
-DriverAge + CarAge + logDensity</td>
+splines::ns(DriverAge, df = 4) + splines::ns(CarAge, df = 4) +
+splines::ns(logDensity, df = 4)</td>
 <td align="left">None</td>
-<td align="left">FALSE</td>
+<td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
 <p>The result is a selective synthesis rather than a blind import of all
-GBM complexity:</p>
-<ul>
-<li>frequency accepted the continuous splines,
-<code>Power x Brand</code>, and <code>Region x DensityBand</code></li>
-<li>raw severity accepted only the continuous splines</li>
-<li>capped severity rejected all tested additions, so it stayed at the
-baseline GLM structure</li>
-</ul>
+GBM complexity. The table above is the source of truth: accepted terms
+are retained because they improved the internal-validation objective,
+and rejected terms are left out even if they looked plausible in the GBM
+diagnostic views.</p>
 <pre class="r"><code>knitr::kable(round_table(results$synthesis_checks))</code></pre>
 <table>
 <thead>
@@ -2148,7 +2222,15 @@ baseline GLM structure</li>
 <td align="right">0</td>
 </tr>
 <tr class="even">
+<td align="left">calibrated_prediction_nonfinite_values</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
 <td align="left">observed_loss_reconciliation_gap</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">capped_observed_loss_reconciliation_gap</td>
 <td align="right">0</td>
 </tr>
 </tbody>
@@ -2158,20 +2240,21 @@ baseline GLM structure</li>
 <h1>Synthesis Results</h1>
 <p>The enhanced GLM improved the baseline GLM’s segmentation while
 keeping the model transparent. Frequency Gini increased from 0.1466 to
-0.1802, a 22.9% relative lift. LightGBM still edges it at 0.1816, but
+0.1746, a 19.1% relative lift. LightGBM still edges it at 0.1816, but
 the enhanced GLM captures most of the GBM’s frequency-ranking
 improvement with explicit model terms.</p>
 <pre class="r"><code>knitr::kable(round_table(synthesis_frequency_comparison))</code></pre>
 <table>
 <colgroup>
-<col width="7%" />
+<col width="6%" />
 <col width="8%" />
-<col width="9%" />
-<col width="14%" />
+<col width="8%" />
+<col width="13%" />
+<col width="13%" />
 <col width="15%" />
-<col width="16%" />
-<col width="17%" />
-<col width="10%" />
+<col width="15%" />
+<col width="9%" />
+<col width="8%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2183,6 +2266,7 @@ improvement with explicit model terms.</p>
 <th align="right">weighted_mae_annual_frequency</th>
 <th align="right">weighted_rmse_annual_frequency</th>
 <th align="right">pricing_lift_gini</th>
+<th align="right">calibration_gap</th>
 </tr>
 </thead>
 <tbody>
@@ -2195,16 +2279,18 @@ improvement with explicit model terms.</p>
 <td align="right">0.1327</td>
 <td align="right">0.4694</td>
 <td align="right">0.1466</td>
+<td align="right">-0.0019</td>
 </tr>
 <tr class="even">
 <td align="left">Enhanced GLM</td>
 <td align="right">3240</td>
-<td align="right">3228.290</td>
+<td align="right">3228.680</td>
 <td align="right">0.0699</td>
-<td align="right">0.0696</td>
+<td align="right">0.0697</td>
 <td align="right">0.1323</td>
-<td align="right">0.4690</td>
-<td align="right">0.1802</td>
+<td align="right">0.4689</td>
+<td align="right">0.1746</td>
+<td align="right">-0.0035</td>
 </tr>
 <tr class="odd">
 <td align="left">LightGBM</td>
@@ -2215,6 +2301,7 @@ improvement with explicit model terms.</p>
 <td align="right">0.1322</td>
 <td align="right">0.4689</td>
 <td align="right">0.1816</td>
+<td align="right">-0.0043</td>
 </tr>
 </tbody>
 </table>
@@ -2225,12 +2312,13 @@ terms, so the selection process left it unchanged.</p>
 <pre class="r"><code>knitr::kable(round_table(synthesis_severity_comparison))</code></pre>
 <table>
 <colgroup>
-<col width="20%" />
+<col width="17%" />
+<col width="13%" />
+<col width="15%" />
 <col width="16%" />
-<col width="18%" />
-<col width="19%" />
-<col width="11%" />
-<col width="12%" />
+<col width="9%" />
+<col width="10%" />
+<col width="17%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2240,6 +2328,7 @@ terms, so the selection process left it unchanged.</p>
 <th align="right">predicted_mean</th>
 <th align="right">mae</th>
 <th align="right">rmse</th>
+<th align="right">calibration_gap</th>
 </tr>
 </thead>
 <tbody>
@@ -2250,6 +2339,7 @@ terms, so the selection process left it unchanged.</p>
 <td align="right">2023.484</td>
 <td align="right">2285.092</td>
 <td align="right">36294.005</td>
+<td align="right">-0.1577</td>
 </tr>
 <tr class="even">
 <td align="left">Raw severity</td>
@@ -2258,6 +2348,7 @@ terms, so the selection process left it unchanged.</p>
 <td align="right">2016.067</td>
 <td align="right">2282.747</td>
 <td align="right">36271.597</td>
+<td align="right">-0.1608</td>
 </tr>
 <tr class="odd">
 <td align="left">Raw severity</td>
@@ -2266,6 +2357,7 @@ terms, so the selection process left it unchanged.</p>
 <td align="right">1818.943</td>
 <td align="right">2124.389</td>
 <td align="right">36291.723</td>
+<td align="right">-0.2428</td>
 </tr>
 <tr class="even">
 <td align="left">Capped severity</td>
@@ -2274,14 +2366,16 @@ terms, so the selection process left it unchanged.</p>
 <td align="right">1647.553</td>
 <td align="right">1224.194</td>
 <td align="right">3289.422</td>
+<td align="right">0.0130</td>
 </tr>
 <tr class="odd">
 <td align="left">Capped severity</td>
 <td align="left">Enhanced GLM</td>
 <td align="right">1626.456</td>
-<td align="right">1647.553</td>
-<td align="right">1224.194</td>
-<td align="right">3289.422</td>
+<td align="right">1649.405</td>
+<td align="right">1225.358</td>
+<td align="right">3286.615</td>
+<td align="right">0.0141</td>
 </tr>
 <tr class="even">
 <td align="left">Capped severity</td>
@@ -2290,25 +2384,27 @@ terms, so the selection process left it unchanged.</p>
 <td align="right">1615.165</td>
 <td align="right">1200.990</td>
 <td align="right">3285.865</td>
+<td align="right">-0.0069</td>
 </tr>
 </tbody>
 </table>
 <p>Pure premium is the main business target. The raw enhanced GLM
-improved pricing lift Gini from 0.2366 to 0.3484, a 47.3% relative lift
+improved pricing lift Gini from 0.2366 to 0.3517, a 48.7% relative lift
 over the baseline GLM. LightGBM remains stronger at 0.3957, but it also
 has the weakest aggregate loss-cost calibration.</p>
 <pre class="r"><code>knitr::kable(round_table(synthesis_pure_premium_comparison))</code></pre>
 <table>
 <colgroup>
-<col width="14%" />
-<col width="6%" />
-<col width="9%" />
-<col width="10%" />
+<col width="13%" />
+<col width="5%" />
 <col width="9%" />
 <col width="9%" />
-<col width="14%" />
-<col width="15%" />
 <col width="8%" />
+<col width="9%" />
+<col width="13%" />
+<col width="14%" />
+<col width="8%" />
+<col width="7%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2321,6 +2417,7 @@ has the weakest aggregate loss-cost calibration.</p>
 <th align="right">weighted_mae_annual_loss_cost</th>
 <th align="right">weighted_rmse_annual_loss_cost</th>
 <th align="right">pricing_lift_gini</th>
+<th align="right">calibration_gap</th>
 </tr>
 </thead>
 <tbody>
@@ -2332,19 +2429,21 @@ has the weakest aggregate loss-cost calibration.</p>
 <td align="right">167.9057</td>
 <td align="right">143.0116</td>
 <td align="right">297.5093</td>
-<td align="right">20356.92</td>
+<td align="right">20356.924</td>
 <td align="right">0.2366</td>
+<td align="right">-0.1483</td>
 </tr>
 <tr class="even">
 <td align="left">Raw severity pure premium</td>
 <td align="left">Enhanced GLM</td>
 <td align="right">7783378</td>
-<td align="right">6573784</td>
+<td align="right">6573391</td>
 <td align="right">167.9057</td>
-<td align="right">141.8120</td>
-<td align="right">295.3947</td>
-<td align="right">20355.78</td>
-<td align="right">0.3484</td>
+<td align="right">141.8035</td>
+<td align="right">295.4483</td>
+<td align="right">20355.772</td>
+<td align="right">0.3517</td>
+<td align="right">-0.1555</td>
 </tr>
 <tr class="odd">
 <td align="left">Raw severity pure premium</td>
@@ -2354,41 +2453,45 @@ has the weakest aggregate loss-cost calibration.</p>
 <td align="right">167.9057</td>
 <td align="right">126.5173</td>
 <td align="right">281.5507</td>
-<td align="right">20355.91</td>
+<td align="right">20355.907</td>
 <td align="right">0.3957</td>
+<td align="right">-0.2465</td>
 </tr>
 <tr class="even">
 <td align="left">Capped severity pure premium</td>
 <td align="left">Baseline GLM</td>
-<td align="right">7783378</td>
+<td align="right">5269717</td>
 <td align="right">5345122</td>
-<td align="right">167.9057</td>
+<td align="right">113.6802</td>
 <td align="right">115.3068</td>
-<td align="right">272.1049</td>
-<td align="right">20357.01</td>
-<td align="right">0.2128</td>
+<td align="right">217.8793</td>
+<td align="right">1756.129</td>
+<td align="right">0.1440</td>
+<td align="right">0.0143</td>
 </tr>
 <tr class="odd">
 <td align="left">Capped severity pure premium</td>
 <td align="left">Enhanced GLM</td>
-<td align="right">7783378</td>
-<td align="right">5335658</td>
-<td align="right">167.9057</td>
-<td align="right">115.1027</td>
-<td align="right">271.4213</td>
-<td align="right">20356.56</td>
-<td align="right">0.3791</td>
+<td align="right">5269717</td>
+<td align="right">5331802</td>
+<td align="right">113.6802</td>
+<td align="right">115.0195</td>
+<td align="right">217.0520</td>
+<td align="right">1755.441</td>
+<td align="right">0.2005</td>
+<td align="right">0.0118</td>
 </tr>
 <tr class="even">
 <td align="left">Capped severity pure premium</td>
 <td align="left">LightGBM</td>
-<td align="right">7783378</td>
+<td align="right">5269717</td>
 <td align="right">5214071</td>
-<td align="right">167.9057</td>
+<td align="right">113.6802</td>
 <td align="right">112.4798</td>
-<td align="right">268.9606</td>
-<td align="right">20356.23</td>
-<td align="right">0.3907</td>
+<td align="right">214.7351</td>
+<td align="right">1755.198</td>
+<td align="right">0.2091</td>
+<td align="right">-0.0106</td>
 </tr>
 </tbody>
 </table>
@@ -2430,11 +2533,11 @@ more loss-heavy high-risk group than the baseline GLM.</p>
 </tr>
 <tr class="even">
 <td align="left">Enhanced GLM</td>
-<td align="right">0.0810</td>
-<td align="right">0.3810</td>
-<td align="right">789.3165</td>
-<td align="right">371.6714</td>
-<td align="right">4.7010</td>
+<td align="right">0.0807</td>
+<td align="right">0.3738</td>
+<td align="right">777.3641</td>
+<td align="right">367.5219</td>
+<td align="right">4.6298</td>
 </tr>
 <tr class="odd">
 <td align="left">LightGBM</td>
@@ -2448,8 +2551,9 @@ more loss-heavy high-risk group than the baseline GLM.</p>
 </table>
 <p>In the top predicted pure-premium decile, the baseline GLM captures
 9.7% of observed holdout loss with observed lift of 1.11 times the
-portfolio average. The enhanced GLM captures 38.1% with observed lift of
-4.7 times. LightGBM captures 38.6% with observed lift of 4.88 times.</p>
+portfolio average. The enhanced GLM captures 37.4% with observed lift of
+4.63 times. LightGBM captures 38.6% with observed lift of 4.88
+times.</p>
 <pre class="r"><code>business_impact_display &lt;- business_impact
 business_impact_display[business_impact_display$metric %in% c(
   &quot;Raw aggregate loss calibration gap&quot;,
@@ -2481,38 +2585,1010 @@ knitr::kable(round_table(business_impact_display))</code></pre>
 <tr class="odd">
 <td align="left">Frequency Gini</td>
 <td align="right">0.1466</td>
-<td align="right">0.1802</td>
+<td align="right">0.1746</td>
 <td align="right">0.1816</td>
 </tr>
 <tr class="even">
 <td align="left">Raw pure premium Gini</td>
 <td align="right">0.2366</td>
-<td align="right">0.3484</td>
+<td align="right">0.3517</td>
 <td align="right">0.3957</td>
 </tr>
 <tr class="odd">
 <td align="left">Raw predicted loss cost</td>
 <td align="right">143.0116</td>
-<td align="right">141.8120</td>
+<td align="right">141.8035</td>
 <td align="right">126.5173</td>
 </tr>
 <tr class="even">
 <td align="left">Raw aggregate loss calibration gap</td>
 <td align="right">-14.8300</td>
-<td align="right">-15.5400</td>
+<td align="right">-15.5500</td>
 <td align="right">-24.6500</td>
 </tr>
 <tr class="odd">
 <td align="left">Top-decile observed loss capture</td>
 <td align="right">9.6800</td>
-<td align="right">38.1000</td>
+<td align="right">37.3800</td>
 <td align="right">38.6500</td>
 </tr>
 <tr class="even">
 <td align="left">Top-decile observed lift</td>
 <td align="right">1.1142</td>
-<td align="right">4.7010</td>
+<td align="right">4.6298</td>
 <td align="right">4.8763</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="calibration-trial" class="section level1">
+<h1>Calibration Trial</h1>
+<p>Calibration was tested after the validation-selected enhanced GLM was
+built. The calibration approach is intentionally component-level:
+frequency, raw severity, and capped severity each get their own
+validation-estimated scalar for each model. That makes the source of
+bias visible instead of hiding everything inside one pure-premium
+multiplier.</p>
+<pre class="r"><code>knitr::kable(round_table(calibration_factors))</code></pre>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="6%" />
+<col width="12%" />
+<col width="15%" />
+<col width="17%" />
+<col width="18%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="left">prefix</th>
+<th align="right">frequency_factor</th>
+<th align="right">raw_severity_factor</th>
+<th align="right">capped_severity_factor</th>
+<th align="right">raw_pure_premium_factor</th>
+<th align="right">capped_pure_premium_factor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Baseline GLM</td>
+<td align="left">glm</td>
+<td align="right">0.9984</td>
+<td align="right">0.8552</td>
+<td align="right">0.9825</td>
+<td align="right">0.8538</td>
+<td align="right">0.9810</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="left">enhanced</td>
+<td align="right">0.9996</td>
+<td align="right">0.8621</td>
+<td align="right">0.9836</td>
+<td align="right">0.8618</td>
+<td align="right">0.9832</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM</td>
+<td align="left">gbm</td>
+<td align="right">1.0005</td>
+<td align="right">0.9874</td>
+<td align="right">1.0081</td>
+<td align="right">0.9878</td>
+<td align="right">1.0086</td>
+</tr>
+</tbody>
+</table>
+<p>On the internal validation sample, these factors did what they were
+supposed to do: they improved aggregate raw pure-premium level and
+lowered MAE for the calibrated candidates.</p>
+<pre class="r"><code>knitr::kable(round_table(validation_calibrated_pure_premium_comparison))</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="12%" />
+<col width="10%" />
+<col width="8%" />
+<col width="9%" />
+<col width="8%" />
+<col width="8%" />
+<col width="13%" />
+<col width="13%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">target</th>
+<th align="left">model</th>
+<th align="right">observed_total_loss</th>
+<th align="right">predicted_total_loss</th>
+<th align="right">observed_loss_cost</th>
+<th align="right">predicted_loss_cost</th>
+<th align="right">weighted_mae_annual_loss_cost</th>
+<th align="right">weighted_rmse_annual_loss_cost</th>
+<th align="right">pricing_lift_gini</th>
+<th align="right">calibration_gap</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Raw severity pure premium</td>
+<td align="left">Baseline GLM calibrated</td>
+<td align="right">4645999</td>
+<td align="right">4675064</td>
+<td align="right">124.9134</td>
+<td align="right">125.6949</td>
+<td align="right">238.6458</td>
+<td align="right">3951.233</td>
+<td align="right">0.1264</td>
+<td align="right">0.0063</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity pure premium</td>
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">4645999</td>
+<td align="right">4685692</td>
+<td align="right">124.9134</td>
+<td align="right">125.9806</td>
+<td align="right">237.9657</td>
+<td align="right">3951.174</td>
+<td align="right">0.1478</td>
+<td align="right">0.0085</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw severity pure premium</td>
+<td align="left">LightGBM calibrated</td>
+<td align="right">4645999</td>
+<td align="right">4661236</td>
+<td align="right">124.9134</td>
+<td align="right">125.3231</td>
+<td align="right">237.4315</td>
+<td align="right">3950.870</td>
+<td align="right">0.2121</td>
+<td align="right">0.0033</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity pure premium</td>
+<td align="left">Baseline GLM calibrated</td>
+<td align="right">4209840</td>
+<td align="right">4230143</td>
+<td align="right">113.1867</td>
+<td align="right">113.7326</td>
+<td align="right">215.9561</td>
+<td align="right">2660.351</td>
+<td align="right">0.1933</td>
+<td align="right">0.0048</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity pure premium</td>
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">4209840</td>
+<td align="right">4231532</td>
+<td align="right">113.1867</td>
+<td align="right">113.7700</td>
+<td align="right">215.4464</td>
+<td align="right">2660.069</td>
+<td align="right">0.2148</td>
+<td align="right">0.0052</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity pure premium</td>
+<td align="left">LightGBM calibrated</td>
+<td align="right">4209840</td>
+<td align="right">4224967</td>
+<td align="right">113.1867</td>
+<td align="right">113.5934</td>
+<td align="right">215.2232</td>
+<td align="right">2659.976</td>
+<td align="right">0.2390</td>
+<td align="right">0.0036</td>
+</tr>
+</tbody>
+</table>
+<p>The final holdout tells a different story. Raw holdout losses are
+materially heavier than validation losses, so the validation-estimated
+raw severity factors reduce the raw pure-premium level too much. This is
+exactly why the holdout should not be used for selection and why
+calibration needs an explicit acceptance gate.</p>
+<pre class="r"><code>knitr::kable(round_table(calibrated_pure_premium_comparison))</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="12%" />
+<col width="10%" />
+<col width="8%" />
+<col width="9%" />
+<col width="8%" />
+<col width="8%" />
+<col width="13%" />
+<col width="13%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">target</th>
+<th align="left">model</th>
+<th align="right">observed_total_loss</th>
+<th align="right">predicted_total_loss</th>
+<th align="right">observed_loss_cost</th>
+<th align="right">predicted_loss_cost</th>
+<th align="right">weighted_mae_annual_loss_cost</th>
+<th align="right">weighted_rmse_annual_loss_cost</th>
+<th align="right">pricing_lift_gini</th>
+<th align="right">calibration_gap</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Raw severity pure premium</td>
+<td align="left">Baseline GLM calibrated</td>
+<td align="right">7783378</td>
+<td align="right">5660474</td>
+<td align="right">167.9057</td>
+<td align="right">122.1097</td>
+<td align="right">278.4767</td>
+<td align="right">20356.965</td>
+<td align="right">0.2366</td>
+<td align="right">-0.2727</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity pure premium</td>
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">7783378</td>
+<td align="right">5664883</td>
+<td align="right">167.9057</td>
+<td align="right">122.2048</td>
+<td align="right">277.7319</td>
+<td align="right">20355.954</td>
+<td align="right">0.3517</td>
+<td align="right">-0.2722</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw severity pure premium</td>
+<td align="left">LightGBM calibrated</td>
+<td align="right">7783378</td>
+<td align="right">5793448</td>
+<td align="right">167.9057</td>
+<td align="right">124.9783</td>
+<td align="right">280.1609</td>
+<td align="right">20355.923</td>
+<td align="right">0.3957</td>
+<td align="right">-0.2557</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity pure premium</td>
+<td align="left">Baseline GLM calibrated</td>
+<td align="right">5269717</td>
+<td align="right">5243313</td>
+<td align="right">113.6802</td>
+<td align="right">113.1106</td>
+<td align="right">215.8858</td>
+<td align="right">1756.127</td>
+<td align="right">0.1440</td>
+<td align="right">-0.0050</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity pure premium</td>
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">5269717</td>
+<td align="right">5242493</td>
+<td align="right">113.6802</td>
+<td align="right">113.0929</td>
+<td align="right">215.3130</td>
+<td align="right">1755.444</td>
+<td align="right">0.2005</td>
+<td align="right">-0.0052</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity pure premium</td>
+<td align="left">LightGBM calibrated</td>
+<td align="right">5269717</td>
+<td align="right">5258702</td>
+<td align="right">113.6802</td>
+<td align="right">113.4425</td>
+<td align="right">215.6040</td>
+<td align="right">1755.193</td>
+<td align="right">0.2091</td>
+<td align="right">-0.0021</td>
+</tr>
+</tbody>
+</table>
+<p>The isotonic candidate was treated as experimental. It was only
+attempted because validation decile A/E bias was non-uniform.</p>
+<pre class="r"><code>knitr::kable(round_table(isotonic_status))</code></pre>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="9%" />
+<col width="18%" />
+<col width="56%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">candidate</th>
+<th align="left">attempted</th>
+<th align="right">validation_ae_range</th>
+<th align="left">reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">LightGBM isotonic</td>
+<td align="left">TRUE</td>
+<td align="right">0.6877</td>
+<td align="left">Attempted because validation decile A/E bias was
+non-uniform.</td>
+</tr>
+</tbody>
+</table>
+<p>The blend was selected on validation from a grid of enhanced-GLM and
+LightGBM calibrated pure premiums. In this run, the selected validation
+blend puts 0.0% weight on the enhanced GLM and 100.0% weight on
+LightGBM.</p>
+<pre class="r"><code>knitr::kable(round_table(selected_blend))</code></pre>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="9%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="19%" />
+<col width="11%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">alpha_enhanced</th>
+<th align="right">alpha_lightgbm</th>
+<th align="right">observed_loss_cost</th>
+<th align="right">predicted_loss_cost</th>
+<th align="right">calibration_gap</th>
+<th align="right">weighted_mae_annual_loss_cost</th>
+<th align="right">pricing_lift_gini</th>
+<th align="left">acceptable_calibration</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">124.9134</td>
+<td align="right">125.3231</td>
+<td align="right">0.0033</td>
+<td align="right">237.4315</td>
+<td align="right">0.2121</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<p>The final acceptance table is deliberately strict. A calibrated
+candidate must improve final holdout absolute aggregate raw pure-premium
+calibration versus the uncalibrated enhanced GLM, preserve segmentation
+Gini, and keep MAE within the 1% tolerance. None of the calibrated
+candidates passed all gates, so the calibrated model changes are
+documented but not retained as the final pricing view.</p>
+<pre class="r"><code>acceptance_display &lt;- candidate_acceptance
+acceptance_display$validation_calibration_gap &lt;- sprintf(&quot;%.1f%%&quot;, 100 * acceptance_display$validation_calibration_gap)
+acceptance_display$holdout_calibration_gap &lt;- sprintf(&quot;%.1f%%&quot;, 100 * acceptance_display$holdout_calibration_gap)
+knitr::kable(round_table(acceptance_display))</code></pre>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="9%" />
+<col width="5%" />
+<col width="5%" />
+<col width="8%" />
+<col width="4%" />
+<col width="4%" />
+<col width="7%" />
+<col width="2%" />
+<col width="2%" />
+<col width="3%" />
+<col width="36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">candidate</th>
+<th align="left">validation_calibration_gap</th>
+<th align="right">validation_gini</th>
+<th align="right">validation_mae</th>
+<th align="left">holdout_calibration_gap</th>
+<th align="right">holdout_gini</th>
+<th align="right">holdout_mae</th>
+<th align="left">calibration_improved</th>
+<th align="left">gini_ok</th>
+<th align="left">mae_ok</th>
+<th align="left">decision</th>
+<th align="left">reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="left">0.9%</td>
+<td align="right">0.1478</td>
+<td align="right">237.9657</td>
+<td align="left">-27.2%</td>
+<td align="right">0.3517</td>
+<td align="right">277.7319</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Rejected</td>
+<td align="left">Rejected: final holdout aggregate calibration did not
+improve versus the uncalibrated enhanced GLM.</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM calibrated</td>
+<td align="left">0.3%</td>
+<td align="right">0.2121</td>
+<td align="right">237.4315</td>
+<td align="left">-25.6%</td>
+<td align="right">0.3957</td>
+<td align="right">280.1609</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Rejected</td>
+<td align="left">Rejected: final holdout aggregate calibration did not
+improve versus the uncalibrated enhanced GLM.</td>
+</tr>
+<tr class="odd">
+<td align="left">Calibrated blend</td>
+<td align="left">0.3%</td>
+<td align="right">0.2121</td>
+<td align="right">237.4315</td>
+<td align="left">-25.6%</td>
+<td align="right">0.3957</td>
+<td align="right">280.1609</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Rejected</td>
+<td align="left">Rejected: final holdout aggregate calibration did not
+improve versus the uncalibrated enhanced GLM.</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM isotonic</td>
+<td align="left">-2.9%</td>
+<td align="right">0.2162</td>
+<td align="right">234.1067</td>
+<td align="left">-27.8%</td>
+<td align="right">0.3916</td>
+<td align="right">277.0361</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Rejected</td>
+<td align="left">Rejected: final holdout aggregate calibration did not
+improve versus the uncalibrated enhanced GLM.</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(final_recommendation)</code></pre>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="82%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">selected_model</th>
+<th align="left">reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Uncalibrated enhanced GLM</td>
+<td align="left">No calibrated candidate passed the final holdout gates,
+so the modeling change is not retained as a pricing improvement.</td>
+</tr>
+</tbody>
+</table>
+<p>The raw pure-premium A/E deciles below are the practical diagnostic
+an actuary would want next. They show that even when aggregate
+calibration is not retained, the calibrated and blended candidates
+remain useful for diagnosing where the model is over- or
+under-estimating.</p>
+<pre class="r"><code>ae_display &lt;- raw_ae_deciles
+ae_display$actual_to_expected &lt;- round(ae_display$actual_to_expected, 3)
+knitr::kable(round_table(ae_display))</code></pre>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="5%" />
+<col width="7%" />
+<col width="10%" />
+<col width="11%" />
+<col width="14%" />
+<col width="15%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">decile</th>
+<th align="right">exposure</th>
+<th align="right">observed_loss</th>
+<th align="right">predicted_loss</th>
+<th align="right">observed_loss_cost</th>
+<th align="right">predicted_loss_cost</th>
+<th align="right">actual_to_expected</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Enhanced GLM</td>
+<td align="right">1</td>
+<td align="right">5006.902</td>
+<td align="right">389749</td>
+<td align="right">373542.8</td>
+<td align="right">77.8423</td>
+<td align="right">74.6056</td>
+<td align="right">1.043</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">2</td>
+<td align="right">4926.187</td>
+<td align="right">461844</td>
+<td align="right">450435.6</td>
+<td align="right">93.7528</td>
+<td align="right">91.4370</td>
+<td align="right">1.025</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM</td>
+<td align="right">3</td>
+<td align="right">4923.785</td>
+<td align="right">470248</td>
+<td align="right">500643.3</td>
+<td align="right">95.5054</td>
+<td align="right">101.6785</td>
+<td align="right">0.939</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">4</td>
+<td align="right">4822.246</td>
+<td align="right">550868</td>
+<td align="right">534242.3</td>
+<td align="right">114.2347</td>
+<td align="right">110.7870</td>
+<td align="right">1.031</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM</td>
+<td align="right">5</td>
+<td align="right">4803.282</td>
+<td align="right">887162</td>
+<td align="right">576363.0</td>
+<td align="right">184.6991</td>
+<td align="right">119.9936</td>
+<td align="right">1.539</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">6</td>
+<td align="right">4639.428</td>
+<td align="right">476600</td>
+<td align="right">601067.2</td>
+<td align="right">102.7282</td>
+<td align="right">129.5563</td>
+<td align="right">0.793</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM</td>
+<td align="right">7</td>
+<td align="right">4601.079</td>
+<td align="right">613013</td>
+<td align="right">648798.0</td>
+<td align="right">133.2325</td>
+<td align="right">141.0100</td>
+<td align="right">0.945</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">8</td>
+<td align="right">4558.251</td>
+<td align="right">522879</td>
+<td align="right">713064.5</td>
+<td align="right">114.7105</td>
+<td align="right">156.4338</td>
+<td align="right">0.733</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM</td>
+<td align="right">9</td>
+<td align="right">4332.100</td>
+<td align="right">501821</td>
+<td align="right">799826.8</td>
+<td align="right">115.8378</td>
+<td align="right">184.6280</td>
+<td align="right">0.627</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">10</td>
+<td align="right">3742.383</td>
+<td align="right">2909194</td>
+<td align="right">1375407.7</td>
+<td align="right">777.3641</td>
+<td align="right">367.5219</td>
+<td align="right">2.115</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">1</td>
+<td align="right">5006.902</td>
+<td align="right">389749</td>
+<td align="right">321915.4</td>
+<td align="right">77.8423</td>
+<td align="right">64.2943</td>
+<td align="right">1.211</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">2</td>
+<td align="right">4926.187</td>
+<td align="right">461844</td>
+<td align="right">388181.0</td>
+<td align="right">93.7528</td>
+<td align="right">78.7995</td>
+<td align="right">1.190</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">3</td>
+<td align="right">4923.785</td>
+<td align="right">470248</td>
+<td align="right">431449.4</td>
+<td align="right">95.5054</td>
+<td align="right">87.6256</td>
+<td align="right">1.090</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">4</td>
+<td align="right">4822.246</td>
+<td align="right">550868</td>
+<td align="right">460404.7</td>
+<td align="right">114.2347</td>
+<td align="right">95.4752</td>
+<td align="right">1.196</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">5</td>
+<td align="right">4803.282</td>
+<td align="right">887162</td>
+<td align="right">496703.9</td>
+<td align="right">184.6991</td>
+<td align="right">103.4093</td>
+<td align="right">1.786</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">6</td>
+<td align="right">4639.428</td>
+<td align="right">476600</td>
+<td align="right">517993.7</td>
+<td align="right">102.7282</td>
+<td align="right">111.6504</td>
+<td align="right">0.920</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">7</td>
+<td align="right">4601.079</td>
+<td align="right">613013</td>
+<td align="right">559127.7</td>
+<td align="right">133.2325</td>
+<td align="right">121.5210</td>
+<td align="right">1.096</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">8</td>
+<td align="right">4558.251</td>
+<td align="right">522879</td>
+<td align="right">614511.9</td>
+<td align="right">114.7105</td>
+<td align="right">134.8131</td>
+<td align="right">0.851</td>
+</tr>
+<tr class="odd">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">9</td>
+<td align="right">4332.100</td>
+<td align="right">501821</td>
+<td align="right">689282.8</td>
+<td align="right">115.8378</td>
+<td align="right">159.1105</td>
+<td align="right">0.728</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM calibrated</td>
+<td align="right">10</td>
+<td align="right">3742.383</td>
+<td align="right">2909194</td>
+<td align="right">1185312.7</td>
+<td align="right">777.3641</td>
+<td align="right">316.7267</td>
+<td align="right">2.454</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM calibrated</td>
+<td align="right">1</td>
+<td align="right">5747.204</td>
+<td align="right">436605</td>
+<td align="right">405743.8</td>
+<td align="right">75.9682</td>
+<td align="right">70.5985</td>
+<td align="right">1.076</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM calibrated</td>
+<td align="right">2</td>
+<td align="right">5260.645</td>
+<td align="right">381142</td>
+<td align="right">457112.2</td>
+<td align="right">72.4516</td>
+<td align="right">86.8928</td>
+<td align="right">0.834</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM calibrated</td>
+<td align="right">3</td>
+<td align="right">5022.654</td>
+<td align="right">701293</td>
+<td align="right">482516.0</td>
+<td align="right">139.6260</td>
+<td align="right">96.0679</td>
+<td align="right">1.453</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM calibrated</td>
+<td align="right">4</td>
+<td align="right">4780.764</td>
+<td align="right">475020</td>
+<td align="right">497207.5</td>
+<td align="right">99.3607</td>
+<td align="right">104.0017</td>
+<td align="right">0.955</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM calibrated</td>
+<td align="right">5</td>
+<td align="right">4649.344</td>
+<td align="right">428550</td>
+<td align="right">521038.4</td>
+<td align="right">92.1743</td>
+<td align="right">112.0671</td>
+<td align="right">0.822</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM calibrated</td>
+<td align="right">6</td>
+<td align="right">4415.449</td>
+<td align="right">480607</td>
+<td align="right">534486.6</td>
+<td align="right">108.8467</td>
+<td align="right">121.0492</td>
+<td align="right">0.899</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM calibrated</td>
+<td align="right">7</td>
+<td align="right">4349.030</td>
+<td align="right">767423</td>
+<td align="right">572564.8</td>
+<td align="right">176.4584</td>
+<td align="right">131.6534</td>
+<td align="right">1.340</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM calibrated</td>
+<td align="right">8</td>
+<td align="right">4295.562</td>
+<td align="right">581066</td>
+<td align="right">624972.0</td>
+<td align="right">135.2712</td>
+<td align="right">145.4925</td>
+<td align="right">0.930</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM calibrated</td>
+<td align="right">9</td>
+<td align="right">4160.962</td>
+<td align="right">523523</td>
+<td align="right">694074.2</td>
+<td align="right">125.8178</td>
+<td align="right">166.8062</td>
+<td align="right">0.754</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM calibrated</td>
+<td align="right">10</td>
+<td align="right">3674.026</td>
+<td align="right">3008149</td>
+<td align="right">1003732.3</td>
+<td align="right">818.7609</td>
+<td align="right">273.1968</td>
+<td align="right">2.997</td>
+</tr>
+<tr class="odd">
+<td align="left">Calibrated blend</td>
+<td align="right">1</td>
+<td align="right">5747.204</td>
+<td align="right">436605</td>
+<td align="right">405743.8</td>
+<td align="right">75.9682</td>
+<td align="right">70.5985</td>
+<td align="right">1.076</td>
+</tr>
+<tr class="even">
+<td align="left">Calibrated blend</td>
+<td align="right">2</td>
+<td align="right">5260.645</td>
+<td align="right">381142</td>
+<td align="right">457112.2</td>
+<td align="right">72.4516</td>
+<td align="right">86.8928</td>
+<td align="right">0.834</td>
+</tr>
+<tr class="odd">
+<td align="left">Calibrated blend</td>
+<td align="right">3</td>
+<td align="right">5022.654</td>
+<td align="right">701293</td>
+<td align="right">482516.0</td>
+<td align="right">139.6260</td>
+<td align="right">96.0679</td>
+<td align="right">1.453</td>
+</tr>
+<tr class="even">
+<td align="left">Calibrated blend</td>
+<td align="right">4</td>
+<td align="right">4780.764</td>
+<td align="right">475020</td>
+<td align="right">497207.5</td>
+<td align="right">99.3607</td>
+<td align="right">104.0017</td>
+<td align="right">0.955</td>
+</tr>
+<tr class="odd">
+<td align="left">Calibrated blend</td>
+<td align="right">5</td>
+<td align="right">4649.344</td>
+<td align="right">428550</td>
+<td align="right">521038.4</td>
+<td align="right">92.1743</td>
+<td align="right">112.0671</td>
+<td align="right">0.822</td>
+</tr>
+<tr class="even">
+<td align="left">Calibrated blend</td>
+<td align="right">6</td>
+<td align="right">4415.449</td>
+<td align="right">480607</td>
+<td align="right">534486.6</td>
+<td align="right">108.8467</td>
+<td align="right">121.0492</td>
+<td align="right">0.899</td>
+</tr>
+<tr class="odd">
+<td align="left">Calibrated blend</td>
+<td align="right">7</td>
+<td align="right">4349.030</td>
+<td align="right">767423</td>
+<td align="right">572564.8</td>
+<td align="right">176.4584</td>
+<td align="right">131.6534</td>
+<td align="right">1.340</td>
+</tr>
+<tr class="even">
+<td align="left">Calibrated blend</td>
+<td align="right">8</td>
+<td align="right">4295.562</td>
+<td align="right">581066</td>
+<td align="right">624972.0</td>
+<td align="right">135.2712</td>
+<td align="right">145.4925</td>
+<td align="right">0.930</td>
+</tr>
+<tr class="odd">
+<td align="left">Calibrated blend</td>
+<td align="right">9</td>
+<td align="right">4160.962</td>
+<td align="right">523523</td>
+<td align="right">694074.2</td>
+<td align="right">125.8178</td>
+<td align="right">166.8062</td>
+<td align="right">0.754</td>
+</tr>
+<tr class="even">
+<td align="left">Calibrated blend</td>
+<td align="right">10</td>
+<td align="right">3674.026</td>
+<td align="right">3008149</td>
+<td align="right">1003732.3</td>
+<td align="right">818.7609</td>
+<td align="right">273.1968</td>
+<td align="right">2.997</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM isotonic</td>
+<td align="right">1</td>
+<td align="right">16030.503</td>
+<td align="right">1519040</td>
+<td align="right">1273124.2</td>
+<td align="right">94.7593</td>
+<td align="right">79.4189</td>
+<td align="right">1.193</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM isotonic</td>
+<td align="right">2</td>
+<td align="right">4780.764</td>
+<td align="right">475020</td>
+<td align="right">455085.0</td>
+<td align="right">99.3607</td>
+<td align="right">95.1908</td>
+<td align="right">1.044</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM isotonic</td>
+<td align="right">3</td>
+<td align="right">11355.463</td>
+<td align="right">1399841</td>
+<td align="right">1410403.9</td>
+<td align="right">123.2747</td>
+<td align="right">124.2049</td>
+<td align="right">0.993</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM isotonic</td>
+<td align="right">4</td>
+<td align="right">2058.361</td>
+<td align="right">276739</td>
+<td align="right">265456.3</td>
+<td align="right">134.4463</td>
+<td align="right">128.9649</td>
+<td align="right">1.043</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM isotonic</td>
+<td align="right">5</td>
+<td align="right">4295.562</td>
+<td align="right">581066</td>
+<td align="right">608011.9</td>
+<td align="right">135.2712</td>
+<td align="right">141.5442</td>
+<td align="right">0.956</td>
+</tr>
+<tr class="even">
+<td align="left">LightGBM isotonic</td>
+<td align="right">6</td>
+<td align="right">4160.962</td>
+<td align="right">523523</td>
+<td align="right">738718.8</td>
+<td align="right">125.8178</td>
+<td align="right">177.5356</td>
+<td align="right">0.709</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM isotonic</td>
+<td align="right">7</td>
+<td align="right">3674.026</td>
+<td align="right">3008149</td>
+<td align="right">866516.9</td>
+<td align="right">818.7609</td>
+<td align="right">235.8494</td>
+<td align="right">3.472</td>
 </tr>
 </tbody>
 </table>
@@ -2521,42 +3597,36 @@ knitr::kable(round_table(business_impact_display))</code></pre>
 <h1>Conclusion</h1>
 <p>The final question is whether LightGBM adds actuarial value beyond
 the GLM, and whether that value can be synthesized back into a
-transparent actuarial model. My answer is yes, but with a clear split
-between ranking value and calibration value.</p>
+transparent actuarial model. My answer is yes for segmentation and
+feature discovery, but no for an automatic calibrated pricing level.</p>
 <p>The baseline GLM is still the clean benchmark. It is simple, easy to
 explain, and strong on aggregate frequency calibration. On holdout
 frequency, it predicts 3,233.8 claims against 3,240 observed. The GBM
 showed that the baseline GLM was smoothing over useful segmentation
 signal, especially in frequency and pure premium ranking.</p>
-<p>The enhanced GLM captures a meaningful part of that GBM signal.
-Frequency Gini rises from 0.1466 for the baseline GLM to 0.1802 for the
-enhanced GLM. Raw pure premium Gini rises from 0.2366 to 0.3484. That
-improvement comes from explicit, reviewable terms: continuous splines
-for nonlinear feature shape, plus selected frequency interactions for
-<code>Power x Brand</code> and <code>Region x DensityBand</code>.</p>
-<p>The tradeoff is calibration. The enhanced GLM does not improve
-aggregate raw loss-cost calibration; it predicts EUR 142 versus EUR 168
-observed. LightGBM is even more undercalibrated as a direct pricing
-level. Severity remains the limiting component: LightGBM improves
-severity MAE, but neither GBM nor the enhanced GLM solves the heavy-tail
-problem.</p>
-<p>The business impact of synthesis is strongest in portfolio
-segmentation. The enhanced GLM’s top predicted pure-premium decile
-captures 38.1% of observed holdout loss, versus 9.7% for the baseline
-GLM. That is a material improvement for pricing review and underwriting
-triage, even though an aggregate calibration adjustment would still be
-required before using the model as a direct rate level.</p>
-<p>My recommendation is to keep the enhanced GLM as the transparent
-synthesis model, keep LightGBM as the challenger and discovery layer,
-and treat aggregate loss-cost calibration as a separate actuarial
-adjustment. The synthesis improves the baseline GLM where the GBM was
-strongest: ranking, segmentation, and identifying high-loss pockets. It
-does not eliminate the need for severity caution or calibration
-governance.</p>
-<p>For this side project, the strongest final story is not “GBM beats
-GLM.” It is “GBM revealed nonlinear and interaction signal, and a
-selective enhanced GLM captured a meaningful share of that signal while
-preserving transparency.”</p>
+<p>The validation-selected enhanced GLM captures a meaningful part of
+that GBM signal. Frequency Gini rises from 0.1466 for the baseline GLM
+to 0.1746 for the enhanced GLM. Raw pure premium Gini rises from 0.2366
+to 0.3517. That improvement comes from explicit, reviewable terms
+selected on internal validation rather than final holdout.</p>
+<p>The calibration trial is the most important actuarial lesson in this
+version. Validation-based component scalars improved validation fit, but
+they did not validate on final raw holdout. The enhanced GLM calibrated
+raw pure premium gap was -27.2% on holdout versus -15.5% before
+calibration, and the calibrated LightGBM gap was -25.6%. Because none of
+the calibrated candidates passed the acceptance gates, the selected
+final model remains Uncalibrated enhanced GLM.</p>
+<p>Severity remains the limiting component. The capped pure-premium
+sensitivity is now evaluated against capped observed loss and reconciles
+cleanly, but raw pure premium remains exposed to large-loss volatility.
+A real client-ready pricing analysis would need broader resampling,
+out-of-time validation if available, large-loss treatment, and actuarial
+rate-level governance before using the model as a direct indication.</p>
+<p>For this side project, the strongest final story is now sharper: “GBM
+revealed nonlinear and interaction signal; a validation-selected
+enhanced GLM captured useful segmentation signal transparently; and a
+disciplined calibration trial was rejected when it failed final holdout
+validation.”</p>
 </div>
 
 
