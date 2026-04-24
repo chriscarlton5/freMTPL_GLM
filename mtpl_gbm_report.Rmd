@@ -50,6 +50,74 @@ pure_glm_gini <- pure_premium_comparison$pricing_lift_gini[
   pure_premium_comparison$model == "GLM" &
     pure_premium_comparison$target == "Raw severity pure premium"
 ]
+
+comparison_row <- function(df, model, target = NULL) {
+  if (is.null(target)) {
+    df[df$model == model, , drop = FALSE][1, , drop = FALSE]
+  } else {
+    df[df$model == model & df$target == target, , drop = FALSE][1, , drop = FALSE]
+  }
+}
+
+pct <- function(x) sprintf("%.1f%%", 100 * x)
+num <- function(x, digits = 3) format(round(x, digits), big.mark = ",", scientific = FALSE)
+
+freq_glm <- comparison_row(frequency_comparison, "GLM")
+freq_gbm <- comparison_row(frequency_comparison, "LightGBM")
+freq_gini_delta <- freq_gbm$pricing_lift_gini - freq_glm$pricing_lift_gini
+freq_gini_rel_delta <- freq_gini_delta / freq_glm$pricing_lift_gini
+freq_glm_claim_gap <- (freq_glm$predicted_claims - freq_glm$observed_claims) / freq_glm$observed_claims
+freq_gbm_claim_gap <- (freq_gbm$predicted_claims - freq_gbm$observed_claims) / freq_gbm$observed_claims
+
+raw_sev_glm <- comparison_row(severity_comparison, "GLM", "Raw severity")
+raw_sev_gbm <- comparison_row(severity_comparison, "LightGBM", "Raw severity")
+capped_sev_glm <- comparison_row(severity_comparison, "GLM", "Capped severity")
+capped_sev_gbm <- comparison_row(severity_comparison, "LightGBM", "Capped severity")
+raw_sev_glm_gap <- (raw_sev_glm$predicted_mean - raw_sev_glm$observed_mean) / raw_sev_glm$observed_mean
+raw_sev_gbm_gap <- (raw_sev_gbm$predicted_mean - raw_sev_gbm$observed_mean) / raw_sev_gbm$observed_mean
+capped_sev_glm_gap <- (capped_sev_glm$predicted_mean - capped_sev_glm$observed_mean) / capped_sev_glm$observed_mean
+capped_sev_gbm_gap <- (capped_sev_gbm$predicted_mean - capped_sev_gbm$observed_mean) / capped_sev_gbm$observed_mean
+raw_sev_mae_improvement <- (raw_sev_glm$mae - raw_sev_gbm$mae) / raw_sev_glm$mae
+capped_sev_mae_improvement <- (capped_sev_glm$mae - capped_sev_gbm$mae) / capped_sev_glm$mae
+
+raw_pp_glm <- comparison_row(pure_premium_comparison, "GLM", "Raw severity pure premium")
+raw_pp_gbm <- comparison_row(pure_premium_comparison, "LightGBM", "Raw severity pure premium")
+capped_pp_glm <- comparison_row(pure_premium_comparison, "GLM", "Capped severity pure premium")
+capped_pp_gbm <- comparison_row(pure_premium_comparison, "LightGBM", "Capped severity pure premium")
+raw_pp_gini_delta <- raw_pp_gbm$pricing_lift_gini - raw_pp_glm$pricing_lift_gini
+raw_pp_gini_rel_delta <- raw_pp_gini_delta / raw_pp_glm$pricing_lift_gini
+raw_pp_glm_gap <- (raw_pp_glm$predicted_loss_cost - raw_pp_glm$observed_loss_cost) / raw_pp_glm$observed_loss_cost
+raw_pp_gbm_gap <- (raw_pp_gbm$predicted_loss_cost - raw_pp_gbm$observed_loss_cost) / raw_pp_gbm$observed_loss_cost
+capped_pp_glm_gap <- (capped_pp_glm$predicted_loss_cost - capped_pp_glm$observed_loss_cost) / capped_pp_glm$observed_loss_cost
+capped_pp_gbm_gap <- (capped_pp_gbm$predicted_loss_cost - capped_pp_gbm$observed_loss_cost) / capped_pp_gbm$observed_loss_cost
+
+business_summary <- data.frame(
+  question = c(
+    "Frequency calibration",
+    "Frequency ranking",
+    "Severity calibration",
+    "Severity error",
+    "Pure premium ranking",
+    "Pure premium calibration"
+  ),
+  result = c(
+    paste0("GLM missed holdout claims by ", pct(freq_glm_claim_gap), "; LightGBM missed by ", pct(freq_gbm_claim_gap), "."),
+    paste0("LightGBM frequency Gini improved by ", num(freq_gini_delta, 4), " points, or ", pct(freq_gini_rel_delta), "."),
+    paste0("Raw severity remains weak: GLM mean gap ", pct(raw_sev_glm_gap), "; LightGBM mean gap ", pct(raw_sev_gbm_gap), "."),
+    paste0("LightGBM lowered raw severity MAE by ", pct(raw_sev_mae_improvement), " and capped severity MAE by ", pct(capped_sev_mae_improvement), "."),
+    paste0("LightGBM raw pure premium Gini improved by ", num(raw_pp_gini_delta, 4), " points, or ", pct(raw_pp_gini_rel_delta), "."),
+    paste0("Raw pure premium is undercalibrated: GLM gap ", pct(raw_pp_glm_gap), "; LightGBM gap ", pct(raw_pp_gbm_gap), ".")
+  ),
+  implication = c(
+    "The GLM remains the cleaner aggregate frequency benchmark.",
+    "LightGBM finds additional segmentation signal in claim frequency.",
+    "Neither model solves large-loss volatility; severity needs cautious interpretation.",
+    "LightGBM helps error modestly, especially in the body of the severity distribution.",
+    "The challenger is materially better at ordering policies by observed loss cost.",
+    "LightGBM needs calibration before being used as a direct pricing level."
+  ),
+  row.names = NULL
+)
 ```
 
 # Executive Result
@@ -62,14 +130,20 @@ expected annual pure premium = expected annual claim frequency * expected claim 
 
 The GLM is the benchmark. LightGBM is the challenger. The useful question is not whether the boosted model produces a nicer metric in isolation; it is whether it improves risk segmentation, calibration, or interaction discovery enough to justify the extra complexity.
 
-On this holdout split:
+On this holdout split, the useful result is mixed but informative:
 
-- frequency Gini is `r round(freq_glm_gini, 4)` for the GLM and `r round(freq_gbm_gini, 4)` for LightGBM
-- raw pure premium Gini is `r round(pure_glm_gini, 4)` for the GLM and `r round(pure_gbm_gini, 4)` for LightGBM
+- the GLM remains excellent on aggregate frequency calibration: it predicted `r num(freq_glm$predicted_claims, 1)` claims versus `r num(freq_glm$observed_claims, 0)` observed, a `r pct(freq_glm_claim_gap)` gap
+- LightGBM is slightly worse on aggregate frequency calibration, predicting `r num(freq_gbm$predicted_claims, 1)` claims, but it improves frequency ranking from Gini `r round(freq_glm_gini, 4)` to `r round(freq_gbm_gini, 4)`
+- raw pure premium Gini improves from `r round(pure_glm_gini, 4)` for the GLM to `r round(pure_gbm_gini, 4)` for LightGBM, a `r pct(raw_pp_gini_rel_delta)` relative lift
+- LightGBM underpredicts aggregate pure premium more than the GLM, so its value is stronger as a segmentation and feature-discovery model than as an unadjusted pricing level
 - the severity cap used for the sensitivity view is `r format_eur(results$severity_cap)`
 
 ```{r executive-model-value}
 knitr::kable(results$model_value)
+```
+
+```{r business-summary}
+knitr::kable(business_summary)
 ```
 
 # Data And Split
@@ -116,6 +190,8 @@ Frequency is usually the cleanest place for this dataset to show signal. The key
 knitr::kable(round_table(frequency_comparison))
 ```
 
+The frequency result is the best argument for the GBM challenger. The GLM is almost perfectly calibrated in aggregate, missing holdout claim count by only `r pct(freq_glm_claim_gap)`. LightGBM misses by `r pct(freq_gbm_claim_gap)`, so it does not beat the GLM on total claim count. But LightGBM improves the ranking Gini by `r num(freq_gini_delta, 4)` points, or `r pct(freq_gini_rel_delta)` relative to the GLM. In actuarial terms, that means the GBM is better at sorting policies into higher- and lower-frequency risk groups, even though the GLM is already strong for aggregate expected claim count.
+
 ```{r frequency-decile-plot}
 freq_deciles <- results$frequency_deciles
 ylim <- range(c(freq_deciles$observed_annual_frequency, freq_deciles$predicted_annual_frequency), na.rm = TRUE)
@@ -144,6 +220,10 @@ Severity is harder because claim amounts are heavy-tailed. The raw model is stil
 knitr::kable(round_table(severity_comparison))
 ```
 
+The severity comparison is more cautious. On raw severity, the GLM predicts an average holdout severity of `r format_eur(raw_sev_glm$predicted_mean)` versus `r format_eur(raw_sev_glm$observed_mean)` observed, a `r pct(raw_sev_glm_gap)` gap. LightGBM predicts `r format_eur(raw_sev_gbm$predicted_mean)`, a `r pct(raw_sev_gbm_gap)` gap. That is worse aggregate calibration. However, LightGBM lowers raw severity MAE by `r pct(raw_sev_mae_improvement)`, and in the capped view its mean prediction is within `r pct(capped_sev_gbm_gap)` of observed capped severity.
+
+My interpretation is that LightGBM finds some body-of-loss signal, but it does not solve the heavy-tail problem. For a portfolio project, that is still useful because it shows the right actuarial caution: the severity model should not be oversold.
+
 ```{r severity-decile-plot}
 sev_deciles <- results$severity_deciles[results$severity_deciles$target == "Capped severity", ]
 ylim <- range(c(sev_deciles$observed_mean, sev_deciles$predicted_mean), na.rm = TRUE)
@@ -171,6 +251,10 @@ Pure premium is the business target. At the policy level, observed annual loss c
 ```{r pure-premium-comparison}
 knitr::kable(round_table(pure_premium_comparison))
 ```
+
+Pure premium shows the tradeoff most clearly. The observed holdout loss cost is `r format_eur(raw_pp_glm$observed_loss_cost)` per exposure-year. The raw GLM pure premium predicts `r format_eur(raw_pp_glm$predicted_loss_cost)`, a `r pct(raw_pp_glm_gap)` gap. The raw LightGBM pure premium predicts `r format_eur(raw_pp_gbm$predicted_loss_cost)`, a larger `r pct(raw_pp_gbm_gap)` gap.
+
+That looks bad if we only care about the unadjusted aggregate level. But the ranking story moves the other way: raw pure premium Gini improves from `r round(raw_pp_glm$pricing_lift_gini, 4)` to `r round(raw_pp_gbm$pricing_lift_gini, 4)`, a `r pct(raw_pp_gini_rel_delta)` relative improvement. This is exactly the distinction an insurer would care about. The GLM gives a more defensible base pricing level; the GBM gives stronger segmentation signal that could identify underpriced and overpriced groups.
 
 ```{r pure-premium-decile-plot}
 pp_deciles <- results$pure_premium_deciles[results$pure_premium_deciles$target == "Raw severity pure premium", ]
@@ -247,11 +331,20 @@ print(knitr::kable(round_table(results$interactions$region_density)))
 
 # Conclusion
 
-The final question is whether LightGBM adds actuarial value beyond the GLM. The right answer depends on the combined evidence:
+The final question is whether LightGBM adds actuarial value beyond the GLM. My answer is yes, but not as a clean replacement for the GLM.
 
-- ranking: frequency and pure premium Gini
-- calibration: aggregate and decile observed-versus-predicted results
-- stability: raw severity versus capped severity
-- interpretability: importance, partial dependence, and interaction views
+The GLM is still the better benchmark model for a first actuarial pricing study. It is simpler, easier to explain, and very strong on aggregate frequency calibration. On holdout frequency, it predicts `r num(freq_glm$predicted_claims, 1)` claims against `r num(freq_glm$observed_claims, 0)` observed, while LightGBM predicts `r num(freq_gbm$predicted_claims, 1)`. That means I would not discard the GLM. It gives the clean baseline actuarial story: expected frequency, expected severity, and pure premium built from transparent model components.
 
-If LightGBM improves ranking or exposes useful nonlinear structure, it is a good challenger model and feature-discovery tool. If the improvements are marginal, the simpler GLM remains the better primary actuarial model for this project.
+The GBM adds value in a different way. Its main improvement is risk segmentation. Frequency Gini rises from `r round(freq_glm_gini, 4)` to `r round(freq_gbm_gini, 4)`, and raw pure premium Gini rises from `r round(pure_glm_gini, 4)` to `r round(pure_gbm_gini, 4)`. That is not a cosmetic improvement. It says the challenger is better at ordering risks by observed loss experience, which is useful for pricing review, underwriting triage, and discovering candidate interactions for a refined GLM.
+
+The tradeoff is calibration. LightGBM underpredicts the aggregate raw pure premium more than the GLM: `r format_eur(raw_pp_gbm$predicted_loss_cost)` versus `r format_eur(raw_pp_gbm$observed_loss_cost)` observed, compared with `r format_eur(raw_pp_glm$predicted_loss_cost)` for the GLM. Severity remains the limiting piece. Raw severity is heavy-tailed, and although LightGBM reduces MAE, it does not produce a more credible raw aggregate severity level. The capped severity view is more stable, but that is a sensitivity analysis rather than a full tail model.
+
+My recommendation is to keep the GLM as the primary model and use LightGBM as a challenger and diagnostic layer. For an insurer, the practical business impact would be:
+
+- use the GLM to communicate the baseline technical premium structure
+- use the GBM to find segments where the GLM may be smoothing over nonlinear or interaction effects
+- investigate high-GBM/high-observed-loss segments as potential underpricing pockets
+- investigate low-GBM/low-observed-loss segments as potential competitiveness opportunities
+- recalibrate any GBM output before using it as an actual pricing level
+
+For this side project, that is a good outcome. The GBM does uncover added signal, especially in ranking and segmentation, but the GLM remains sufficient as the core actuarial baseline. The strongest final story is not "GBM beats GLM." It is "GLM provides the credible benchmark, and GBM adds useful challenger insight that helps identify where the benchmark could be improved."

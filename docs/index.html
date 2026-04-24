@@ -361,11 +361,19 @@ display: none;
 question is not whether the boosted model produces a nicer metric in
 isolation; it is whether it improves risk segmentation, calibration, or
 interaction discovery enough to justify the extra complexity.</p>
-<p>On this holdout split:</p>
+<p>On this holdout split, the useful result is mixed but
+informative:</p>
 <ul>
-<li>frequency Gini is 0.1466 for the GLM and 0.1816 for LightGBM</li>
-<li>raw pure premium Gini is 0.2366 for the GLM and 0.3957 for
-LightGBM</li>
+<li>the GLM remains excellent on aggregate frequency calibration: it
+predicted 3,233.8 claims versus 3,240 observed, a -0.2% gap</li>
+<li>LightGBM is slightly worse on aggregate frequency calibration,
+predicting 3,226.2 claims, but it improves frequency ranking from Gini
+0.1466 to 0.1816</li>
+<li>raw pure premium Gini improves from 0.2366 for the GLM to 0.3957 for
+LightGBM, a 67.3% relative lift</li>
+<li>LightGBM underpredicts aggregate pure premium more than the GLM, so
+its value is stronger as a segmentation and feature-discovery model than
+as an unadjusted pricing level</li>
 <li>the severity cap used for the sensitivity view is EUR 36,876</li>
 </ul>
 <pre class="r"><code>knitr::kable(results$model_value)</code></pre>
@@ -398,6 +406,65 @@ views should both be shown.</td>
 <td align="left">What is the main use of GBM here?</td>
 <td align="left">Use it as a challenger model and interaction-discovery
 tool, not as an automatic replacement for the GLM.</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(business_summary)</code></pre>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="40%" />
+<col width="45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">question</th>
+<th align="left">result</th>
+<th align="left">implication</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Frequency calibration</td>
+<td align="left">GLM missed holdout claims by -0.2%; LightGBM missed by
+-0.4%.</td>
+<td align="left">The GLM remains the cleaner aggregate frequency
+benchmark.</td>
+</tr>
+<tr class="even">
+<td align="left">Frequency ranking</td>
+<td align="left">LightGBM frequency Gini improved by 0.035 points, or
+23.9%.</td>
+<td align="left">LightGBM finds additional segmentation signal in claim
+frequency.</td>
+</tr>
+<tr class="odd">
+<td align="left">Severity calibration</td>
+<td align="left">Raw severity remains weak: GLM mean gap -15.8%;
+LightGBM mean gap -24.3%.</td>
+<td align="left">Neither model solves large-loss volatility; severity
+needs cautious interpretation.</td>
+</tr>
+<tr class="even">
+<td align="left">Severity error</td>
+<td align="left">LightGBM lowered raw severity MAE by 7.0% and capped
+severity MAE by 1.9%.</td>
+<td align="left">LightGBM helps error modestly, especially in the body
+of the severity distribution.</td>
+</tr>
+<tr class="odd">
+<td align="left">Pure premium ranking</td>
+<td align="left">LightGBM raw pure premium Gini improved by 0.1591
+points, or 67.3%.</td>
+<td align="left">The challenger is materially better at ordering
+policies by observed loss cost.</td>
+</tr>
+<tr class="even">
+<td align="left">Pure premium calibration</td>
+<td align="left">Raw pure premium is undercalibrated: GLM gap -14.8%;
+LightGBM gap -24.6%.</td>
+<td align="left">LightGBM needs calibration before being used as a
+direct pricing level.</td>
 </tr>
 </tbody>
 </table>
@@ -753,6 +820,14 @@ better.</p>
 </tr>
 </tbody>
 </table>
+<p>The frequency result is the best argument for the GBM challenger. The
+GLM is almost perfectly calibrated in aggregate, missing holdout claim
+count by only -0.2%. LightGBM misses by -0.4%, so it does not beat the
+GLM on total claim count. But LightGBM improves the ranking Gini by
+0.035 points, or 23.9% relative to the GLM. In actuarial terms, that
+means the GBM is better at sorting policies into higher- and
+lower-frequency risk groups, even though the GLM is already strong for
+aggregate expected claim count.</p>
 <pre class="r"><code>freq_deciles &lt;- results$frequency_deciles
 ylim &lt;- range(c(freq_deciles$observed_annual_frequency, freq_deciles$predicted_annual_frequency), na.rm = TRUE)
 plot(
@@ -832,6 +907,16 @@ stable view of typical claim severity behavior.</p>
 </tr>
 </tbody>
 </table>
+<p>The severity comparison is more cautious. On raw severity, the GLM
+predicts an average holdout severity of EUR 2,023 versus EUR 2,402
+observed, a -15.8% gap. LightGBM predicts EUR 1,819, a -24.3% gap. That
+is worse aggregate calibration. However, LightGBM lowers raw severity
+MAE by 7.0%, and in the capped view its mean prediction is within -0.7%
+of observed capped severity.</p>
+<p>My interpretation is that LightGBM finds some body-of-loss signal,
+but it does not solve the heavy-tail problem. For a portfolio project,
+that is still useful because it shows the right actuarial caution: the
+severity model should not be oversold.</p>
 <pre class="r"><code>sev_deciles &lt;- results$severity_deciles[results$severity_deciles$target == &quot;Capped severity&quot;, ]
 ylim &lt;- range(c(sev_deciles$observed_mean, sev_deciles$predicted_mean), na.rm = TRUE)
 plot(
@@ -929,6 +1014,16 @@ but aggregate calibration and decile ranking are still useful.</p>
 </tr>
 </tbody>
 </table>
+<p>Pure premium shows the tradeoff most clearly. The observed holdout
+loss cost is EUR 168 per exposure-year. The raw GLM pure premium
+predicts EUR 143, a -14.8% gap. The raw LightGBM pure premium predicts
+EUR 127, a larger -24.6% gap.</p>
+<p>That looks bad if we only care about the unadjusted aggregate level.
+But the ranking story moves the other way: raw pure premium Gini
+improves from 0.2366 to 0.3957, a 67.3% relative improvement. This is
+exactly the distinction an insurer would care about. The GLM gives a
+more defensible base pricing level; the GBM gives stronger segmentation
+signal that could identify underpriced and overpriced groups.</p>
 <pre class="r"><code>pp_deciles &lt;- results$pure_premium_deciles[results$pure_premium_deciles$target == &quot;Raw severity pure premium&quot;, ]
 ylim &lt;- range(c(pp_deciles$observed_loss_cost, pp_deciles$predicted_loss_cost), na.rm = TRUE)
 plot(
@@ -1739,19 +1834,50 @@ considering as future GLM feature engineering.</p>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
 <p>The final question is whether LightGBM adds actuarial value beyond
-the GLM. The right answer depends on the combined evidence:</p>
+the GLM. My answer is yes, but not as a clean replacement for the
+GLM.</p>
+<p>The GLM is still the better benchmark model for a first actuarial
+pricing study. It is simpler, easier to explain, and very strong on
+aggregate frequency calibration. On holdout frequency, it predicts
+3,233.8 claims against 3,240 observed, while LightGBM predicts 3,226.2.
+That means I would not discard the GLM. It gives the clean baseline
+actuarial story: expected frequency, expected severity, and pure premium
+built from transparent model components.</p>
+<p>The GBM adds value in a different way. Its main improvement is risk
+segmentation. Frequency Gini rises from 0.1466 to 0.1816, and raw pure
+premium Gini rises from 0.2366 to 0.3957. That is not a cosmetic
+improvement. It says the challenger is better at ordering risks by
+observed loss experience, which is useful for pricing review,
+underwriting triage, and discovering candidate interactions for a
+refined GLM.</p>
+<p>The tradeoff is calibration. LightGBM underpredicts the aggregate raw
+pure premium more than the GLM: EUR 127 versus EUR 168 observed,
+compared with EUR 143 for the GLM. Severity remains the limiting piece.
+Raw severity is heavy-tailed, and although LightGBM reduces MAE, it does
+not produce a more credible raw aggregate severity level. The capped
+severity view is more stable, but that is a sensitivity analysis rather
+than a full tail model.</p>
+<p>My recommendation is to keep the GLM as the primary model and use
+LightGBM as a challenger and diagnostic layer. For an insurer, the
+practical business impact would be:</p>
 <ul>
-<li>ranking: frequency and pure premium Gini</li>
-<li>calibration: aggregate and decile observed-versus-predicted
-results</li>
-<li>stability: raw severity versus capped severity</li>
-<li>interpretability: importance, partial dependence, and interaction
-views</li>
+<li>use the GLM to communicate the baseline technical premium
+structure</li>
+<li>use the GBM to find segments where the GLM may be smoothing over
+nonlinear or interaction effects</li>
+<li>investigate high-GBM/high-observed-loss segments as potential
+underpricing pockets</li>
+<li>investigate low-GBM/low-observed-loss segments as potential
+competitiveness opportunities</li>
+<li>recalibrate any GBM output before using it as an actual pricing
+level</li>
 </ul>
-<p>If LightGBM improves ranking or exposes useful nonlinear structure,
-it is a good challenger model and feature-discovery tool. If the
-improvements are marginal, the simpler GLM remains the better primary
-actuarial model for this project.</p>
+<p>For this side project, that is a good outcome. The GBM does uncover
+added signal, especially in ranking and segmentation, but the GLM
+remains sufficient as the core actuarial baseline. The strongest final
+story is not “GBM beats GLM.” It is “GLM provides the credible
+benchmark, and GBM adds useful challenger insight that helps identify
+where the benchmark could be improved.”</p>
 </div>
 
 
