@@ -16,7 +16,8 @@ pure premium = expected annual claim frequency * expected claim severity
 - `mtpl_glm_analysis.R`: base-`R` workflow for loading data, fitting models, and producing summary objects.
 - `mtpl_glm_report.Rmd`: notebook-style report that explains the project and renders the model results.
 - `mtpl_gbm_analysis.R`: LightGBM challenger workflow and GLM-vs-GBM comparison objects.
-- `mtpl_gbm_report.Rmd`: notebook-style report comparing GLM and LightGBM.
+- `mtpl_gbm_glm_synthesis.R`: GBM-first synthesis workflow that converts selected GBM learnings into an enhanced transparent GLM.
+- `mtpl_gbm_report.Rmd`: notebook-style report comparing GLM, LightGBM, and the GBM-informed enhanced GLM.
 - `docs/glm.html`: preserved static GLM walkthrough.
 - `docs/index.html`: GitHub Pages-ready static GBM comparison walkthrough.
 
@@ -31,6 +32,10 @@ pure premium = expected annual claim frequency * expected claim severity
   - Severity: Gamma objective on raw positive claim amounts.
   - Severity sensitivity: Gamma objective on 99.5% capped claim amounts.
   - Pure premium: derived from the frequency and severity predictions.
+- GBM-informed GLM synthesis:
+  - Run the full LightGBM analysis before enhancing the GLM.
+  - Test GBM-inspired splines and interactions on the holdout set.
+  - Retain only transparent terms that improve the relevant holdout metric without unacceptable calibration deterioration.
 
 ## Project Rules
 

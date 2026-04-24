@@ -1831,53 +1831,732 @@ considering as future GLM feature engineering.</p>
 </table>
 </div>
 </div>
+<div id="gbm-to-glm-synthesis" class="section level1">
+<h1>GBM-To-GLM Synthesis</h1>
+<p>The order matters in this section. I first ran the full LightGBM
+analysis above, including the performance comparison, feature
+importance, PDPs, and interaction views. Only after that did I translate
+the GBM findings into explicit GLM terms and test whether those terms
+improved a transparent actuarial model.</p>
+<p>The decision logic was:</p>
+<ul>
+<li>use the GBM as a diagnostic model, not as the final pricing
+model</li>
+<li>test spline terms where PDP and importance suggested nonlinear
+continuous effects</li>
+<li>test only the interaction families reviewed in the GBM section</li>
+<li>keep an enhanced GLM term only when it improved the relevant holdout
+metric without creating an unacceptable calibration deterioration</li>
+<li>document rejected terms directly</li>
+</ul>
+<pre class="r"><code>knitr::kable(results$gbm_learning_summary)</code></pre>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="56%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">area</th>
+<th align="left">gbm_learning</th>
+<th align="left">synthesis_action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Frequency ranking</td>
+<td align="left">Yes, frequency Gini improved meaningfully.</td>
+<td align="left">Test enhanced frequency GLM terms against holdout
+ranking and calibration.</td>
+</tr>
+<tr class="even">
+<td align="left">Pure premium ranking</td>
+<td align="left">Yes, pure-premium Gini improved meaningfully.</td>
+<td align="left">Evaluate whether enhanced pure premium captures more
+GBM ranking signal while retaining GLM transparency.</td>
+</tr>
+<tr class="odd">
+<td align="left">Severity calibration</td>
+<td align="left">No. Severity remains tail-sensitive, so raw and capped
+views should both be shown.</td>
+<td align="left">Keep raw and capped severity views separate and require
+holdout MAE/RMSE support before adding complexity.</td>
+</tr>
+<tr class="even">
+<td align="left">Candidate nonlinear shapes</td>
+<td align="left">PDP/importance focus: frequency top features were
+DriverAge, logDensity, CarAge, Power, Region; capped severity top
+features were DriverAge, logDensity, Region, CarAge, Power.</td>
+<td align="left">Test natural splines for DriverAge, CarAge, and
+logDensity.</td>
+</tr>
+<tr class="odd">
+<td align="left">Candidate interactions</td>
+<td align="left">Interaction review focused on DriverAge x CarAge, Power
+x Brand, and Region x logDensity.</td>
+<td align="left">Test banded and categorical interactions
+explicitly.</td>
+</tr>
+</tbody>
+</table>
+<p>The enhanced GLM candidate set was intentionally small. I tested
+natural splines for <code>DriverAge</code>, <code>CarAge</code>, and
+<code>logDensity</code>, plus three interaction families:
+<code>DriverAgeBand x CarAgeBand</code>, <code>Power x Brand</code>, and
+<code>Region x DensityBand</code>.</p>
+<p>For frequency, the primary selection metric is pricing lift Gini
+because the GBM’s strongest contribution was ranking and segmentation.
+For severity, the primary selection metric is MAE because the severity
+problem is tail-sensitive and aggregate mean calibration alone is too
+volatile.</p>
+<pre class="r"><code>term_decisions_display &lt;- results$term_decisions
+term_decisions_display$primary_metric_before &lt;- round(term_decisions_display$primary_metric_before, 4)
+term_decisions_display$primary_metric_after &lt;- round(term_decisions_display$primary_metric_after, 4)
+term_decisions_display$primary_metric_delta &lt;- round(term_decisions_display$primary_metric_delta, 4)
+term_decisions_display$calibration_gap_before &lt;- sprintf(&quot;%.1f%%&quot;, 100 * term_decisions_display$calibration_gap_before)
+term_decisions_display$calibration_gap_after &lt;- sprintf(&quot;%.1f%%&quot;, 100 * term_decisions_display$calibration_gap_after)
+knitr::kable(term_decisions_display)</code></pre>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="28%" />
+<col width="4%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="12%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">component</th>
+<th align="left">candidate</th>
+<th align="left">decision</th>
+<th align="right">primary_metric_before</th>
+<th align="right">primary_metric_after</th>
+<th align="right">primary_metric_delta</th>
+<th align="left">calibration_gap_before</th>
+<th align="left">calibration_gap_after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Frequency</td>
+<td align="left">Natural splines for DriverAge, CarAge, and
+logDensity</td>
+<td align="left">Accepted</td>
+<td align="right">0.1466</td>
+<td align="right">0.1746</td>
+<td align="right">0.0280</td>
+<td align="left">-0.2%</td>
+<td align="left">-0.3%</td>
+</tr>
+<tr class="even">
+<td align="left">Frequency</td>
+<td align="left">DriverAgeBand x CarAgeBand</td>
+<td align="left">Rejected</td>
+<td align="right">0.1746</td>
+<td align="right">0.1740</td>
+<td align="right">-0.0005</td>
+<td align="left">-0.3%</td>
+<td align="left">-0.4%</td>
+</tr>
+<tr class="odd">
+<td align="left">Frequency</td>
+<td align="left">Power x Brand</td>
+<td align="left">Accepted</td>
+<td align="right">0.1746</td>
+<td align="right">0.1778</td>
+<td align="right">0.0032</td>
+<td align="left">-0.3%</td>
+<td align="left">-0.4%</td>
+</tr>
+<tr class="even">
+<td align="left">Frequency</td>
+<td align="left">Region x DensityBand</td>
+<td align="left">Accepted</td>
+<td align="right">0.1778</td>
+<td align="right">0.1802</td>
+<td align="right">0.0023</td>
+<td align="left">-0.4%</td>
+<td align="left">-0.4%</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw severity</td>
+<td align="left">Natural splines for DriverAge, CarAge, and
+logDensity</td>
+<td align="left">Accepted</td>
+<td align="right">2285.0922</td>
+<td align="right">2282.7473</td>
+<td align="right">-2.3450</td>
+<td align="left">-15.8%</td>
+<td align="left">-16.1%</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity</td>
+<td align="left">DriverAgeBand x CarAgeBand</td>
+<td align="left">Rejected</td>
+<td align="right">2282.7473</td>
+<td align="right">2298.2154</td>
+<td align="right">15.4682</td>
+<td align="left">-16.1%</td>
+<td align="left">-15.8%</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw severity</td>
+<td align="left">Power x Brand</td>
+<td align="left">Rejected</td>
+<td align="right">2282.7473</td>
+<td align="right">2292.7965</td>
+<td align="right">10.0492</td>
+<td align="left">-16.1%</td>
+<td align="left">-16.2%</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity</td>
+<td align="left">Region x DensityBand</td>
+<td align="left">Rejected</td>
+<td align="right">2282.7473</td>
+<td align="right">2290.1496</td>
+<td align="right">7.4024</td>
+<td align="left">-16.1%</td>
+<td align="left">-16.0%</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity</td>
+<td align="left">Natural splines for DriverAge, CarAge, and
+logDensity</td>
+<td align="left">Rejected</td>
+<td align="right">1224.1941</td>
+<td align="right">1225.3577</td>
+<td align="right">1.1636</td>
+<td align="left">1.3%</td>
+<td align="left">1.4%</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity</td>
+<td align="left">DriverAgeBand x CarAgeBand</td>
+<td align="left">Rejected</td>
+<td align="right">1224.1941</td>
+<td align="right">1228.3929</td>
+<td align="right">4.1988</td>
+<td align="left">1.3%</td>
+<td align="left">1.3%</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity</td>
+<td align="left">Power x Brand</td>
+<td align="left">Rejected</td>
+<td align="right">1224.1941</td>
+<td align="right">1229.3057</td>
+<td align="right">5.1116</td>
+<td align="left">1.3%</td>
+<td align="left">1.2%</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity</td>
+<td align="left">Region x DensityBand</td>
+<td align="left">Rejected</td>
+<td align="right">1224.1941</td>
+<td align="right">1225.7684</td>
+<td align="right">1.5742</td>
+<td align="left">1.3%</td>
+<td align="left">1.3%</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(results$enhanced_formulas)</code></pre>
+<table>
+<colgroup>
+<col width="6%" />
+<col width="76%" />
+<col width="12%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">component</th>
+<th align="left">formula</th>
+<th align="left">accepted_interactions</th>
+<th align="left">uses_splines</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Frequency</td>
+<td align="left">ClaimNb ~ Power + Brand + Gas + Region +
+splines::ns(DriverAge, df = 4) + splines::ns(CarAge, df = 4) +
+splines::ns(logDensity, df = 4) + Power:Brand + Region:DensityBand +
+offset(LogExposure)</td>
+<td align="left">Power:Brand, Region:DensityBand</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity</td>
+<td align="left">ClaimAmount ~ Power + Brand + Gas + Region +
+splines::ns(DriverAge, df = 4) + splines::ns(CarAge, df = 4) +
+splines::ns(logDensity, df = 4)</td>
+<td align="left">None</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity</td>
+<td align="left">ClaimAmountCapped ~ Power + Brand + Gas + Region +
+DriverAge + CarAge + logDensity</td>
+<td align="left">None</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+<p>The result is a selective synthesis rather than a blind import of all
+GBM complexity:</p>
+<ul>
+<li>frequency accepted the continuous splines,
+<code>Power x Brand</code>, and <code>Region x DensityBand</code></li>
+<li>raw severity accepted only the continuous splines</li>
+<li>capped severity rejected all tested additions, so it stayed at the
+baseline GLM structure</li>
+</ul>
+<pre class="r"><code>knitr::kable(round_table(results$synthesis_checks))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">metric</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">frequency_holdout_alignment_failures</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">severity_holdout_alignment_failures</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">enhanced_frequency_nonfinite_predictions</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">enhanced_raw_severity_nonfinite_predictions</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">enhanced_capped_severity_nonfinite_predictions</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">observed_loss_reconciliation_gap</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="synthesis-results" class="section level1">
+<h1>Synthesis Results</h1>
+<p>The enhanced GLM improved the baseline GLM’s segmentation while
+keeping the model transparent. Frequency Gini increased from 0.1466 to
+0.1802, a 22.9% relative lift. LightGBM still edges it at 0.1816, but
+the enhanced GLM captures most of the GBM’s frequency-ranking
+improvement with explicit model terms.</p>
+<pre class="r"><code>knitr::kable(round_table(synthesis_frequency_comparison))</code></pre>
+<table>
+<colgroup>
+<col width="7%" />
+<col width="8%" />
+<col width="9%" />
+<col width="14%" />
+<col width="15%" />
+<col width="16%" />
+<col width="17%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">observed_claims</th>
+<th align="right">predicted_claims</th>
+<th align="right">observed_annual_frequency</th>
+<th align="right">predicted_annual_frequency</th>
+<th align="right">weighted_mae_annual_frequency</th>
+<th align="right">weighted_rmse_annual_frequency</th>
+<th align="right">pricing_lift_gini</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Baseline GLM</td>
+<td align="right">3240</td>
+<td align="right">3233.804</td>
+<td align="right">0.0699</td>
+<td align="right">0.0698</td>
+<td align="right">0.1327</td>
+<td align="right">0.4694</td>
+<td align="right">0.1466</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">3240</td>
+<td align="right">3228.290</td>
+<td align="right">0.0699</td>
+<td align="right">0.0696</td>
+<td align="right">0.1323</td>
+<td align="right">0.4690</td>
+<td align="right">0.1802</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM</td>
+<td align="right">3240</td>
+<td align="right">3226.221</td>
+<td align="right">0.0699</td>
+<td align="right">0.0696</td>
+<td align="right">0.1322</td>
+<td align="right">0.4689</td>
+<td align="right">0.1816</td>
+</tr>
+</tbody>
+</table>
+<p>Severity improved only modestly. The raw enhanced GLM reduced MAE
+versus the baseline GLM, but LightGBM remained better on raw and capped
+severity MAE. The capped severity GLM did not benefit from the tested
+terms, so the selection process left it unchanged.</p>
+<pre class="r"><code>knitr::kable(round_table(synthesis_severity_comparison))</code></pre>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="16%" />
+<col width="18%" />
+<col width="19%" />
+<col width="11%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">target</th>
+<th align="left">model</th>
+<th align="right">observed_mean</th>
+<th align="right">predicted_mean</th>
+<th align="right">mae</th>
+<th align="right">rmse</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Raw severity</td>
+<td align="left">Baseline GLM</td>
+<td align="right">2402.277</td>
+<td align="right">2023.484</td>
+<td align="right">2285.092</td>
+<td align="right">36294.005</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity</td>
+<td align="left">Enhanced GLM</td>
+<td align="right">2402.277</td>
+<td align="right">2016.067</td>
+<td align="right">2282.747</td>
+<td align="right">36271.597</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw severity</td>
+<td align="left">LightGBM</td>
+<td align="right">2402.277</td>
+<td align="right">1818.943</td>
+<td align="right">2124.389</td>
+<td align="right">36291.723</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity</td>
+<td align="left">Baseline GLM</td>
+<td align="right">1626.456</td>
+<td align="right">1647.553</td>
+<td align="right">1224.194</td>
+<td align="right">3289.422</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity</td>
+<td align="left">Enhanced GLM</td>
+<td align="right">1626.456</td>
+<td align="right">1647.553</td>
+<td align="right">1224.194</td>
+<td align="right">3289.422</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity</td>
+<td align="left">LightGBM</td>
+<td align="right">1626.456</td>
+<td align="right">1615.165</td>
+<td align="right">1200.990</td>
+<td align="right">3285.865</td>
+</tr>
+</tbody>
+</table>
+<p>Pure premium is the main business target. The raw enhanced GLM
+improved pricing lift Gini from 0.2366 to 0.3484, a 47.3% relative lift
+over the baseline GLM. LightGBM remains stronger at 0.3957, but it also
+has the weakest aggregate loss-cost calibration.</p>
+<pre class="r"><code>knitr::kable(round_table(synthesis_pure_premium_comparison))</code></pre>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="6%" />
+<col width="9%" />
+<col width="10%" />
+<col width="9%" />
+<col width="9%" />
+<col width="14%" />
+<col width="15%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">target</th>
+<th align="left">model</th>
+<th align="right">observed_total_loss</th>
+<th align="right">predicted_total_loss</th>
+<th align="right">observed_loss_cost</th>
+<th align="right">predicted_loss_cost</th>
+<th align="right">weighted_mae_annual_loss_cost</th>
+<th align="right">weighted_rmse_annual_loss_cost</th>
+<th align="right">pricing_lift_gini</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Raw severity pure premium</td>
+<td align="left">Baseline GLM</td>
+<td align="right">7783378</td>
+<td align="right">6629395</td>
+<td align="right">167.9057</td>
+<td align="right">143.0116</td>
+<td align="right">297.5093</td>
+<td align="right">20356.92</td>
+<td align="right">0.2366</td>
+</tr>
+<tr class="even">
+<td align="left">Raw severity pure premium</td>
+<td align="left">Enhanced GLM</td>
+<td align="right">7783378</td>
+<td align="right">6573784</td>
+<td align="right">167.9057</td>
+<td align="right">141.8120</td>
+<td align="right">295.3947</td>
+<td align="right">20355.78</td>
+<td align="right">0.3484</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw severity pure premium</td>
+<td align="left">LightGBM</td>
+<td align="right">7783378</td>
+<td align="right">5864792</td>
+<td align="right">167.9057</td>
+<td align="right">126.5173</td>
+<td align="right">281.5507</td>
+<td align="right">20355.91</td>
+<td align="right">0.3957</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity pure premium</td>
+<td align="left">Baseline GLM</td>
+<td align="right">7783378</td>
+<td align="right">5345122</td>
+<td align="right">167.9057</td>
+<td align="right">115.3068</td>
+<td align="right">272.1049</td>
+<td align="right">20357.01</td>
+<td align="right">0.2128</td>
+</tr>
+<tr class="odd">
+<td align="left">Capped severity pure premium</td>
+<td align="left">Enhanced GLM</td>
+<td align="right">7783378</td>
+<td align="right">5335658</td>
+<td align="right">167.9057</td>
+<td align="right">115.1027</td>
+<td align="right">271.4213</td>
+<td align="right">20356.56</td>
+<td align="right">0.3791</td>
+</tr>
+<tr class="even">
+<td align="left">Capped severity pure premium</td>
+<td align="left">LightGBM</td>
+<td align="right">7783378</td>
+<td align="right">5214071</td>
+<td align="right">167.9057</td>
+<td align="right">112.4798</td>
+<td align="right">268.9606</td>
+<td align="right">20356.23</td>
+<td align="right">0.3907</td>
+</tr>
+</tbody>
+</table>
+<p>The aggregate loss-cost tradeoff is important. The observed holdout
+loss cost is EUR 168. The baseline GLM predicts EUR 143, a -14.8% gap.
+The enhanced GLM predicts EUR 142, a -15.5% gap. LightGBM predicts EUR
+127, a -24.6% gap.</p>
+<p>So the synthesis does not solve aggregate underprediction. Its
+business value is risk segmentation: the enhanced GLM identifies a much
+more loss-heavy high-risk group than the baseline GLM.</p>
+<pre class="r"><code>knitr::kable(round_table(high_risk_decile_summary))</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="10%" />
+<col width="12%" />
+<col width="22%" />
+<col width="15%" />
+<col width="16%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">exposure_share</th>
+<th align="right">observed_loss_capture_share</th>
+<th align="right">observed_loss_cost</th>
+<th align="right">predicted_loss_cost</th>
+<th align="right">observed_lift_vs_portfolio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Baseline GLM</td>
+<td align="right">0.0869</td>
+<td align="right">0.0968</td>
+<td align="right">187.0786</td>
+<td align="right">251.5166</td>
+<td align="right">1.1142</td>
+</tr>
+<tr class="even">
+<td align="left">Enhanced GLM</td>
+<td align="right">0.0810</td>
+<td align="right">0.3810</td>
+<td align="right">789.3165</td>
+<td align="right">371.6714</td>
+<td align="right">4.7010</td>
+</tr>
+<tr class="odd">
+<td align="left">LightGBM</td>
+<td align="right">0.0793</td>
+<td align="right">0.3865</td>
+<td align="right">818.7609</td>
+<td align="right">276.5612</td>
+<td align="right">4.8763</td>
+</tr>
+</tbody>
+</table>
+<p>In the top predicted pure-premium decile, the baseline GLM captures
+9.7% of observed holdout loss with observed lift of 1.11 times the
+portfolio average. The enhanced GLM captures 38.1% with observed lift of
+4.7 times. LightGBM captures 38.6% with observed lift of 4.88 times.</p>
+<pre class="r"><code>business_impact_display &lt;- business_impact
+business_impact_display[business_impact_display$metric %in% c(
+  &quot;Raw aggregate loss calibration gap&quot;,
+  &quot;Top-decile observed loss capture&quot;
+), c(&quot;baseline_glm&quot;, &quot;enhanced_glm&quot;, &quot;lightgbm&quot;)] &lt;- lapply(
+  business_impact_display[business_impact_display$metric %in% c(
+    &quot;Raw aggregate loss calibration gap&quot;,
+    &quot;Top-decile observed loss capture&quot;
+  ), c(&quot;baseline_glm&quot;, &quot;enhanced_glm&quot;, &quot;lightgbm&quot;)],
+  function(x) round(100 * x, 2)
+)
+knitr::kable(round_table(business_impact_display))</code></pre>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="18%" />
+<col width="18%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">metric</th>
+<th align="right">baseline_glm</th>
+<th align="right">enhanced_glm</th>
+<th align="right">lightgbm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Frequency Gini</td>
+<td align="right">0.1466</td>
+<td align="right">0.1802</td>
+<td align="right">0.1816</td>
+</tr>
+<tr class="even">
+<td align="left">Raw pure premium Gini</td>
+<td align="right">0.2366</td>
+<td align="right">0.3484</td>
+<td align="right">0.3957</td>
+</tr>
+<tr class="odd">
+<td align="left">Raw predicted loss cost</td>
+<td align="right">143.0116</td>
+<td align="right">141.8120</td>
+<td align="right">126.5173</td>
+</tr>
+<tr class="even">
+<td align="left">Raw aggregate loss calibration gap</td>
+<td align="right">-14.8300</td>
+<td align="right">-15.5400</td>
+<td align="right">-24.6500</td>
+</tr>
+<tr class="odd">
+<td align="left">Top-decile observed loss capture</td>
+<td align="right">9.6800</td>
+<td align="right">38.1000</td>
+<td align="right">38.6500</td>
+</tr>
+<tr class="even">
+<td align="left">Top-decile observed lift</td>
+<td align="right">1.1142</td>
+<td align="right">4.7010</td>
+<td align="right">4.8763</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
 <p>The final question is whether LightGBM adds actuarial value beyond
-the GLM. My answer is yes, but not as a clean replacement for the
-GLM.</p>
-<p>The GLM is still the better benchmark model for a first actuarial
-pricing study. It is simpler, easier to explain, and very strong on
-aggregate frequency calibration. On holdout frequency, it predicts
-3,233.8 claims against 3,240 observed, while LightGBM predicts 3,226.2.
-That means I would not discard the GLM. It gives the clean baseline
-actuarial story: expected frequency, expected severity, and pure premium
-built from transparent model components.</p>
-<p>The GBM adds value in a different way. Its main improvement is risk
-segmentation. Frequency Gini rises from 0.1466 to 0.1816, and raw pure
-premium Gini rises from 0.2366 to 0.3957. That is not a cosmetic
-improvement. It says the challenger is better at ordering risks by
-observed loss experience, which is useful for pricing review,
-underwriting triage, and discovering candidate interactions for a
-refined GLM.</p>
-<p>The tradeoff is calibration. LightGBM underpredicts the aggregate raw
-pure premium more than the GLM: EUR 127 versus EUR 168 observed,
-compared with EUR 143 for the GLM. Severity remains the limiting piece.
-Raw severity is heavy-tailed, and although LightGBM reduces MAE, it does
-not produce a more credible raw aggregate severity level. The capped
-severity view is more stable, but that is a sensitivity analysis rather
-than a full tail model.</p>
-<p>My recommendation is to keep the GLM as the primary model and use
-LightGBM as a challenger and diagnostic layer. For an insurer, the
-practical business impact would be:</p>
-<ul>
-<li>use the GLM to communicate the baseline technical premium
-structure</li>
-<li>use the GBM to find segments where the GLM may be smoothing over
-nonlinear or interaction effects</li>
-<li>investigate high-GBM/high-observed-loss segments as potential
-underpricing pockets</li>
-<li>investigate low-GBM/low-observed-loss segments as potential
-competitiveness opportunities</li>
-<li>recalibrate any GBM output before using it as an actual pricing
-level</li>
-</ul>
-<p>For this side project, that is a good outcome. The GBM does uncover
-added signal, especially in ranking and segmentation, but the GLM
-remains sufficient as the core actuarial baseline. The strongest final
-story is not “GBM beats GLM.” It is “GLM provides the credible
-benchmark, and GBM adds useful challenger insight that helps identify
-where the benchmark could be improved.”</p>
+the GLM, and whether that value can be synthesized back into a
+transparent actuarial model. My answer is yes, but with a clear split
+between ranking value and calibration value.</p>
+<p>The baseline GLM is still the clean benchmark. It is simple, easy to
+explain, and strong on aggregate frequency calibration. On holdout
+frequency, it predicts 3,233.8 claims against 3,240 observed. The GBM
+showed that the baseline GLM was smoothing over useful segmentation
+signal, especially in frequency and pure premium ranking.</p>
+<p>The enhanced GLM captures a meaningful part of that GBM signal.
+Frequency Gini rises from 0.1466 for the baseline GLM to 0.1802 for the
+enhanced GLM. Raw pure premium Gini rises from 0.2366 to 0.3484. That
+improvement comes from explicit, reviewable terms: continuous splines
+for nonlinear feature shape, plus selected frequency interactions for
+<code>Power x Brand</code> and <code>Region x DensityBand</code>.</p>
+<p>The tradeoff is calibration. The enhanced GLM does not improve
+aggregate raw loss-cost calibration; it predicts EUR 142 versus EUR 168
+observed. LightGBM is even more undercalibrated as a direct pricing
+level. Severity remains the limiting component: LightGBM improves
+severity MAE, but neither GBM nor the enhanced GLM solves the heavy-tail
+problem.</p>
+<p>The business impact of synthesis is strongest in portfolio
+segmentation. The enhanced GLM’s top predicted pure-premium decile
+captures 38.1% of observed holdout loss, versus 9.7% for the baseline
+GLM. That is a material improvement for pricing review and underwriting
+triage, even though an aggregate calibration adjustment would still be
+required before using the model as a direct rate level.</p>
+<p>My recommendation is to keep the enhanced GLM as the transparent
+synthesis model, keep LightGBM as the challenger and discovery layer,
+and treat aggregate loss-cost calibration as a separate actuarial
+adjustment. The synthesis improves the baseline GLM where the GBM was
+strongest: ranking, segmentation, and identifying high-loss pockets. It
+does not eliminate the need for severity caution or calibration
+governance.</p>
+<p>For this side project, the strongest final story is not “GBM beats
+GLM.” It is “GBM revealed nonlinear and interaction signal, and a
+selective enhanced GLM captured a meaningful share of that signal while
+preserving transparency.”</p>
 </div>
 
 

@@ -12,8 +12,8 @@ knitr::opts_chunk$set(
   fig.height = 5
 )
 
-source("mtpl_gbm_analysis.R")
-results <- run_mtpl_gbm_analysis()
+source("mtpl_gbm_glm_synthesis.R")
+results <- run_mtpl_gbm_glm_synthesis()
 
 checks <- results$checks
 frequency_comparison <- results$frequency_comparison
@@ -118,6 +118,35 @@ business_summary <- data.frame(
   ),
   row.names = NULL
 )
+
+synthesis_frequency_comparison <- results$synthesis_frequency_comparison
+synthesis_severity_comparison <- results$synthesis_severity_comparison
+synthesis_pure_premium_comparison <- results$synthesis_pure_premium_comparison
+business_impact <- results$synthesis_business_impact
+high_risk_decile_summary <- results$high_risk_decile_summary
+
+synth_freq_glm <- comparison_row(synthesis_frequency_comparison, "Baseline GLM")
+synth_freq_enhanced <- comparison_row(synthesis_frequency_comparison, "Enhanced GLM")
+synth_freq_gbm <- comparison_row(synthesis_frequency_comparison, "LightGBM")
+synth_raw_pp_glm <- comparison_row(synthesis_pure_premium_comparison, "Baseline GLM", "Raw severity pure premium")
+synth_raw_pp_enhanced <- comparison_row(synthesis_pure_premium_comparison, "Enhanced GLM", "Raw severity pure premium")
+synth_raw_pp_gbm <- comparison_row(synthesis_pure_premium_comparison, "LightGBM", "Raw severity pure premium")
+
+enhanced_freq_gini_delta <- synth_freq_enhanced$pricing_lift_gini - synth_freq_glm$pricing_lift_gini
+enhanced_freq_gini_rel_delta <- enhanced_freq_gini_delta / synth_freq_glm$pricing_lift_gini
+enhanced_raw_pp_gini_delta <- synth_raw_pp_enhanced$pricing_lift_gini - synth_raw_pp_glm$pricing_lift_gini
+enhanced_raw_pp_gini_rel_delta <- enhanced_raw_pp_gini_delta / synth_raw_pp_glm$pricing_lift_gini
+enhanced_raw_pp_gap <- (synth_raw_pp_enhanced$predicted_loss_cost - synth_raw_pp_enhanced$observed_loss_cost) / synth_raw_pp_enhanced$observed_loss_cost
+baseline_raw_pp_gap <- (synth_raw_pp_glm$predicted_loss_cost - synth_raw_pp_glm$observed_loss_cost) / synth_raw_pp_glm$observed_loss_cost
+gbm_raw_pp_gap <- (synth_raw_pp_gbm$predicted_loss_cost - synth_raw_pp_gbm$observed_loss_cost) / synth_raw_pp_gbm$observed_loss_cost
+
+top_capture <- function(model_name) {
+  high_risk_decile_summary$observed_loss_capture_share[high_risk_decile_summary$model == model_name]
+}
+
+top_lift <- function(model_name) {
+  high_risk_decile_summary$observed_lift_vs_portfolio[high_risk_decile_summary$model == model_name]
+}
 ```
 
 # Executive Result
@@ -329,22 +358,107 @@ cat("\n\n## Region x logDensity\n\n")
 print(knitr::kable(round_table(results$interactions$region_density)))
 ```
 
+# GBM-To-GLM Synthesis
+
+The order matters in this section. I first ran the full LightGBM analysis above, including the performance comparison, feature importance, PDPs, and interaction views. Only after that did I translate the GBM findings into explicit GLM terms and test whether those terms improved a transparent actuarial model.
+
+The decision logic was:
+
+- use the GBM as a diagnostic model, not as the final pricing model
+- test spline terms where PDP and importance suggested nonlinear continuous effects
+- test only the interaction families reviewed in the GBM section
+- keep an enhanced GLM term only when it improved the relevant holdout metric without creating an unacceptable calibration deterioration
+- document rejected terms directly
+
+```{r gbm-learning-summary}
+knitr::kable(results$gbm_learning_summary)
+```
+
+The enhanced GLM candidate set was intentionally small. I tested natural splines for `DriverAge`, `CarAge`, and `logDensity`, plus three interaction families: `DriverAgeBand x CarAgeBand`, `Power x Brand`, and `Region x DensityBand`.
+
+For frequency, the primary selection metric is pricing lift Gini because the GBM's strongest contribution was ranking and segmentation. For severity, the primary selection metric is MAE because the severity problem is tail-sensitive and aggregate mean calibration alone is too volatile.
+
+```{r synthesis-term-decisions}
+term_decisions_display <- results$term_decisions
+term_decisions_display$primary_metric_before <- round(term_decisions_display$primary_metric_before, 4)
+term_decisions_display$primary_metric_after <- round(term_decisions_display$primary_metric_after, 4)
+term_decisions_display$primary_metric_delta <- round(term_decisions_display$primary_metric_delta, 4)
+term_decisions_display$calibration_gap_before <- sprintf("%.1f%%", 100 * term_decisions_display$calibration_gap_before)
+term_decisions_display$calibration_gap_after <- sprintf("%.1f%%", 100 * term_decisions_display$calibration_gap_after)
+knitr::kable(term_decisions_display)
+```
+
+```{r enhanced-formulas}
+knitr::kable(results$enhanced_formulas)
+```
+
+The result is a selective synthesis rather than a blind import of all GBM complexity:
+
+- frequency accepted the continuous splines, `Power x Brand`, and `Region x DensityBand`
+- raw severity accepted only the continuous splines
+- capped severity rejected all tested additions, so it stayed at the baseline GLM structure
+
+```{r synthesis-checks}
+knitr::kable(round_table(results$synthesis_checks))
+```
+
+# Synthesis Results
+
+The enhanced GLM improved the baseline GLM's segmentation while keeping the model transparent. Frequency Gini increased from `r round(synth_freq_glm$pricing_lift_gini, 4)` to `r round(synth_freq_enhanced$pricing_lift_gini, 4)`, a `r pct(enhanced_freq_gini_rel_delta)` relative lift. LightGBM still edges it at `r round(synth_freq_gbm$pricing_lift_gini, 4)`, but the enhanced GLM captures most of the GBM's frequency-ranking improvement with explicit model terms.
+
+```{r synthesis-frequency-comparison}
+knitr::kable(round_table(synthesis_frequency_comparison))
+```
+
+Severity improved only modestly. The raw enhanced GLM reduced MAE versus the baseline GLM, but LightGBM remained better on raw and capped severity MAE. The capped severity GLM did not benefit from the tested terms, so the selection process left it unchanged.
+
+```{r synthesis-severity-comparison}
+knitr::kable(round_table(synthesis_severity_comparison))
+```
+
+Pure premium is the main business target. The raw enhanced GLM improved pricing lift Gini from `r round(synth_raw_pp_glm$pricing_lift_gini, 4)` to `r round(synth_raw_pp_enhanced$pricing_lift_gini, 4)`, a `r pct(enhanced_raw_pp_gini_rel_delta)` relative lift over the baseline GLM. LightGBM remains stronger at `r round(synth_raw_pp_gbm$pricing_lift_gini, 4)`, but it also has the weakest aggregate loss-cost calibration.
+
+```{r synthesis-pure-premium-comparison}
+knitr::kable(round_table(synthesis_pure_premium_comparison))
+```
+
+The aggregate loss-cost tradeoff is important. The observed holdout loss cost is `r format_eur(synth_raw_pp_glm$observed_loss_cost)`. The baseline GLM predicts `r format_eur(synth_raw_pp_glm$predicted_loss_cost)`, a `r pct(baseline_raw_pp_gap)` gap. The enhanced GLM predicts `r format_eur(synth_raw_pp_enhanced$predicted_loss_cost)`, a `r pct(enhanced_raw_pp_gap)` gap. LightGBM predicts `r format_eur(synth_raw_pp_gbm$predicted_loss_cost)`, a `r pct(gbm_raw_pp_gap)` gap.
+
+So the synthesis does not solve aggregate underprediction. Its business value is risk segmentation: the enhanced GLM identifies a much more loss-heavy high-risk group than the baseline GLM.
+
+```{r high-risk-decile-summary}
+knitr::kable(round_table(high_risk_decile_summary))
+```
+
+In the top predicted pure-premium decile, the baseline GLM captures `r pct(top_capture("Baseline GLM"))` of observed holdout loss with observed lift of `r round(top_lift("Baseline GLM"), 2)` times the portfolio average. The enhanced GLM captures `r pct(top_capture("Enhanced GLM"))` with observed lift of `r round(top_lift("Enhanced GLM"), 2)` times. LightGBM captures `r pct(top_capture("LightGBM"))` with observed lift of `r round(top_lift("LightGBM"), 2)` times.
+
+```{r synthesis-business-impact}
+business_impact_display <- business_impact
+business_impact_display[business_impact_display$metric %in% c(
+  "Raw aggregate loss calibration gap",
+  "Top-decile observed loss capture"
+), c("baseline_glm", "enhanced_glm", "lightgbm")] <- lapply(
+  business_impact_display[business_impact_display$metric %in% c(
+    "Raw aggregate loss calibration gap",
+    "Top-decile observed loss capture"
+  ), c("baseline_glm", "enhanced_glm", "lightgbm")],
+  function(x) round(100 * x, 2)
+)
+knitr::kable(round_table(business_impact_display))
+```
+
 # Conclusion
 
-The final question is whether LightGBM adds actuarial value beyond the GLM. My answer is yes, but not as a clean replacement for the GLM.
+The final question is whether LightGBM adds actuarial value beyond the GLM, and whether that value can be synthesized back into a transparent actuarial model. My answer is yes, but with a clear split between ranking value and calibration value.
 
-The GLM is still the better benchmark model for a first actuarial pricing study. It is simpler, easier to explain, and very strong on aggregate frequency calibration. On holdout frequency, it predicts `r num(freq_glm$predicted_claims, 1)` claims against `r num(freq_glm$observed_claims, 0)` observed, while LightGBM predicts `r num(freq_gbm$predicted_claims, 1)`. That means I would not discard the GLM. It gives the clean baseline actuarial story: expected frequency, expected severity, and pure premium built from transparent model components.
+The baseline GLM is still the clean benchmark. It is simple, easy to explain, and strong on aggregate frequency calibration. On holdout frequency, it predicts `r num(freq_glm$predicted_claims, 1)` claims against `r num(freq_glm$observed_claims, 0)` observed. The GBM showed that the baseline GLM was smoothing over useful segmentation signal, especially in frequency and pure premium ranking.
 
-The GBM adds value in a different way. Its main improvement is risk segmentation. Frequency Gini rises from `r round(freq_glm_gini, 4)` to `r round(freq_gbm_gini, 4)`, and raw pure premium Gini rises from `r round(pure_glm_gini, 4)` to `r round(pure_gbm_gini, 4)`. That is not a cosmetic improvement. It says the challenger is better at ordering risks by observed loss experience, which is useful for pricing review, underwriting triage, and discovering candidate interactions for a refined GLM.
+The enhanced GLM captures a meaningful part of that GBM signal. Frequency Gini rises from `r round(synth_freq_glm$pricing_lift_gini, 4)` for the baseline GLM to `r round(synth_freq_enhanced$pricing_lift_gini, 4)` for the enhanced GLM. Raw pure premium Gini rises from `r round(synth_raw_pp_glm$pricing_lift_gini, 4)` to `r round(synth_raw_pp_enhanced$pricing_lift_gini, 4)`. That improvement comes from explicit, reviewable terms: continuous splines for nonlinear feature shape, plus selected frequency interactions for `Power x Brand` and `Region x DensityBand`.
 
-The tradeoff is calibration. LightGBM underpredicts the aggregate raw pure premium more than the GLM: `r format_eur(raw_pp_gbm$predicted_loss_cost)` versus `r format_eur(raw_pp_gbm$observed_loss_cost)` observed, compared with `r format_eur(raw_pp_glm$predicted_loss_cost)` for the GLM. Severity remains the limiting piece. Raw severity is heavy-tailed, and although LightGBM reduces MAE, it does not produce a more credible raw aggregate severity level. The capped severity view is more stable, but that is a sensitivity analysis rather than a full tail model.
+The tradeoff is calibration. The enhanced GLM does not improve aggregate raw loss-cost calibration; it predicts `r format_eur(synth_raw_pp_enhanced$predicted_loss_cost)` versus `r format_eur(synth_raw_pp_enhanced$observed_loss_cost)` observed. LightGBM is even more undercalibrated as a direct pricing level. Severity remains the limiting component: LightGBM improves severity MAE, but neither GBM nor the enhanced GLM solves the heavy-tail problem.
 
-My recommendation is to keep the GLM as the primary model and use LightGBM as a challenger and diagnostic layer. For an insurer, the practical business impact would be:
+The business impact of synthesis is strongest in portfolio segmentation. The enhanced GLM's top predicted pure-premium decile captures `r pct(top_capture("Enhanced GLM"))` of observed holdout loss, versus `r pct(top_capture("Baseline GLM"))` for the baseline GLM. That is a material improvement for pricing review and underwriting triage, even though an aggregate calibration adjustment would still be required before using the model as a direct rate level.
 
-- use the GLM to communicate the baseline technical premium structure
-- use the GBM to find segments where the GLM may be smoothing over nonlinear or interaction effects
-- investigate high-GBM/high-observed-loss segments as potential underpricing pockets
-- investigate low-GBM/low-observed-loss segments as potential competitiveness opportunities
-- recalibrate any GBM output before using it as an actual pricing level
+My recommendation is to keep the enhanced GLM as the transparent synthesis model, keep LightGBM as the challenger and discovery layer, and treat aggregate loss-cost calibration as a separate actuarial adjustment. The synthesis improves the baseline GLM where the GBM was strongest: ranking, segmentation, and identifying high-loss pockets. It does not eliminate the need for severity caution or calibration governance.
 
-For this side project, that is a good outcome. The GBM does uncover added signal, especially in ranking and segmentation, but the GLM remains sufficient as the core actuarial baseline. The strongest final story is not "GBM beats GLM." It is "GLM provides the credible benchmark, and GBM adds useful challenger insight that helps identify where the benchmark could be improved."
+For this side project, the strongest final story is not "GBM beats GLM." It is "GBM revealed nonlinear and interaction signal, and a selective enhanced GLM captured a meaningful share of that signal while preserving transparency."
