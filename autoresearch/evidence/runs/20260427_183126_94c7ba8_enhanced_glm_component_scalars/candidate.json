@@ -1,0 +1,23 @@
+{
+  "actuarial_rationale": "Component scalars are easy to audit and separate frequency, raw severity, and capped severity bias. They should only be retained if they improve calibration without weakening capped pure premium lift or stability.",
+  "calibration": {
+    "component_scalars": true
+  },
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "Baseline transparent enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds component-level frequency, raw severity, and capped severity calibration scalars estimated only inside each training fold.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "hypothesis": "Fold-internal component calibration can improve loss-cost level while preserving the enhanced GLM's transparent segmentation structure.",
+  "id": "enhanced_glm_component_scalars",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}
