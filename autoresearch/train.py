@@ -8,26 +8,26 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "enhanced_glm_driver_car_age_interaction",
-    "is_baseline": False,
+    "id": "baseline_enhanced_glm_splines",
+    "is_baseline": True,
     "model_type": "glm",
     "description": (
-        "Enhanced GLM using natural splines for DriverAge, "
+        "Baseline transparent enhanced GLM using natural splines for DriverAge, "
         "CarAge, and logDensity in frequency, raw severity, and capped severity; "
-        "adds DriverAgeBand:CarAgeBand to the frequency component only."
+        "no interactions or calibration scalars."
     ),
     "hypothesis": (
-        "A transparent young-driver by vehicle-age interaction may improve "
-        "frequency risk segmentation without compromising capped pure premium stability."
+        "The current report's enhanced GLM structure is the right starting "
+        "champion for transparent actuarial segmentation."
     ),
     "actuarial_rationale": (
-        "Driver age and vehicle age are standard actuarial rating dimensions. "
-        "A limited banded interaction is easier to defend than a black-box effect, "
-        "but should be rejected if sparse cells reduce stability."
+        "Natural splines allow smooth nonlinear age and density effects while "
+        "remaining reviewable, parsimonious, and defensible compared with a "
+        "direct black-box pricing level."
     ),
     "frequency": {
         "use_splines": True,
-        "interactions": ["DriverAgeBand:CarAgeBand"],
+        "interactions": [],
     },
     "severity": {
         "use_splines": True,
