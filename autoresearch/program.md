@@ -119,6 +119,16 @@ python autoresearch/train.py
 
 Do not ask whether to keep going. Continue until interrupted.
 
+## Git Queue Fallback
+
+If Codex can edit files and run experiments but cannot write to `.git`, use the host-side git worker:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\autoresearch\tools\git_queue_worker.ps1
+```
+
+The worker watches `autoresearch/scratch/git_queue` for JSON jobs written by Codex. Each job stages explicit paths, commits them with the provided message, pushes when requested, and moves the job to `autoresearch/scratch/git_done`. This preserves the audit trail without requiring Codex itself to write `.git/index.lock`.
+
 ## Crash Policy
 
 If a run crashes because of an obvious typo or interface mistake, fix it once and rerun. If it crashes again, log the crash, restore the champion `train.py`, and move on.

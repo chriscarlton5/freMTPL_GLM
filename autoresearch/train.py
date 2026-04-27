@@ -8,26 +8,26 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "enhanced_glm_power_brand_frequency",
-    "is_baseline": False,
+    "id": "baseline_enhanced_glm_splines",
+    "is_baseline": True,
     "model_type": "glm",
     "description": (
-        "Enhanced GLM using natural splines for DriverAge, "
+        "Baseline transparent enhanced GLM using natural splines for DriverAge, "
         "CarAge, and logDensity in frequency, raw severity, and capped severity; "
-        "adds Power:Brand to the frequency component only."
+        "no interactions or calibration scalars."
     ),
     "hypothesis": (
-        "Vehicle power may interact with grouped vehicle brand in claim frequency, "
-        "adding segmentation signal without changing the severity model."
+        "The current report's enhanced GLM structure is the right starting "
+        "champion for transparent actuarial segmentation."
     ),
     "actuarial_rationale": (
-        "Power and brand are standard vehicle risk dimensions. A frequency-only "
-        "interaction is transparent but should be rejected if sparse classes create "
-        "unstable relativity movement."
+        "Natural splines allow smooth nonlinear age and density effects while "
+        "remaining reviewable, parsimonious, and defensible compared with a "
+        "direct black-box pricing level."
     ),
     "frequency": {
         "use_splines": True,
-        "interactions": ["Power:Brand"],
+        "interactions": [],
     },
     "severity": {
         "use_splines": True,
