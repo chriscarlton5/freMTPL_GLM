@@ -1,0 +1,25 @@
+{
+  "actuarial_rationale": "Power and brand are standard vehicle risk dimensions. A frequency-only interaction is transparent but should be rejected if sparse classes create unstable relativity movement.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds Power:Brand to the frequency component only.",
+  "frequency": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  },
+  "hypothesis": "Vehicle power may interact with grouped vehicle brand in claim frequency, adding segmentation signal without changing the severity model.",
+  "id": "enhanced_glm_power_brand_frequency",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}
