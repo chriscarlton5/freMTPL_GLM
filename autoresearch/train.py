@@ -8,23 +8,22 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "enhanced_glm_component_scalars",
-    "is_baseline": False,
+    "id": "baseline_enhanced_glm_splines",
+    "is_baseline": True,
     "model_type": "glm",
     "description": (
         "Baseline transparent enhanced GLM using natural splines for DriverAge, "
         "CarAge, and logDensity in frequency, raw severity, and capped severity; "
-        "adds component-level frequency, raw severity, and capped severity "
-        "calibration scalars estimated only inside each training fold."
+        "no interactions or calibration scalars."
     ),
     "hypothesis": (
-        "Fold-internal component calibration can improve loss-cost level while "
-        "preserving the enhanced GLM's transparent segmentation structure."
+        "The current report's enhanced GLM structure is the right starting "
+        "champion for transparent actuarial segmentation."
     ),
     "actuarial_rationale": (
-        "Component scalars are easy to audit and separate frequency, raw severity, "
-        "and capped severity bias. They should only be retained if they improve "
-        "calibration without weakening capped pure premium lift or stability."
+        "Natural splines allow smooth nonlinear age and density effects while "
+        "remaining reviewable, parsimonious, and defensible compared with a "
+        "direct black-box pricing level."
     ),
     "frequency": {
         "use_splines": True,
@@ -39,7 +38,7 @@ CANDIDATE = {
         "interactions": [],
     },
     "calibration": {
-        "component_scalars": True,
+        "component_scalars": False,
     },
 }
 
