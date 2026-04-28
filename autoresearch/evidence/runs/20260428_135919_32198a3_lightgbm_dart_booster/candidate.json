@@ -1,0 +1,69 @@
+{
+  "actuarial_rationale": "DART is alternative boosting method. Has different bias-variance tradeoff. Sometimes finds better solutions than GBDT.",
+  "description": "NEW HYPOTHESIS: Use DART booster ( dropout + tree) instead of GBDT. Drops trees during training to reduce overfitting.",
+  "hypothesis": "DART applies dropout to trees - prevents overfitting from greedy trees. Different optimization path may find new local optimum.",
+  "id": "lightgbm_dart_booster",
+  "is_baseline": false,
+  "lightgbm": {
+    "boosting_type": "dart",
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "drop_rate": 0.1,
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "skip_drop": 0.5
+  },
+  "model_type": "lightgbm"
+}

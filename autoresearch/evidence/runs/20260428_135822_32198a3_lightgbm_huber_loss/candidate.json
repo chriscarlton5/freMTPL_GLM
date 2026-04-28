@@ -1,0 +1,70 @@
+{
+  "actuarial_rationale": "Insurance claims have heavy tails. Huber loss is standard robust regression technique - better handling of extreme events.",
+  "description": "NEW HYPOTHESIS: Use Huber loss for robustness to outliers in severity. Poisson/Gamma are sensitive to extreme claims.",
+  "hypothesis": "Huber loss combines MSE (good for inliers) and MAE (robust to outliers). Should improve stability on heavy-tailed severity.",
+  "id": "lightgbm_huber_loss",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "huber_delta": 1.0,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15,
+        "objective": "huber"
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "huber_delta": 1.0,
+        "lambda_l2": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24,
+        "objective": "huber"
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

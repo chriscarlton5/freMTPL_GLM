@@ -8,35 +8,40 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_optimal_balance",
+    "id": "lightgbm_dart_booster",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Best still 0.1851. Try intermediate: 16/23 leaves, 0.042 LR to find "
-        "optimum between capacity and overfitting."
+        "NEW HYPOTHESIS: Use DART booster ( dropout + tree) instead of GBDT. "
+        "Drops trees during training to reduce overfitting."
     ),
     "hypothesis": (
-        "15/24 @ 0.04 = 0.1851, 16/28 @ 0.04 = 0.1834. Try 16/23 with 0.042 LR."
+        "DART applies dropout to trees - prevents overfitting from greedy trees. "
+        "Different optimization path may find new local optimum."
     ),
     "actuarial_rationale": (
-        "Balance between best configs - fine-tuned hyperparameter search."
+        "DART is alternative boosting method. Has different bias-variance tradeoff. "
+        "Sometimes finds better solutions than GBDT."
     ),
     "lightgbm": {
-        "nrounds": 125,
-        "early_stopping_rounds": 16,
+        "nrounds": 120,
+        "early_stopping_rounds": 15,
+        "boosting_type": "dart",
+        "drop_rate": 0.1,
+        "skip_drop": 0.5,
         "frequency_grid": [
             {
-                "num_leaves": 16,
-                "min_data_in_leaf": 1550,
-                "learning_rate": 0.042,
+                "num_leaves": 15,
+                "min_data_in_leaf": 1600,
+                "learning_rate": 0.04,
                 "feature_fraction": 0.87,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 10,
             },
             {
-                "num_leaves": 23,
-                "min_data_in_leaf": 1250,
-                "learning_rate": 0.036,
+                "num_leaves": 24,
+                "min_data_in_leaf": 1300,
+                "learning_rate": 0.035,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 8,
@@ -44,17 +49,17 @@ CANDIDATE = {
         ],
         "severity_grid": [
             {
-                "num_leaves": 8,
-                "min_data_in_leaf": 170,
-                "learning_rate": 0.042,
+                "num_leaves": 7,
+                "min_data_in_leaf": 190,
+                "learning_rate": 0.04,
                 "feature_fraction": 0.87,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 8,
             },
             {
                 "num_leaves": 11,
-                "min_data_in_leaf": 130,
-                "learning_rate": 0.036,
+                "min_data_in_leaf": 150,
+                "learning_rate": 0.035,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 6,
@@ -62,17 +67,17 @@ CANDIDATE = {
         ],
         "capped_severity_grid": [
             {
-                "num_leaves": 8,
-                "min_data_in_leaf": 170,
-                "learning_rate": 0.042,
+                "num_leaves": 7,
+                "min_data_in_leaf": 190,
+                "learning_rate": 0.04,
                 "feature_fraction": 0.87,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 8,
             },
             {
                 "num_leaves": 11,
-                "min_data_in_leaf": 130,
-                "learning_rate": 0.036,
+                "min_data_in_leaf": 150,
+                "learning_rate": 0.035,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 6,

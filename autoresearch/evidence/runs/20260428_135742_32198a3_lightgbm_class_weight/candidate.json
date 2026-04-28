@@ -1,0 +1,68 @@
+{
+  "actuarial_rationale": "Claim events are rare (~3.5%). Weighting them helps the model focus on predicting risk drivers. Standard ML practice.",
+  "description": "NEW HYPOTHESIS: Frequency has class imbalance (only ~3.5% have claims). Use scale_pos_weight to give more weight to claim events.",
+  "hypothesis": "Class imbalance hurts minority class prediction. scale_pos_weight balances the dataset. Standard technique for imbalanced classification.",
+  "id": "lightgbm_class_weight",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15,
+        "scale_pos_weight": 5
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24,
+        "scale_pos_weight": 3
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
