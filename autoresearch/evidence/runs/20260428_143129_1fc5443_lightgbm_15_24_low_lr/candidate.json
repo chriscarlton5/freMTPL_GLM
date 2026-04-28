@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Slower learning.",
+  "description": "15/24 with lower LR (0.038/0.033). More boosting rounds.",
+  "hypothesis": "Lower LR + more trees might help.",
+  "id": "lightgbm_15_24_low_lr",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 7,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 5,
+        "learning_rate": 0.033,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 18,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 9,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 7,
+        "learning_rate": 0.033,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 140,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 7,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 5,
+        "learning_rate": 0.033,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

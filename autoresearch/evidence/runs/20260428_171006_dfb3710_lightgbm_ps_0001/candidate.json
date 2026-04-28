@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Questioning assumptions",
+  "description": "Paradigm: conservative",
+  "hypothesis": "Fundamental shift: conservative",
+  "id": "lightgbm_ps_0001",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.52,
+        "lambda_l2": 12.0,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.47000000000000003,
+        "lambda_l2": 11.0,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 23,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.52,
+        "lambda_l2": 14,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1650,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.47000000000000003,
+        "lambda_l2": 12.0,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1350,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 185,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.52,
+        "lambda_l2": 12.0,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.47000000000000003,
+        "lambda_l2": 11.0,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

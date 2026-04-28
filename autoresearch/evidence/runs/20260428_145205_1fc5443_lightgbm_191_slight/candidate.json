@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Check 15/23.",
+  "description": "0.191 slight: feature 0.513 / bagging 0.513 + 15/23 + L2 13.0/11.0. Slight leaf reduction.",
+  "hypothesis": "Different leaves.",
+  "id": "lightgbm_191_slight",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.513,
+        "feature_fraction": 0.513,
+        "lambda_l2": 10.0,
+        "learning_rate": 0.0367,
+        "min_data_in_leaf": 215,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.513,
+        "feature_fraction": 0.463,
+        "lambda_l2": 8.0,
+        "learning_rate": 0.0317,
+        "min_data_in_leaf": 165,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.513,
+        "feature_fraction": 0.513,
+        "lambda_l2": 13.0,
+        "learning_rate": 0.0367,
+        "min_data_in_leaf": 1780,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.513,
+        "feature_fraction": 0.463,
+        "lambda_l2": 11.0,
+        "learning_rate": 0.0317,
+        "min_data_in_leaf": 1480,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 175,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.513,
+        "feature_fraction": 0.513,
+        "lambda_l2": 10.0,
+        "learning_rate": 0.0367,
+        "min_data_in_leaf": 215,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.513,
+        "feature_fraction": 0.463,
+        "lambda_l2": 8.0,
+        "learning_rate": 0.0317,
+        "min_data_in_leaf": 165,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Alternative exploration.",
+  "description": "18/26 leaves, 0.043 LR, lower L2 (7-8). More trees.",
+  "hypothesis": "More leaves + moderate LR.",
+  "id": "lightgbm_18_26_lr043",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 6,
+        "learning_rate": 0.043,
+        "min_data_in_leaf": 180,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 5,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 140,
+        "num_leaves": 12
+      }
+    ],
+    "early_stopping_rounds": 16,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 8,
+        "learning_rate": 0.043,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 18
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 6,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 26
+      }
+    ],
+    "nrounds": 130,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 6,
+        "learning_rate": 0.043,
+        "min_data_in_leaf": 180,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 5,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 140,
+        "num_leaves": 12
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

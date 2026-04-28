@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Test less regularization.",
+  "description": "0.191 slide: feature 0.514 + 16/24 + L2 12.8/10.8. Lower L2.",
+  "hypothesis": "Lower L2 may help.",
+  "id": "lightgbm_191_slide",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.514,
+        "feature_fraction": 0.514,
+        "lambda_l2": 9.8,
+        "learning_rate": 0.0365,
+        "min_data_in_leaf": 218,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.514,
+        "feature_fraction": 0.464,
+        "lambda_l2": 7.8,
+        "learning_rate": 0.0315,
+        "min_data_in_leaf": 168,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.514,
+        "feature_fraction": 0.514,
+        "lambda_l2": 12.8,
+        "learning_rate": 0.0365,
+        "min_data_in_leaf": 1795,
+        "num_leaves": 16
+      },
+      {
+        "bagging_fraction": 0.514,
+        "feature_fraction": 0.464,
+        "lambda_l2": 10.8,
+        "learning_rate": 0.0315,
+        "min_data_in_leaf": 1495,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 175,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.514,
+        "feature_fraction": 0.514,
+        "lambda_l2": 9.8,
+        "learning_rate": 0.0365,
+        "min_data_in_leaf": 218,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.514,
+        "feature_fraction": 0.464,
+        "lambda_l2": 7.8,
+        "learning_rate": 0.0315,
+        "min_data_in_leaf": 168,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Push further.",
+  "description": "19+ push: feature 0.508 / bagging 0.508 + 15/23 + lower min_data. Push above 0.19.",
+  "hypothesis": "Pushing beyond 0.19.",
+  "id": "lightgbm_19_plus",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.508,
+        "feature_fraction": 0.508,
+        "lambda_l2": 10,
+        "learning_rate": 0.037,
+        "min_data_in_leaf": 210,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.508,
+        "feature_fraction": 0.458,
+        "lambda_l2": 8,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 160,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 23,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.508,
+        "feature_fraction": 0.508,
+        "lambda_l2": 13,
+        "learning_rate": 0.037,
+        "min_data_in_leaf": 1750,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.508,
+        "feature_fraction": 0.458,
+        "lambda_l2": 11,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 1450,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 176,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.508,
+        "feature_fraction": 0.508,
+        "lambda_l2": 10,
+        "learning_rate": 0.037,
+        "min_data_in_leaf": 210,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.508,
+        "feature_fraction": 0.458,
+        "lambda_l2": 8,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 160,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

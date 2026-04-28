@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Aggressive exploration.",
+  "description": "NEW: Very high LR (0.055/0.05) with high min_data. Aggressive learning.",
+  "hypothesis": "Very high LR finds different solutions.",
+  "id": "lightgbm_very_high_lr",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.85,
+        "lambda_l2": 12,
+        "learning_rate": 0.055,
+        "min_data_in_leaf": 300,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 10,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 250,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 8,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.85,
+        "lambda_l2": 15,
+        "learning_rate": 0.055,
+        "min_data_in_leaf": 2500,
+        "num_leaves": 14
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 12,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 2000,
+        "num_leaves": 22
+      }
+    ],
+    "nrounds": 80,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.85,
+        "lambda_l2": 12,
+        "learning_rate": 0.055,
+        "min_data_in_leaf": 300,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 10,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 250,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

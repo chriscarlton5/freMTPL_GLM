@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Fine variation.",
+  "description": "Extreme v2: feature 0.54 / bagging 0.54 + 17/26 leaves + lower L2. Variation on 0.1874 winner.",
+  "hypothesis": "Variation may push further.",
+  "id": "lightgbm_extreme_v2",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.54,
+        "feature_fraction": 0.54,
+        "lambda_l2": 13,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 225,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.54,
+        "feature_fraction": 0.49,
+        "lambda_l2": 11,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 175,
+        "num_leaves": 12
+      }
+    ],
+    "early_stopping_rounds": 21,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.54,
+        "feature_fraction": 0.54,
+        "lambda_l2": 16,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1850,
+        "num_leaves": 17
+      },
+      {
+        "bagging_fraction": 0.54,
+        "feature_fraction": 0.49,
+        "lambda_l2": 14,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1550,
+        "num_leaves": 26
+      }
+    ],
+    "nrounds": 168,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.54,
+        "feature_fraction": 0.54,
+        "lambda_l2": 13,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 225,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.54,
+        "feature_fraction": 0.49,
+        "lambda_l2": 11,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 175,
+        "num_leaves": 12
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

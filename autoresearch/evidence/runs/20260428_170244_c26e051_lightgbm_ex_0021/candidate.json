@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Breaking plateau with new direction",
+  "description": "Explore: more_leaves. FF=0.520, L2=12.9, leaves=24",
+  "hypothesis": "Exploration: more_leaves",
+  "id": "lightgbm_ex_0021",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.5196765262346585,
+        "feature_fraction": 0.5196765262346585,
+        "lambda_l2": 10.876985137707209,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 205,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.5196765262346585,
+        "feature_fraction": 0.46967652623465855,
+        "lambda_l2": 9.876985137707209,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 155,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.5196765262346585,
+        "feature_fraction": 0.5196765262346585,
+        "lambda_l2": 12.876985137707209,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1700,
+        "num_leaves": 24
+      },
+      {
+        "bagging_fraction": 0.5196765262346585,
+        "feature_fraction": 0.46967652623465855,
+        "lambda_l2": 10.876985137707209,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 1400,
+        "num_leaves": 32
+      }
+    ],
+    "nrounds": 180,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.5196765262346585,
+        "feature_fraction": 0.5196765262346585,
+        "lambda_l2": 10.876985137707209,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 205,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.5196765262346585,
+        "feature_fraction": 0.46967652623465855,
+        "lambda_l2": 9.876985137707209,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 155,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Push boundaries.",
+  "description": "Extreme variant: feature 0.55 / bagging 0.55. Even more randomization.",
+  "hypothesis": "Further randomization may push beyond 0.1855.",
+  "id": "lightgbm_extreme_variant",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.55,
+        "feature_fraction": 0.55,
+        "lambda_l2": 15,
+        "learning_rate": 0.034,
+        "min_data_in_leaf": 230,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.55,
+        "feature_fraction": 0.5,
+        "lambda_l2": 13,
+        "learning_rate": 0.029,
+        "min_data_in_leaf": 180,
+        "num_leaves": 12
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.55,
+        "feature_fraction": 0.55,
+        "lambda_l2": 18,
+        "learning_rate": 0.034,
+        "min_data_in_leaf": 1900,
+        "num_leaves": 17
+      },
+      {
+        "bagging_fraction": 0.55,
+        "feature_fraction": 0.5,
+        "lambda_l2": 16,
+        "learning_rate": 0.029,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 26
+      }
+    ],
+    "nrounds": 170,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.55,
+        "feature_fraction": 0.55,
+        "lambda_l2": 15,
+        "learning_rate": 0.034,
+        "min_data_in_leaf": 230,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.55,
+        "feature_fraction": 0.5,
+        "lambda_l2": 13,
+        "learning_rate": 0.029,
+        "min_data_in_leaf": 180,
+        "num_leaves": 12
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
