@@ -8,81 +8,35 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_regularized_challenger",
+    "id": "enhanced_glm_power_brand_dual_severity",
     "is_baseline": False,
-    "model_type": "lightgbm",
+    "model_type": "glm",
     "description": (
-        "Regularized LightGBM challenger using constrained leaf counts and "
-        "moderate L2 penalties for frequency, raw severity, and capped severity."
+        "Enhanced GLM using natural splines for DriverAge, CarAge, and "
+        "logDensity in frequency, raw severity, and capped severity; adds "
+        "Power:Brand to both raw and capped severity."
     ),
     "hypothesis": (
-        "A constrained LightGBM may improve capped pure premium ranking enough "
-        "to qualify as a segmentation/research champion while preserving capped "
-        "calibration and error stability."
+        "Power:Brand in capped severity was the strongest transparent pricing "
+        "near miss. Adding the same repair-cost interaction to raw severity may "
+        "improve raw monitoring metrics while preserving the capped gain."
     ),
     "actuarial_rationale": (
-        "The existing report showed LightGBM can find segmentation signal, but "
-        "it is not accepted as a pricing level unless calibration and stability "
-        "also pass. This candidate intentionally limits flexibility to avoid a "
-        "black-box gift."
+        "Power and brand are plausible severity dimensions tied to vehicle "
+        "repair cost. This remains a transparent GLM, but should be rejected if "
+        "the extra sparse interaction complexity is not supported by CV metrics."
     ),
-    "lightgbm": {
-        "nrounds": 120,
-        "early_stopping_rounds": 15,
-        "frequency_grid": [
-            {
-                "num_leaves": 15,
-                "min_data_in_leaf": 1200,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
-            },
-            {
-                "num_leaves": 31,
-                "min_data_in_leaf": 1500,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
-            },
-        ],
-        "severity_grid": [
-            {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
-            },
-            {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
-            },
-        ],
-        "capped_severity_grid": [
-            {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
-            },
-            {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
-            },
-        ],
+    "frequency": {
+        "use_splines": True,
+        "interactions": [],
+    },
+    "severity": {
+        "use_splines": True,
+        "interactions": ["Power:Brand"],
+    },
+    "capped_severity": {
+        "use_splines": True,
+        "interactions": ["Power:Brand"],
     },
 }
 
