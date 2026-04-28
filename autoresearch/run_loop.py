@@ -1,22 +1,45 @@
 #!/usr/bin/env python3
-"""Autonomous research loop - minimal, robust."""
+"""Autonomous research loop - local MTPL experiments with tracked evidence."""
 
-import json, subprocess, sys, time, random
+import json, subprocess, sys, time, random, argparse
 from pathlib import Path
 
 RP = Path(".")
 TP = RP / "autoresearch/train.py"
 CHAMP = RP / "autoresearch/evidence/champions.json"
+RESULTS = RP / "autoresearch/evidence/results.tsv"
+LOOP_STATE = RP / "autoresearch/evidence/loop_state.json"
 
 def champion(): 
     return json.load(open(CHAMP))["pricing"]["aggregate"]["capped_pp_gini_mean"]
 
+def sh(args, check=False):
+    return subprocess.run(args, cwd=str(RP), capture_output=True, text=True, check=check)
+
 def run():
-    out = subprocess.run([sys.executable, str(TP)], capture_output=True, text=True, timeout=180, cwd=str(RP)).stdout
+    out = subprocess.run([sys.executable, str(TP)], capture_output=True, text=True, timeout=240, cwd=str(RP)).stdout
     for line in out.split("\n"):
         if "capped_pp_gini_mean" in line:
             return float(line.split(":")[1].strip())
     return 0.0
+
+def current_iter():
+    if not LOOP_STATE.exists():
+        return 0
+    try:
+        return int(json.load(open(LOOP_STATE)).get("iter", 0))
+    except Exception:
+        return 0
+
+def latest_run_dir():
+    if not RESULTS.exists():
+        return None
+    lines = [line for line in RESULTS.read_text().splitlines() if line.strip()]
+    if len(lines) <= 1:
+        return None
+    run_id = lines[-1].split("\t", 1)[0]
+    path = RP / "autoresearch/evidence/runs" / run_id
+    return str(path).replace("\\", "/") if path.exists() else None
 
 def gen(i, champ):
     random.seed(int(time.time()*1000) + i)
@@ -60,26 +83,45 @@ def gen(i, champ):
         },
     }
     content = json.dumps(cand, indent=2).replace('"is_baseline": false', '"is_baseline": False')
-    TP.write_text(f'from prepare import run_experiment\nCANDIDATE = {content}\nif __name__ == "__main__": run_experiment(CANDIDATE)')
+    TP.write_text(f'from prepare import run_experiment\nCANDIDATE = {content}\nif __name__ == "__main__": run_experiment(CANDIDATE)\n')
 
-champ = champion()
-print(f"Starting | Champion: {champ:.4f}")
+def commit_and_push(message, paths):
+    sh(["git", "add", *paths])
+    result = sh(["git", "commit", "-m", message])
+    if result.returncode == 0:
+        sh(["git", "push", "origin", "autoresearch-mtpl-v1"])
+    return result.returncode == 0
 
-i = 0
-while True:
-    gen(i, champ)
-    gini = run()
-    
-    improved = gini > champ + 0.001
-    if improved:
-        champ = gini
-        print(f"[NEW] {gini:.4f}")
-    else:
-        print(f"{i+1}: {gini:.4f}")
-    
-    subprocess.run(["git", "add", "autoresearch/train.py"], cwd=RP, capture_output=True)
-    subprocess.run(["git", "commit", "-m", f"auto: iter{i+1} gini{gini:.4f}"], cwd=RP, capture_output=True)
-    
-    i += 1
-    if i % 20 == 0:
-        print(f"[CHECK] {i} iterations, champ={champ:.4f}")
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--max-iterations", type=int, default=0)
+    args = parser.parse_args()
+
+    champ = champion()
+    start = current_iter()
+    print(f"Starting | Champion: {champ:.4f} | Iteration: {start}")
+
+    completed = 0
+    while args.max_iterations <= 0 or completed < args.max_iterations:
+        i = start + completed
+        gen(i, champ)
+        commit_and_push(f"auto: candidate iter{i+1}", ["autoresearch/train.py"])
+
+        gini = run()
+        was_new = gini > champ
+        if was_new:
+            champ = gini
+
+        run_dir = latest_run_dir()
+        LOOP_STATE.write_text(json.dumps({"champion": champ, "iter": i + 1}, indent=2) + "\n")
+        evidence_paths = ["autoresearch/evidence/results.tsv", "autoresearch/evidence/champions.json", "autoresearch/evidence/loop_state.json"]
+        if run_dir:
+            evidence_paths.append(run_dir)
+        commit_and_push(f"auto: evidence iter{i+1} gini{gini:.4f}", evidence_paths)
+
+        label = "NEW" if was_new else "run"
+        print(f"[{label}] iter={i+1} gini={gini:.4f} champion={champ:.4f}")
+        completed += 1
+
+if __name__ == "__main__":
+    main()
