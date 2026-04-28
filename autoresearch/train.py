@@ -8,28 +8,28 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-  "id": "lightgbm_0005_autotune",
+  "id": "lightgbm_ft_0001",
   "is_baseline": False,
   "model_type": "lightgbm",
-  "description": "Auto-generated: min_data variation on champion. FF=0.515, L2=13.4, leaves=16/24",
-  "hypothesis": "Fine-tuning min_data from champion config.",
-  "actuarial_rationale": "Testing min_data variation for potential improvement.",
+  "description": "Fine-tune: lr. FF=0.515, L2=13.4",
+  "hypothesis": "Targeted lr variation",
+  "actuarial_rationale": "Exploiting sweet spot",
   "lightgbm": {
-    "nrounds": 175,
+    "nrounds": 178,
     "early_stopping_rounds": 22,
     "frequency_grid": [
       {
         "num_leaves": 16,
-        "min_data_in_leaf": 1945,
-        "learning_rate": 0.0365,
+        "min_data_in_leaf": 1795,
+        "learning_rate": 0.03545846690935306,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
         "lambda_l2": 13.4
       },
       {
         "num_leaves": 24,
-        "min_data_in_leaf": 1556,
-        "learning_rate": 0.0315,
+        "min_data_in_leaf": 1436,
+        "learning_rate": 0.030458466909353058,
         "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
         "lambda_l2": 11.4
@@ -38,16 +38,16 @@ CANDIDATE = {
     "severity_grid": [
       {
         "num_leaves": 7,
-        "min_data_in_leaf": 218,
-        "learning_rate": 0.0365,
+        "min_data_in_leaf": 215,
+        "learning_rate": 0.03545846690935306,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
         "lambda_l2": 10.4
       },
       {
         "num_leaves": 11,
-        "min_data_in_leaf": 168,
-        "learning_rate": 0.0315,
+        "min_data_in_leaf": 165,
+        "learning_rate": 0.030458466909353058,
         "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
         "lambda_l2": 9.4
@@ -56,16 +56,16 @@ CANDIDATE = {
     "capped_severity_grid": [
       {
         "num_leaves": 7,
-        "min_data_in_leaf": 218,
-        "learning_rate": 0.0365,
+        "min_data_in_leaf": 215,
+        "learning_rate": 0.03545846690935306,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
         "lambda_l2": 10.4
       },
       {
         "num_leaves": 11,
-        "min_data_in_leaf": 168,
-        "learning_rate": 0.0315,
+        "min_data_in_leaf": 165,
+        "learning_rate": 0.030458466909353058,
         "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
         "lambda_l2": 9.4
