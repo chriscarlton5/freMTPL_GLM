@@ -8,31 +8,31 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-  "id": "lightgbm_ex_0019",
+  "id": "lightgbm_ex_0020",
   "is_baseline": False,
   "model_type": "lightgbm",
-  "description": "Explore: higher_ff. FF=0.527, L2=11.4, leaves=16",
-  "hypothesis": "Exploration: higher_ff",
+  "description": "Explore: very_low_ff. FF=0.457, L2=14.4, leaves=17",
+  "hypothesis": "Exploration: very_low_ff",
   "actuarial_rationale": "Breaking plateau with new direction",
   "lightgbm": {
     "nrounds": 180,
     "early_stopping_rounds": 22,
     "frequency_grid": [
       {
-        "num_leaves": 16,
+        "num_leaves": 17,
         "min_data_in_leaf": 1700,
         "learning_rate": 0.036,
-        "feature_fraction": 0.5269359492420723,
-        "bagging_fraction": 0.5269359492420723,
-        "lambda_l2": 11.354417704694818
+        "feature_fraction": 0.45721302133896335,
+        "bagging_fraction": 0.45721302133896335,
+        "lambda_l2": 14.386042215717582
       },
       {
-        "num_leaves": 24,
+        "num_leaves": 25,
         "min_data_in_leaf": 1400,
         "learning_rate": 0.031,
-        "feature_fraction": 0.47693594924207233,
-        "bagging_fraction": 0.5269359492420723,
-        "lambda_l2": 9.354417704694818
+        "feature_fraction": 0.40721302133896337,
+        "bagging_fraction": 0.45721302133896335,
+        "lambda_l2": 12.386042215717582
       }
     ],
     "severity_grid": [
@@ -40,17 +40,17 @@ CANDIDATE = {
         "num_leaves": 7,
         "min_data_in_leaf": 205,
         "learning_rate": 0.036,
-        "feature_fraction": 0.5269359492420723,
-        "bagging_fraction": 0.5269359492420723,
-        "lambda_l2": 9.354417704694818
+        "feature_fraction": 0.45721302133896335,
+        "bagging_fraction": 0.45721302133896335,
+        "lambda_l2": 12.386042215717582
       },
       {
         "num_leaves": 11,
         "min_data_in_leaf": 155,
         "learning_rate": 0.031,
-        "feature_fraction": 0.47693594924207233,
-        "bagging_fraction": 0.5269359492420723,
-        "lambda_l2": 8.354417704694818
+        "feature_fraction": 0.40721302133896337,
+        "bagging_fraction": 0.45721302133896335,
+        "lambda_l2": 11.386042215717582
       }
     ],
     "capped_severity_grid": [
@@ -58,17 +58,17 @@ CANDIDATE = {
         "num_leaves": 7,
         "min_data_in_leaf": 205,
         "learning_rate": 0.036,
-        "feature_fraction": 0.5269359492420723,
-        "bagging_fraction": 0.5269359492420723,
-        "lambda_l2": 9.354417704694818
+        "feature_fraction": 0.45721302133896335,
+        "bagging_fraction": 0.45721302133896335,
+        "lambda_l2": 12.386042215717582
       },
       {
         "num_leaves": 11,
         "min_data_in_leaf": 155,
         "learning_rate": 0.031,
-        "feature_fraction": 0.47693594924207233,
-        "bagging_fraction": 0.5269359492420723,
-        "lambda_l2": 8.354417704694818
+        "feature_fraction": 0.40721302133896337,
+        "bagging_fraction": 0.45721302133896335,
+        "lambda_l2": 11.386042215717582
       }
     ]
   }
