@@ -394,6 +394,9 @@ def gate_decision(metrics: dict[str, Any], champions: dict[str, Any] | None, can
     pricing_capped_rmse_deterioration = (capped_rmse - champion_metric(
         pricing_champion, "capped_pp_rmse_mean", capped_rmse
     )) / max(abs(champion_metric(pricing_champion, "capped_pp_rmse_mean", capped_rmse)), 1e-12)
+    pricing_model_defensible = str(candidate.get("model_type", "glm")).lower() == "glm" or bool(
+        candidate.get("documented_pricing_blend")
+    )
     pricing_material_improvement = (
         pricing_capped_gini_gain >= 0.001
         or pricing_capped_mae_deterioration <= -0.002
@@ -401,6 +404,11 @@ def gate_decision(metrics: dict[str, Any], champions: dict[str, Any] | None, can
     )
 
     pricing_failures: list[str] = []
+    record_target(
+        pricing_failures,
+        "pricing_transparent_model_or_documented_blend",
+        pricing_model_defensible,
+    )
     record_target(pricing_failures, "pricing_material_improvement", pricing_material_improvement)
     record_target(
         pricing_failures,
