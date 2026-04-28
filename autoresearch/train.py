@@ -8,80 +8,77 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_best_seed_avg",
+    "id": "lightgbm_optimal_balance_v2",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "NEW HYPOTHESIS: Use slightly different seed (20260428 vs 20260423). "
-        "Test if different random initialization finds better solution."
+        "Combine findings: aggressive LR (0.05) with best settings (leaves 15/24). "
+        "Best MAE was 216.90 with 0.1836 Gini. Try to get both."
     ),
     "hypothesis": (
-        "Seeds affect tree construction and split ties. Different seed "
-        "may find alternative local optimum."
+        "Combine optimal LR with optimal leaves. May get best of both."
     ),
     "actuarial_rationale": (
-        "Bootstrap averaging is standard practice. Different seeds "
-        "explore solution space differently."
+        "Synthesis of best hyperparameters."
     ),
     "lightgbm": {
-        "nrounds": 120,
-        "early_stopping_rounds": 15,
+        "nrounds": 100,
+        "early_stopping_rounds": 12,
         "frequency_grid": [
             {
                 "num_leaves": 15,
-                "min_data_in_leaf": 1600,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.87,
-                "bagging_fraction": 0.87,
-                "lambda_l2": 10,
+                "min_data_in_leaf": 1800,
+                "learning_rate": 0.05,
+                "feature_fraction": 0.86,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 11,
             },
             {
                 "num_leaves": 24,
-                "min_data_in_leaf": 1300,
-                "learning_rate": 0.035,
-                "feature_fraction": 0.82,
-                "bagging_fraction": 0.87,
-                "lambda_l2": 8,
+                "min_data_in_leaf": 1400,
+                "learning_rate": 0.044,
+                "feature_fraction": 0.81,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 9,
             },
         ],
         "severity_grid": [
             {
                 "num_leaves": 7,
-                "min_data_in_leaf": 190,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.87,
-                "bagging_fraction": 0.87,
-                "lambda_l2": 8,
+                "min_data_in_leaf": 200,
+                "learning_rate": 0.05,
+                "feature_fraction": 0.86,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 9,
             },
             {
                 "num_leaves": 11,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.035,
-                "feature_fraction": 0.82,
-                "bagging_fraction": 0.87,
-                "lambda_l2": 6,
+                "min_data_in_leaf": 160,
+                "learning_rate": 0.044,
+                "feature_fraction": 0.81,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 7,
             },
         ],
         "capped_severity_grid": [
             {
                 "num_leaves": 7,
-                "min_data_in_leaf": 190,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.87,
-                "bagging_fraction": 0.87,
-                "lambda_l2": 8,
+                "min_data_in_leaf": 200,
+                "learning_rate": 0.05,
+                "feature_fraction": 0.86,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 9,
             },
             {
                 "num_leaves": 11,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.035,
-                "feature_fraction": 0.82,
-                "bagging_fraction": 0.87,
-                "lambda_l2": 6,
+                "min_data_in_leaf": 160,
+                "learning_rate": 0.044,
+                "feature_fraction": 0.81,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 7,
             },
         ],
     },
-    "seed": 20260428,
 }
 
 

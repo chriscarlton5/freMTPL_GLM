@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Parsimony principle: simpler model preferred when similar performance.",
+  "description": "NEW HYPOTHESIS: Try simpler model - fewer leaves (12/20 vs 15/24). May generalize better despite less capacity.",
+  "hypothesis": "Simpler model might outperform complex. Less overfitting risk. Classic bias-variance tradeoff.",
+  "id": "lightgbm_fewer_leaves_better",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 6,
+        "learning_rate": 0.045,
+        "min_data_in_leaf": 200,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.84,
+        "lambda_l2": 5,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 160,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 12,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 8,
+        "learning_rate": 0.045,
+        "min_data_in_leaf": 1800,
+        "num_leaves": 12
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.84,
+        "lambda_l2": 6,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1400,
+        "num_leaves": 20
+      }
+    ],
+    "nrounds": 110,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 6,
+        "learning_rate": 0.045,
+        "min_data_in_leaf": 200,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.84,
+        "lambda_l2": 5,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 160,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
