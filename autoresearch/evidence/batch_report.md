@@ -24,6 +24,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_driver_car_age_interaction`: held calibration and MAE but missed capped Gini gain and fold agreement.
 - `enhanced_glm_power_brand_frequency`: improved raw Gini slightly but failed capped Gini gain.
 - `enhanced_glm_component_scalars`: worsened capped calibration, capped MAE, and raw Gini.
+- `lightgbm_deeper_frequency_capped`: slightly lowered capped MAE but missed capped Gini gain, failed fold agreement, and reduced raw Gini.
 
 ## Next Ideas
 
