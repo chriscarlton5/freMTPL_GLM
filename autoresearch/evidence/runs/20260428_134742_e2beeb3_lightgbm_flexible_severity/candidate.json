@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Severity has high variance - try more flexible estimation while keeping frequency regularized.",
+  "description": "Best run: Gini 0.1851, calibration -0.98%. Now tune severity - more leaves (8-12 vs 7-11) for better severity estimation.",
+  "hypothesis": "Frequency is optimized. Try more flexible severity to see if better severity estimation translates to better pure premium.",
+  "id": "lightgbm_flexible_severity",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 6,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 160,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 5,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 120,
+        "num_leaves": 12
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 6,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 160,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 5,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 120,
+        "num_leaves": 12
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
