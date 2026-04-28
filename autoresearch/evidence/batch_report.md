@@ -42,6 +42,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_midleaf_frequency_edge_capped`: pushed capped severity too far; capped MAE improved sharply, but capped Gini fell to `0.1845` and calibration deteriorated to `-0.0345`.
 - `lightgbm_tuned_midleaf_stronger_capped`: increasing the frequency learning rate around the best near miss lowered capped Gini to `0.1859`; the original mid-leaf frequency setting was better.
 - `enhanced_glm_power_brand_capped_calibrated`: fold-internal component calibration turned the transparent Power:Brand capped-severity near miss into a clear deterioration, with capped Gini `0.1675`, capped calibration gap `0.0265`, capped MAE `221.5002`, and raw Gini `0.1467`.
+- `lightgbm_midleaf_frequency_restrained_severity`: preserving conservative raw/capped severity lowered capped Gini to `0.1818`; this suggests the prior LightGBM near-miss lift was not frequency-only.
 
 ## Next Ideas
 
@@ -60,6 +61,7 @@ Baseline evidence has been established through the autoresearch harness.
 - The adjacent capped-severity edge variant worsened the ranking/calibration tradeoff; stop local capped-severity edge search unless new features or constraints are introduced.
 - Local tuning around `lightgbm_midleaf_frequency_stronger_capped` appears exhausted; preserve it as a near miss but do not keep nudging the same tree hyperparameters.
 - Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
+- Restricting LightGBM severity too hard removes the ranking lift; future tree candidates need a more targeted way to stabilize severity rather than simply raising all severity leaf floors.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
 - Avoid severity-side `DensityBand` interactions until the immutable R bridge uses one shared density-band reference across frequency and severity scoring frames.
 - Avoid further pure capped-severity flexibility unless it improves fold 1 and fold 2, not just fold 3.
