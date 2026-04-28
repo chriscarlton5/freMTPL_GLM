@@ -8,27 +8,27 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-  "id": "lightgbm_ft_0003",
+  "id": "lightgbm_ft_0004",
   "is_baseline": False,
   "model_type": "lightgbm",
-  "description": "Fine-tune: min_data. FF=0.518, L2=13.2",
-  "hypothesis": "Targeted min_data variation",
+  "description": "Fine-tune: leaves. FF=0.518, L2=13.2",
+  "hypothesis": "Targeted leaves variation",
   "actuarial_rationale": "Exploiting sweet spot",
   "lightgbm": {
     "nrounds": 178,
     "early_stopping_rounds": 22,
     "frequency_grid": [
       {
-        "num_leaves": 17,
-        "min_data_in_leaf": 1600,
+        "num_leaves": 15,
+        "min_data_in_leaf": 1700,
         "learning_rate": 0.036,
         "feature_fraction": 0.5179,
         "bagging_fraction": 0.5179,
         "lambda_l2": 13.2142
       },
       {
-        "num_leaves": 25,
-        "min_data_in_leaf": 1280,
+        "num_leaves": 23,
+        "min_data_in_leaf": 1360,
         "learning_rate": 0.030999999999999996,
         "feature_fraction": 0.46790000000000004,
         "bagging_fraction": 0.5179,
