@@ -21,7 +21,7 @@ CANDIDATE = {
       {
         "num_leaves": 16,
         "min_data_in_leaf": 1795,
-        "learning_rate": 0.038210355747396695,
+        "learning_rate": 0.03443065739864331,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
         "lambda_l2": 13.4
@@ -29,8 +29,8 @@ CANDIDATE = {
       {
         "num_leaves": 24,
         "min_data_in_leaf": 1436,
-        "learning_rate": 0.0332103557473967,
-        "feature_fraction": 0.45,
+        "learning_rate": 0.02943065739864331,
+        "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
         "lambda_l2": 11.4
       }
@@ -39,7 +39,7 @@ CANDIDATE = {
       {
         "num_leaves": 7,
         "min_data_in_leaf": 218,
-        "learning_rate": 0.038210355747396695,
+        "learning_rate": 0.03443065739864331,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
         "lambda_l2": 10.4
@@ -47,8 +47,8 @@ CANDIDATE = {
       {
         "num_leaves": 11,
         "min_data_in_leaf": 168,
-        "learning_rate": 0.0332103557473967,
-        "feature_fraction": 0.45,
+        "learning_rate": 0.02943065739864331,
+        "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
         "lambda_l2": 9.4
       }
@@ -57,7 +57,7 @@ CANDIDATE = {
       {
         "num_leaves": 7,
         "min_data_in_leaf": 218,
-        "learning_rate": 0.038210355747396695,
+        "learning_rate": 0.03443065739864331,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
         "lambda_l2": 10.4
@@ -65,8 +65,8 @@ CANDIDATE = {
       {
         "num_leaves": 11,
         "min_data_in_leaf": 168,
-        "learning_rate": 0.0332103557473967,
-        "feature_fraction": 0.45,
+        "learning_rate": 0.02943065739864331,
+        "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
         "lambda_l2": 9.4
       }
