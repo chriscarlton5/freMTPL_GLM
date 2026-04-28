@@ -41,11 +41,13 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_midleaf_frequency_stronger_capped`: reached capped Gini `0.1875` with all 3 folds better than champion and improved capped MAE, but missed the segmentation Gini gate by `0.0002`.
 - `lightgbm_midleaf_frequency_edge_capped`: pushed capped severity too far; capped MAE improved sharply, but capped Gini fell to `0.1845` and calibration deteriorated to `-0.0345`.
 - `lightgbm_tuned_midleaf_stronger_capped`: increasing the frequency learning rate around the best near miss lowered capped Gini to `0.1859`; the original mid-leaf frequency setting was better.
+- `enhanced_glm_power_brand_capped_calibrated`: fold-internal component calibration turned the transparent Power:Brand capped-severity near miss into a clear deterioration, with capped Gini `0.1675`, capped calibration gap `0.0265`, capped MAE `221.5002`, and raw Gini `0.1467`.
 
 ## Next Ideas
 
 - Try translating the LightGBM gain back into a transparent GLM term set.
 - Revisit `Power:Brand` capped severity only if paired with a parsimony mechanism or stricter sparse-cell pooling.
+- Do not apply blunt component calibration scalars to the Power:Brand capped-severity GLM; the fold-level scalars overcorrected level and degraded both ranking and error.
 - Do not combine sparse `Power:Brand` across multiple GLM components without a pooling or selection mechanism.
 - Try a slightly more regularized LightGBM variant to see whether calibration improves without losing the capped Gini gain.
 - Try capped-severity-specific stabilization while preserving the LightGBM frequency signal.
