@@ -1,0 +1,21 @@
+{
+  "aggregate": {},
+  "candidate_id": "enhanced_glm_region_density_capped_severity",
+  "decision": {
+    "gate_failures": [
+      "candidate crashed"
+    ],
+    "gate_results": {},
+    "pricing_status": "crash",
+    "segmentation_status": "crash",
+    "selection_score": 0.0,
+    "status": "crash"
+  },
+  "diagnostics": {},
+  "integrity": {},
+  "log_truncated": false,
+  "return_code": 1,
+  "runtime_seconds": 9.341545,
+  "status": "crash",
+  "timed_out": false
+}

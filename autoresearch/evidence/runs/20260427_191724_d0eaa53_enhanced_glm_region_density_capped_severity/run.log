@@ -1,0 +1,5 @@
+[stderr]
+Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels) : 
+  factor DensityBand has new levels [-Inf,4.22], (4.22,5.66], (5.66,7.25], (7.25, Inf]
+Calls: evaluate_candidate ... predict.glm -> predict.lm -> model.frame -> model.frame.default
+Execution halted

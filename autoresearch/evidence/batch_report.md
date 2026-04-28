@@ -24,6 +24,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_driver_car_age_interaction`: held calibration and MAE but missed capped Gini gain and fold agreement.
 - `enhanced_glm_power_brand_frequency`: improved raw Gini slightly but failed capped Gini gain.
 - `enhanced_glm_region_density_frequency`: preserved calibration and slightly improved capped MAE, but reduced capped and raw pure premium Gini.
+- `enhanced_glm_region_density_capped_severity`: crashed because severity-side `DensityBand` levels did not match policy-scoring `DensityBand` levels; do not retry severity `DensityBand` terms without a harness-level factor-level fix.
 - `enhanced_glm_component_scalars`: worsened capped calibration, capped MAE, and raw Gini.
 - `lightgbm_deeper_frequency_capped`: slightly lowered capped MAE but missed capped Gini gain, failed fold agreement, and reduced raw Gini.
 - `lightgbm_flexible_capped_severity`: improved capped Gini to `0.1839` and lowered capped MAE, but did not clear the `+0.005` champion gain gate.
@@ -35,4 +36,5 @@ Baseline evidence has been established through the autoresearch harness.
 - Try a slightly more regularized LightGBM variant to see whether calibration improves without losing the capped Gini gain.
 - Try capped-severity-specific stabilization while preserving the LightGBM frequency signal.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
+- Avoid severity-side `DensityBand` interactions until the immutable R bridge uses one shared density-band reference across frequency and severity scoring frames.
 - Avoid further pure capped-severity flexibility unless it improves fold 1 and fold 2, not just fold 3.

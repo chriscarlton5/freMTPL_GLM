@@ -1,0 +1,25 @@
+{
+  "actuarial_rationale": "Capped severity is a stability view, so this tests the geography signal where tail noise is reduced. The interaction remains explicit and reviewable, but it should be rejected if it creates sparse-cell relativity movement without cross-fold metric support.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [
+      "Region:DensityBand"
+    ],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds Region:DensityBand to the capped severity component only.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "hypothesis": "The capped-severity GBM importance suggests regional density signal may belong in capped severity rather than frequency. A capped-only interaction may improve stable pure premium ranking without disturbing frequency calibration.",
+  "id": "enhanced_glm_region_density_capped_severity",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}
