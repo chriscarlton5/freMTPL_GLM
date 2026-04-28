@@ -40,6 +40,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_midleaf_frequency_forced_aggressive_capped`: best post-champion near miss; capped Gini improved to `0.1864`, fold agreement passed, and calibration improved versus the LightGBM champion, but the gain was still below the required `+0.005`.
 - `lightgbm_midleaf_frequency_stronger_capped`: reached capped Gini `0.1875` with all 3 folds better than champion and improved capped MAE, but missed the segmentation Gini gate by `0.0002`.
 - `lightgbm_midleaf_frequency_edge_capped`: pushed capped severity too far; capped MAE improved sharply, but capped Gini fell to `0.1845` and calibration deteriorated to `-0.0345`.
+- `lightgbm_tuned_midleaf_stronger_capped`: increasing the frequency learning rate around the best near miss lowered capped Gini to `0.1859`; the original mid-leaf frequency setting was better.
 
 ## Next Ideas
 
@@ -55,6 +56,7 @@ Baseline evidence has been established through the autoresearch harness.
 - The forced aggressive capped-severity path can add lift when paired with mid-leaf frequency, but fold 2 remains the limiting fold and capped MAE deteriorates versus the champion.
 - Stronger forced capped severity nearly cleared the segmentation gate; one adjacent variant is justified, but treat this as the edge of acceptable black-box severity flexibility.
 - The adjacent capped-severity edge variant worsened the ranking/calibration tradeoff; stop local capped-severity edge search unless new features or constraints are introduced.
+- Local tuning around `lightgbm_midleaf_frequency_stronger_capped` appears exhausted; preserve it as a near miss but do not keep nudging the same tree hyperparameters.
 - Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
 - Avoid severity-side `DensityBand` interactions until the immutable R bridge uses one shared density-band reference across frequency and severity scoring frames.
