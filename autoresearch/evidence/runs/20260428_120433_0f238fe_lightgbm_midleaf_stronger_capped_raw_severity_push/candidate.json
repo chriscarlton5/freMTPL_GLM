@@ -1,0 +1,82 @@
+{
+  "actuarial_rationale": "This is segmentation research only. The raw-severity option is useful only if it improves monitoring without weakening capped stability.",
+  "description": "LightGBM challenger using the strongest mid-leaf frequency and stronger capped-severity near-miss grids, with an added raw-severity option for monitoring lift.",
+  "hypothesis": "The best capped segmentation near miss already passes raw Gini monitoring. A slightly broader raw-severity grid may improve raw pure premium monitoring without changing the capped ranking path.",
+  "id": "lightgbm_midleaf_stronger_capped_raw_severity_push",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.75,
+        "lambda_l2": 12,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 75,
+        "num_leaves": 63
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.7,
+        "lambda_l2": 18,
+        "learning_rate": 0.02,
+        "min_data_in_leaf": 50,
+        "num_leaves": 63
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.8,
+        "feature_fraction": 0.8,
+        "lambda_l2": 5,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 500,
+        "num_leaves": 31
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.75,
+        "lambda_l2": 15,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 100,
+        "num_leaves": 31
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

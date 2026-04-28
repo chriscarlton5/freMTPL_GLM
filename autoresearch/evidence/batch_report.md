@@ -49,6 +49,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_power_brand_raw_severity`: isolated the raw-severity signal cleanly, raising raw Gini to `0.1624` while leaving capped pricing metrics at the baseline; useful monitoring signal but not a pricing improvement.
 - `lightgbm_shorter_midleaf_stronger_capped`: shorter boosting preserved fold agreement and improved MAE, but capped Gini was only `0.1847`, below the strongest `0.1875` near miss.
 - `simple_glm_power_brand_capped_severity`: removing splines for parsimony dropped capped Gini to `0.1366`; the baseline spline terms are doing essential transparent work.
+- `lightgbm_midleaf_stronger_capped_raw_severity_push`: reproduced the strongest capped near-miss metrics exactly, but raw Gini fell to `0.1940`; raw-severity tuning is not the missing gate-clearing lever.
 
 ## Next Ideas
 
@@ -72,6 +73,7 @@ Baseline evidence has been established through the autoresearch harness.
 - Local tuning around `lightgbm_midleaf_frequency_stronger_capped` appears exhausted; preserve it as a near miss but do not keep nudging the same tree hyperparameters.
 - Longer boosting budgets around `lightgbm_midleaf_frequency_stronger_capped` are not promising; they improved MAE while losing the fold-balanced ranking lift.
 - Shorter boosting budgets around `lightgbm_midleaf_frequency_stronger_capped` also do not clear the gate; the strongest local setting remains the original `120` rounds / `15` early-stopping setup.
+- Adding a broader raw-severity grid to the strongest LightGBM near miss does not improve the decision case; capped metrics are unchanged and raw monitoring weakens.
 - Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
 - Restricting LightGBM severity too hard removes the ranking lift; future tree candidates need a more targeted way to stabilize severity rather than simply raising all severity leaf floors.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
