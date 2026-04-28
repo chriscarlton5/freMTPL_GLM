@@ -25,6 +25,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_power_brand_frequency`: improved raw Gini slightly but failed capped Gini gain.
 - `enhanced_glm_component_scalars`: worsened capped calibration, capped MAE, and raw Gini.
 - `lightgbm_deeper_frequency_capped`: slightly lowered capped MAE but missed capped Gini gain, failed fold agreement, and reduced raw Gini.
+- `lightgbm_flexible_capped_severity`: improved capped Gini to `0.1839` and lowered capped MAE, but did not clear the `+0.005` champion gain gate.
 
 ## Next Ideas
 
