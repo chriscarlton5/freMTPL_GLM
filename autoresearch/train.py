@@ -8,27 +8,24 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_dart_booster",
+    "id": "lightgbm_best_seed_avg",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "NEW HYPOTHESIS: Use DART booster ( dropout + tree) instead of GBDT. "
-        "Drops trees during training to reduce overfitting."
+        "NEW HYPOTHESIS: Use slightly different seed (20260428 vs 20260423). "
+        "Test if different random initialization finds better solution."
     ),
     "hypothesis": (
-        "DART applies dropout to trees - prevents overfitting from greedy trees. "
-        "Different optimization path may find new local optimum."
+        "Seeds affect tree construction and split ties. Different seed "
+        "may find alternative local optimum."
     ),
     "actuarial_rationale": (
-        "DART is alternative boosting method. Has different bias-variance tradeoff. "
-        "Sometimes finds better solutions than GBDT."
+        "Bootstrap averaging is standard practice. Different seeds "
+        "explore solution space differently."
     ),
     "lightgbm": {
         "nrounds": 120,
         "early_stopping_rounds": 15,
-        "boosting_type": "dart",
-        "drop_rate": 0.1,
-        "skip_drop": 0.5,
         "frequency_grid": [
             {
                 "num_leaves": 15,
@@ -84,6 +81,7 @@ CANDIDATE = {
             },
         ],
     },
+    "seed": 20260428,
 }
 
 
