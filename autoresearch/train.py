@@ -8,27 +8,26 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_regularized_challenger",
+    "id": "lightgbm_aggressive_capped_severity",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Regularized LightGBM challenger using constrained leaf counts and "
-        "moderate L2 penalties for frequency, raw severity, and capped severity."
+        "LightGBM challenger that preserves the current frequency and raw "
+        "severity grids while testing a more aggressive capped-severity grid."
     ),
     "hypothesis": (
-        "A constrained LightGBM may improve capped pure premium ranking enough "
-        "to qualify as a segmentation/research champion while preserving capped "
-        "calibration and error stability."
+        "The previous capped-severity-only variant improved capped Gini but not "
+        "enough to pass the champion gate. A stronger capped-severity search may "
+        "extract additional stable segmentation signal."
     ),
     "actuarial_rationale": (
-        "The existing report showed LightGBM can find segmentation signal, but "
-        "it is not accepted as a pricing level unless calibration and stability "
-        "also pass. This candidate intentionally limits flexibility to avoid a "
-        "black-box gift."
+        "This intentionally concentrates extra flexibility in capped severity, "
+        "the stable severity target, while preserving the existing frequency and "
+        "raw severity settings. It must still pass calibration and fold gates."
     ),
     "lightgbm": {
-        "nrounds": 120,
-        "early_stopping_rounds": 15,
+        "nrounds": 180,
+        "early_stopping_rounds": 25,
         "frequency_grid": [
             {
                 "num_leaves": 15,
@@ -67,20 +66,20 @@ CANDIDATE = {
         ],
         "capped_severity_grid": [
             {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
+                "num_leaves": 63,
+                "min_data_in_leaf": 80,
                 "learning_rate": 0.04,
                 "feature_fraction": 0.9,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 5,
+                "lambda_l2": 3,
             },
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
+                "num_leaves": 127,
+                "min_data_in_leaf": 100,
                 "learning_rate": 0.03,
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "lambda_l2": 5,
             },
         ],
     },
