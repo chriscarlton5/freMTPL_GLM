@@ -26,9 +26,11 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_component_scalars`: worsened capped calibration, capped MAE, and raw Gini.
 - `lightgbm_deeper_frequency_capped`: slightly lowered capped MAE but missed capped Gini gain, failed fold agreement, and reduced raw Gini.
 - `lightgbm_flexible_capped_severity`: improved capped Gini to `0.1839` and lowered capped MAE, but did not clear the `+0.005` champion gain gate.
+- `lightgbm_aggressive_capped_severity`: improved capped Gini to `0.1856` and lowered capped MAE, but the lift came mainly from fold 3 while folds 1 and 2 were slightly worse than the champion.
 
 ## Next Ideas
 
 - Try translating the LightGBM gain back into a transparent GLM term set.
 - Try a slightly more regularized LightGBM variant to see whether calibration improves without losing the capped Gini gain.
 - Try capped-severity-specific stabilization while preserving the LightGBM frequency signal.
+- Avoid further pure capped-severity flexibility unless it improves fold 1 and fold 2, not just fold 3.
