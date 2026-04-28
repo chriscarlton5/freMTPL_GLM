@@ -8,7 +8,7 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-  "id": "lightgbm_0004_autotune",
+  "id": "lightgbm_0005_autotune",
   "is_baseline": False,
   "model_type": "lightgbm",
   "description": "Auto-generated: min_data variation on champion. FF=0.515, L2=13.4, leaves=16/24",
