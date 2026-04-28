@@ -35,6 +35,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_expanded_regularized_grid`: improved capped MAE and raw calibration versus champion, but capped Gini fell to `0.1820` and fold agreement still failed.
 - `lightgbm_frequency_ranking_push`: matched champion capped Gini and slightly improved capped MAE, but did not produce a material segmentation gain or fold agreement.
 - `lightgbm_moderate_capped_severity_push`: improved capped MAE substantially but reduced capped Gini to `0.1808` and worsened capped calibration, reinforcing that capped-severity flexibility is optimizing error rather than lift.
+- `lightgbm_midleaf_frequency_probe`: strongest recent near miss; improved capped Gini to `0.1847`, passed fold agreement, and improved capped MAE, but missed the required `+0.005` segmentation Gini gain.
 
 ## Next Ideas
 
@@ -45,6 +46,7 @@ Baseline evidence has been established through the autoresearch harness.
 - Try capped-severity-specific stabilization while preserving the LightGBM frequency signal.
 - Broad LightGBM grids that include conservative alternatives may optimize MAE/calibration at the expense of ranking; require capped Gini to remain the primary segmentation hurdle.
 - Frequency-only LightGBM flexibility appears to improve error more than ranking; further segmentation attempts likely need new features or a different transparent synthesis path, not just more tree depth.
+- The mid-leaf frequency option is worth combining sparingly with one additional lift-oriented change because it improved two folds without damaging capped MAE.
 - Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
 - Avoid severity-side `DensityBand` interactions until the immutable R bridge uses one shared density-band reference across frequency and severity scoring frames.
