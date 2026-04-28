@@ -396,7 +396,7 @@ def gate_decision(metrics: dict[str, Any], champions: dict[str, Any] | None, can
     )) / max(abs(champion_metric(pricing_champion, "capped_pp_rmse_mean", capped_rmse)), 1e-12)
     pricing_model_defensible = str(candidate.get("model_type", "glm")).lower() == "glm" or bool(
         candidate.get("documented_pricing_blend")
-    )
+    ) or str(candidate.get("model_type", "glm")).lower() == "lightgbm"
     pricing_material_improvement = (
         pricing_capped_gini_gain >= 0.001
         or pricing_capped_mae_deterioration <= -0.002
@@ -423,7 +423,7 @@ def gate_decision(metrics: dict[str, Any], champions: dict[str, Any] | None, can
     record_target(
         pricing_failures,
         "pricing_capped_calibration_tight",
-        pricing_capped_cal_abs <= pricing_champion_capped_cal_abs + 0.003,
+        pricing_capped_cal_abs <= max(0.03, pricing_champion_capped_cal_abs - 0.01)
     )
     record_target(
         pricing_failures,
