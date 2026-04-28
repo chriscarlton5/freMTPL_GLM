@@ -8,81 +8,38 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_regularized_challenger",
+    "id": "enhanced_glm_driver_car_age_capped_severity",
     "is_baseline": False,
-    "model_type": "lightgbm",
+    "model_type": "glm",
     "description": (
-        "Regularized LightGBM challenger using constrained leaf counts and "
-        "moderate L2 penalties for frequency, raw severity, and capped severity."
+        "Enhanced GLM using natural splines for DriverAge, CarAge, and "
+        "logDensity in frequency, raw severity, and capped severity; adds "
+        "DriverAgeBand:CarAgeBand to the capped severity component only."
     ),
     "hypothesis": (
-        "A constrained LightGBM may improve capped pure premium ranking enough "
-        "to qualify as a segmentation/research champion while preserving capped "
-        "calibration and error stability."
+        "The GBM interaction review showed large age-by-vehicle-age pure "
+        "premium differences. Putting this term in capped severity may improve "
+        "stable loss-cost ranking while leaving frequency calibration intact."
     ),
     "actuarial_rationale": (
-        "The existing report showed LightGBM can find segmentation signal, but "
-        "it is not accepted as a pricing level unless calibration and stability "
-        "also pass. This candidate intentionally limits flexibility to avoid a "
-        "black-box gift."
+        "Driver age and vehicle age have plausible claim-size relationships, "
+        "but severity is tail-sensitive. This candidate uses the capped target "
+        "only and requires cross-fold support before any pricing-level change."
     ),
-    "lightgbm": {
-        "nrounds": 120,
-        "early_stopping_rounds": 15,
-        "frequency_grid": [
-            {
-                "num_leaves": 15,
-                "min_data_in_leaf": 1200,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
-            },
-            {
-                "num_leaves": 31,
-                "min_data_in_leaf": 1500,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
-            },
-        ],
-        "severity_grid": [
-            {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
-            },
-            {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
-            },
-        ],
-        "capped_severity_grid": [
-            {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
-            },
-            {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
-            },
-        ],
+    "frequency": {
+        "use_splines": True,
+        "interactions": [],
+    },
+    "severity": {
+        "use_splines": True,
+        "interactions": [],
+    },
+    "capped_severity": {
+        "use_splines": True,
+        "interactions": ["DriverAgeBand:CarAgeBand"],
+    },
+    "calibration": {
+        "component_scalars": False,
     },
 }
 
