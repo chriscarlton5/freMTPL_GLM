@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "LightGBM with strong regularization is defensible: the hyperparameters (num_leaves, min_data_in_leaf, lambda_l2) limit model complexity. Regularized boosting is standard practice in actuarial pricing. Cross-validation prevents overfitting. Full methodology documented.",
+  "description": "Ultra-regularized LightGBM with very conservative hyperparameters: fewer leaves (8-12), more data per leaf (2000+), stronger L2 (15+). Goal is better calibration while maintaining segmentation advantage.",
+  "hypothesis": "The current segmentation champion (Gini 0.1827) loses on calibration (-1.45%). Stronger regularization should improve calibration while preserving the ranking signal that makes LightGBM better than GLM.",
+  "id": "lightgbm_ultra_regularized",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 15,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 300,
+        "num_leaves": 5
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.75,
+        "lambda_l2": 12,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 250,
+        "num_leaves": 8
+      }
+    ],
+    "early_stopping_rounds": 10,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 20,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 2500,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.75,
+        "lambda_l2": 15,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 2000,
+        "num_leaves": 12
+      }
+    ],
+    "nrounds": 100,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 15,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 300,
+        "num_leaves": 5
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.75,
+        "lambda_l2": 12,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 250,
+        "num_leaves": 8
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
