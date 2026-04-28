@@ -8,23 +8,22 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_regularized_challenger",
+    "id": "lightgbm_midleaf_frequency_restrained_severity",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Regularized LightGBM challenger using constrained leaf counts and "
-        "moderate L2 penalties for frequency, raw severity, and capped severity."
+        "LightGBM challenger adding one mid-leaf frequency option while "
+        "restraining raw and capped severity grids to conservative leaf sizes."
     ),
     "hypothesis": (
-        "A constrained LightGBM may improve capped pure premium ranking enough "
-        "to qualify as a segmentation/research champion while preserving capped "
-        "calibration and error stability."
+        "The strongest near misses came from mid-leaf frequency lift plus "
+        "capped-severity flexibility. Holding severity conservative may retain "
+        "the frequency ranking signal while avoiding capped severity overfit."
     ),
     "actuarial_rationale": (
-        "The existing report showed LightGBM can find segmentation signal, but "
-        "it is not accepted as a pricing level unless calibration and stability "
-        "also pass. This candidate intentionally limits flexibility to avoid a "
-        "black-box gift."
+        "This is a segmentation research candidate, not a pricing-level model. "
+        "It tests whether the incremental lift is coming from a plausible claim "
+        "frequency segmentation signal rather than unstable severity slicing."
     ),
     "lightgbm": {
         "nrounds": 120,
@@ -40,47 +39,47 @@ CANDIDATE = {
             },
             {
                 "num_leaves": 31,
-                "min_data_in_leaf": 1500,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
+                "min_data_in_leaf": 900,
+                "learning_rate": 0.035,
+                "feature_fraction": 0.9,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "lambda_l2": 8,
             },
         ],
         "severity_grid": [
             {
                 "num_leaves": 7,
-                "min_data_in_leaf": 150,
+                "min_data_in_leaf": 300,
                 "learning_rate": 0.04,
                 "feature_fraction": 0.9,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 5,
+                "lambda_l2": 10,
             },
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
+                "num_leaves": 7,
+                "min_data_in_leaf": 500,
                 "learning_rate": 0.03,
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "lambda_l2": 20,
             },
         ],
         "capped_severity_grid": [
             {
                 "num_leaves": 7,
-                "min_data_in_leaf": 150,
+                "min_data_in_leaf": 300,
                 "learning_rate": 0.04,
                 "feature_fraction": 0.9,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 5,
+                "lambda_l2": 10,
             },
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
+                "num_leaves": 7,
+                "min_data_in_leaf": 500,
                 "learning_rate": 0.03,
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "lambda_l2": 20,
             },
         ],
     },
