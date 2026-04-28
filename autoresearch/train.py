@@ -8,74 +8,74 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_optimal_balance_v2",
+    "id": "lightgbm_optimal_exploration",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Combine findings: aggressive LR (0.05) with best settings (leaves 15/24). "
-        "Best MAE was 216.90 with 0.1836 Gini. Try to get both."
+        "Final exploration: 18 leaves at 0.048 LR, extreme L2=15 for safety. "
+        "Testing boundary of hyperparameter space."
     ),
     "hypothesis": (
-        "Combine optimal LR with optimal leaves. May get best of both."
+        "Push to boundary to find potential new optimum. High L2 prevents wild fits."
     ),
     "actuarial_rationale": (
-        "Synthesis of best hyperparameters."
+        "Final boundary test."
     ),
     "lightgbm": {
-        "nrounds": 100,
-        "early_stopping_rounds": 12,
+        "nrounds": 130,
+        "early_stopping_rounds": 18,
         "frequency_grid": [
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 1800,
-                "learning_rate": 0.05,
+                "num_leaves": 18,
+                "min_data_in_leaf": 1700,
+                "learning_rate": 0.048,
                 "feature_fraction": 0.86,
                 "bagging_fraction": 0.86,
-                "lambda_l2": 11,
+                "lambda_l2": 15,
             },
             {
-                "num_leaves": 24,
-                "min_data_in_leaf": 1400,
-                "learning_rate": 0.044,
+                "num_leaves": 26,
+                "min_data_in_leaf": 1350,
+                "learning_rate": 0.042,
                 "feature_fraction": 0.81,
                 "bagging_fraction": 0.86,
-                "lambda_l2": 9,
+                "lambda_l2": 12,
             },
         ],
         "severity_grid": [
             {
-                "num_leaves": 7,
+                "num_leaves": 8,
                 "min_data_in_leaf": 200,
-                "learning_rate": 0.05,
+                "learning_rate": 0.048,
                 "feature_fraction": 0.86,
                 "bagging_fraction": 0.86,
-                "lambda_l2": 9,
+                "lambda_l2": 12,
             },
             {
-                "num_leaves": 11,
+                "num_leaves": 12,
                 "min_data_in_leaf": 160,
-                "learning_rate": 0.044,
+                "learning_rate": 0.042,
                 "feature_fraction": 0.81,
                 "bagging_fraction": 0.86,
-                "lambda_l2": 7,
+                "lambda_l2": 10,
             },
         ],
         "capped_severity_grid": [
             {
-                "num_leaves": 7,
+                "num_leaves": 8,
                 "min_data_in_leaf": 200,
-                "learning_rate": 0.05,
+                "learning_rate": 0.048,
                 "feature_fraction": 0.86,
                 "bagging_fraction": 0.86,
-                "lambda_l2": 9,
+                "lambda_l2": 12,
             },
             {
-                "num_leaves": 11,
+                "num_leaves": 12,
                 "min_data_in_leaf": 160,
-                "learning_rate": 0.044,
+                "learning_rate": 0.042,
                 "feature_fraction": 0.81,
                 "bagging_fraction": 0.86,
-                "lambda_l2": 7,
+                "lambda_l2": 10,
             },
         ],
     },
