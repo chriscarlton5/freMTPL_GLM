@@ -202,15 +202,86 @@ def metric(metrics: dict[str, Any], name: str, default: float = 0.0) -> float:
         return default
 
 
+def normalize_champions(
+    raw_champions: dict[str, Any] | None,
+    baseline: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Return the v2 dual-champion registry, migrating v1 single payloads."""
+    if raw_champions and ("pricing" in raw_champions or "segmentation" in raw_champions):
+        pricing = raw_champions.get("pricing") or baseline
+        segmentation = raw_champions.get("segmentation") or baseline or pricing
+        if pricing is None and segmentation is None:
+            return None
+        return {
+            "schema_version": 2,
+            "pricing": pricing,
+            "segmentation": segmentation,
+            "updated_at": raw_champions.get("updated_at"),
+        }
+
+    if raw_champions is None and baseline is None:
+        return None
+
+    if raw_champions is None:
+        return {
+            "schema_version": 2,
+            "pricing": baseline,
+            "segmentation": baseline,
+            "updated_at": None,
+        }
+
+    decision = raw_champions.get("decision", {})
+    pricing_status = decision.get("pricing_status")
+    segmentation_status = decision.get("segmentation_status")
+    pricing = raw_champions if pricing_status in {"baseline", "candidate"} else baseline
+    segmentation = raw_champions if segmentation_status in {"baseline", "candidate"} else baseline or raw_champions
+    if pricing is None and segmentation is None:
+        return None
+    return {
+        "schema_version": 2,
+        "pricing": pricing,
+        "segmentation": segmentation,
+        "updated_at": None,
+    }
+
+
 def load_champions() -> dict[str, Any] | None:
-    return json_load(CHAMPIONS_JSON) or json_load(BASELINE_METRICS_JSON)
+    return normalize_champions(json_load(CHAMPIONS_JSON), json_load(BASELINE_METRICS_JSON))
 
 
 def is_baseline_run(candidate: dict[str, Any], champions: dict[str, Any] | None) -> bool:
     return bool(candidate.get("is_baseline")) or champions is None
 
 
-def gate_decision(metrics: dict[str, Any], champion: dict[str, Any] | None, candidate: dict[str, Any]) -> dict[str, Any]:
+def fold_gini_agreement(metrics: dict[str, Any], champion: dict[str, Any] | None) -> int:
+    if champion is None:
+        return 0
+    candidate_folds = metrics.get("fold_metrics", [])
+    champion_folds = champion.get("fold_metrics", [])
+    fold_agreement = 0
+    for candidate_fold in candidate_folds:
+        fold_id = candidate_fold.get("fold")
+        champion_fold = next((row for row in champion_folds if row.get("fold") == fold_id), None)
+        if champion_fold is None:
+            continue
+        if float(candidate_fold.get("capped_pp_gini", 0.0)) > float(champion_fold.get("capped_pp_gini", 0.0)):
+            fold_agreement += 1
+    return fold_agreement
+
+
+def champion_metric(champion: dict[str, Any] | None, name: str, default: float = 0.0) -> float:
+    if champion is None:
+        return default
+    try:
+        value = champion.get("aggregate", {}).get(name, default)
+        if value is None:
+            return default
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def gate_decision(metrics: dict[str, Any], champions: dict[str, Any] | None, candidate: dict[str, Any]) -> dict[str, Any]:
     if metrics.get("status") == "crash":
         return {
             "status": "crash",
@@ -224,16 +295,21 @@ def gate_decision(metrics: dict[str, Any], champion: dict[str, Any] | None, cand
     aggregate = metrics.get("aggregate", {})
     integrity = metrics.get("integrity", {})
     gate_results: dict[str, bool] = {}
-    failures: list[str] = []
+    integrity_failures: list[str] = []
 
-    def record(name: str, passed: bool) -> None:
+    def record_integrity(name: str, passed: bool) -> None:
+        gate_results[name] = bool(passed)
+        if not passed:
+            integrity_failures.append(name)
+
+    def record_target(failures: list[str], name: str, passed: bool) -> None:
         gate_results[name] = bool(passed)
         if not passed:
             failures.append(name)
 
-    record("no_policy_leakage", int(integrity.get("policy_leakage_count", 0)) == 0)
-    record("finite_nonnegative_predictions", int(integrity.get("bad_prediction_count", 0)) == 0)
-    record("loss_reconciliation", abs(float(integrity.get("loss_reconciliation_gap", 0.0))) < 1e-6)
+    record_integrity("no_policy_leakage", int(integrity.get("policy_leakage_count", 0)) == 0)
+    record_integrity("finite_nonnegative_predictions", int(integrity.get("bad_prediction_count", 0)) == 0)
+    record_integrity("loss_reconciliation", abs(float(integrity.get("loss_reconciliation_gap", 0.0))) < 1e-6)
 
     capped_gini = metric(metrics, "capped_pp_gini_mean")
     capped_calibration = metric(metrics, "capped_pp_calibration_gap_mean")
@@ -244,50 +320,124 @@ def gate_decision(metrics: dict[str, Any], champion: dict[str, Any] | None, cand
     complexity_penalty = min(parameter_count / 10000.0, 0.02)
     selection_score = capped_gini - 0.25 * abs(capped_calibration) - complexity_penalty
 
-    if is_baseline_run(candidate, champion):
+    if is_baseline_run(candidate, champions):
+        status = "keep" if not integrity_failures else "discard"
         return {
-            "status": "keep",
+            "status": status,
             "pricing_status": "baseline",
             "segmentation_status": "baseline",
             "selection_score": selection_score,
-            "gate_failures": failures,
+            "gate_failures": integrity_failures,
             "gate_results": gate_results,
         }
 
-    assert champion is not None
-    champion_aggregate = champion.get("aggregate", {})
-    champion_capped_gini = float(champion_aggregate.get("capped_pp_gini_mean", 0.0))
-    champion_raw_gini = float(champion_aggregate.get("raw_pp_gini_mean", 0.0))
-    champion_capped_cal = abs(float(champion_aggregate.get("capped_pp_calibration_gap_mean", 0.0)))
-    champion_capped_mae = float(champion_aggregate.get("capped_pp_mae_mean", capped_mae))
-    champion_capped_rmse = float(champion_aggregate.get("capped_pp_rmse_mean", capped_rmse))
+    assert champions is not None
+    pricing_champion = champions.get("pricing")
+    segmentation_champion = champions.get("segmentation")
 
-    capped_gini_gain = capped_gini - champion_capped_gini
-    raw_gini_gain = raw_gini - champion_raw_gini
-    capped_cal_deterioration = abs(capped_calibration) - champion_capped_cal
-    capped_mae_deterioration = (capped_mae - champion_capped_mae) / max(abs(champion_capped_mae), 1e-12)
-    capped_rmse_deterioration = (capped_rmse - champion_capped_rmse) / max(abs(champion_capped_rmse), 1e-12)
+    segmentation_capped_gini_gain = capped_gini - champion_metric(
+        segmentation_champion, "capped_pp_gini_mean", capped_gini
+    )
+    segmentation_raw_gini_gain = raw_gini - champion_metric(segmentation_champion, "raw_pp_gini_mean", raw_gini)
+    segmentation_capped_cal_deterioration = abs(capped_calibration) - abs(
+        champion_metric(segmentation_champion, "capped_pp_calibration_gap_mean", capped_calibration)
+    )
+    segmentation_capped_mae_deterioration = (capped_mae - champion_metric(
+        segmentation_champion, "capped_pp_mae_mean", capped_mae
+    )) / max(abs(champion_metric(segmentation_champion, "capped_pp_mae_mean", capped_mae)), 1e-12)
+    segmentation_capped_rmse_deterioration = (capped_rmse - champion_metric(
+        segmentation_champion, "capped_pp_rmse_mean", capped_rmse
+    )) / max(abs(champion_metric(segmentation_champion, "capped_pp_rmse_mean", capped_rmse)), 1e-12)
+    segmentation_fold_agreement = fold_gini_agreement(metrics, segmentation_champion)
 
-    candidate_folds = metrics.get("fold_metrics", [])
-    champion_folds = champion.get("fold_metrics", [])
-    fold_agreement = 0
-    for candidate_fold in candidate_folds:
-        fold_id = candidate_fold.get("fold")
-        champion_fold = next((row for row in champion_folds if row.get("fold") == fold_id), None)
-        if champion_fold is None:
-            continue
-        if float(candidate_fold.get("capped_pp_gini", 0.0)) > float(champion_fold.get("capped_pp_gini", 0.0)):
-            fold_agreement += 1
-    record("minimum_capped_gini_gain", capped_gini_gain >= GATE_DEFAULTS["minimum_gini_gain"])
-    record("minimum_fold_agreement", fold_agreement >= GATE_DEFAULTS["minimum_fold_agreement"])
-    record("capped_calibration_tolerance", capped_cal_deterioration <= GATE_DEFAULTS["max_calibration_deterioration"])
-    record("capped_mae_tolerance", capped_mae_deterioration <= GATE_DEFAULTS["max_mae_deterioration"])
-    record("capped_rmse_tolerance", capped_rmse_deterioration <= GATE_DEFAULTS["max_deviance_deterioration"])
-    record("raw_gini_not_materially_worse", raw_gini_gain >= -GATE_DEFAULTS["minimum_gini_gain"])
+    segmentation_failures: list[str] = []
+    record_target(
+        segmentation_failures,
+        "segmentation_minimum_capped_gini_gain",
+        segmentation_capped_gini_gain >= GATE_DEFAULTS["minimum_gini_gain"],
+    )
+    record_target(
+        segmentation_failures,
+        "segmentation_minimum_fold_agreement",
+        segmentation_fold_agreement >= GATE_DEFAULTS["minimum_fold_agreement"],
+    )
+    record_target(
+        segmentation_failures,
+        "segmentation_capped_calibration_tolerance",
+        segmentation_capped_cal_deterioration <= GATE_DEFAULTS["max_calibration_deterioration"],
+    )
+    record_target(
+        segmentation_failures,
+        "segmentation_capped_mae_tolerance",
+        segmentation_capped_mae_deterioration <= GATE_DEFAULTS["max_mae_deterioration"],
+    )
+    record_target(
+        segmentation_failures,
+        "segmentation_capped_rmse_tolerance",
+        segmentation_capped_rmse_deterioration <= GATE_DEFAULTS["max_deviance_deterioration"],
+    )
+    record_target(
+        segmentation_failures,
+        "segmentation_raw_gini_not_materially_worse",
+        segmentation_raw_gini_gain >= -GATE_DEFAULTS["minimum_gini_gain"],
+    )
 
-    status = "keep" if not failures else "discard"
-    pricing_status = "candidate" if status == "keep" and abs(capped_calibration) <= champion_capped_cal else "not_pricing"
-    segmentation_status = "candidate" if status == "keep" else "not_segmentation"
+    pricing_capped_gini_gain = capped_gini - champion_metric(pricing_champion, "capped_pp_gini_mean", capped_gini)
+    pricing_raw_gini_gain = raw_gini - champion_metric(pricing_champion, "raw_pp_gini_mean", raw_gini)
+    pricing_capped_cal_abs = abs(capped_calibration)
+    pricing_champion_capped_cal_abs = abs(
+        champion_metric(pricing_champion, "capped_pp_calibration_gap_mean", capped_calibration)
+    )
+    pricing_capped_mae_deterioration = (capped_mae - champion_metric(
+        pricing_champion, "capped_pp_mae_mean", capped_mae
+    )) / max(abs(champion_metric(pricing_champion, "capped_pp_mae_mean", capped_mae)), 1e-12)
+    pricing_capped_rmse_deterioration = (capped_rmse - champion_metric(
+        pricing_champion, "capped_pp_rmse_mean", capped_rmse
+    )) / max(abs(champion_metric(pricing_champion, "capped_pp_rmse_mean", capped_rmse)), 1e-12)
+    pricing_material_improvement = (
+        pricing_capped_gini_gain >= 0.001
+        or pricing_capped_mae_deterioration <= -0.002
+        or pricing_capped_cal_abs <= max(pricing_champion_capped_cal_abs - 0.001, 0.0)
+    )
+
+    pricing_failures: list[str] = []
+    record_target(pricing_failures, "pricing_material_improvement", pricing_material_improvement)
+    record_target(
+        pricing_failures,
+        "pricing_capped_gini_not_materially_worse",
+        pricing_capped_gini_gain >= -GATE_DEFAULTS["minimum_gini_gain"],
+    )
+    record_target(
+        pricing_failures,
+        "pricing_raw_gini_not_materially_worse",
+        pricing_raw_gini_gain >= -GATE_DEFAULTS["minimum_gini_gain"],
+    )
+    record_target(
+        pricing_failures,
+        "pricing_capped_calibration_tight",
+        pricing_capped_cal_abs <= pricing_champion_capped_cal_abs + 0.003,
+    )
+    record_target(
+        pricing_failures,
+        "pricing_capped_mae_tolerance",
+        pricing_capped_mae_deterioration <= GATE_DEFAULTS["max_mae_deterioration"],
+    )
+    record_target(
+        pricing_failures,
+        "pricing_capped_rmse_tolerance",
+        pricing_capped_rmse_deterioration <= GATE_DEFAULTS["max_deviance_deterioration"],
+    )
+
+    integrity_passed = not integrity_failures
+    segmentation_passed = integrity_passed and not segmentation_failures
+    pricing_passed = integrity_passed and not pricing_failures
+    status = "keep" if pricing_passed or segmentation_passed else "discard"
+    pricing_status = "candidate" if pricing_passed else "not_pricing"
+    segmentation_status = "candidate" if segmentation_passed else "not_segmentation"
+    failures = list(integrity_failures)
+    if status == "discard":
+        failures.extend(pricing_failures)
+        failures.extend(segmentation_failures)
     return {
         "status": status,
         "pricing_status": pricing_status,
@@ -296,11 +446,18 @@ def gate_decision(metrics: dict[str, Any], champion: dict[str, Any] | None, cand
         "gate_failures": failures,
         "gate_results": gate_results,
         "deltas": {
-            "capped_gini_gain": capped_gini_gain,
-            "raw_gini_gain": raw_gini_gain,
-            "capped_calibration_deterioration": capped_cal_deterioration,
-            "capped_mae_deterioration": capped_mae_deterioration,
-            "capped_rmse_deterioration": capped_rmse_deterioration,
+            "segmentation_capped_gini_gain": segmentation_capped_gini_gain,
+            "segmentation_raw_gini_gain": segmentation_raw_gini_gain,
+            "segmentation_capped_calibration_deterioration": segmentation_capped_cal_deterioration,
+            "segmentation_capped_mae_deterioration": segmentation_capped_mae_deterioration,
+            "segmentation_capped_rmse_deterioration": segmentation_capped_rmse_deterioration,
+            "segmentation_fold_agreement": segmentation_fold_agreement,
+            "pricing_capped_gini_gain": pricing_capped_gini_gain,
+            "pricing_raw_gini_gain": pricing_raw_gini_gain,
+            "pricing_capped_calibration_abs": pricing_capped_cal_abs,
+            "pricing_champion_capped_calibration_abs": pricing_champion_capped_cal_abs,
+            "pricing_capped_mae_deterioration": pricing_capped_mae_deterioration,
+            "pricing_capped_rmse_deterioration": pricing_capped_rmse_deterioration,
         },
     }
 
@@ -375,7 +532,19 @@ def update_champions_if_needed(metrics: dict[str, Any], decision: dict[str, Any]
         return
     champion_payload = dict(metrics)
     champion_payload["decision"] = decision
-    json_dump(CHAMPIONS_JSON, champion_payload)
+
+    champions = load_champions() or {"schema_version": 2, "pricing": None, "segmentation": None}
+    if metrics.get("candidate", {}).get("is_baseline"):
+        champions["pricing"] = champion_payload
+        champions["segmentation"] = champion_payload
+    else:
+        if decision.get("pricing_status") in {"baseline", "candidate"}:
+            champions["pricing"] = champion_payload
+        if decision.get("segmentation_status") in {"baseline", "candidate"}:
+            champions["segmentation"] = champion_payload
+    champions["schema_version"] = 2
+    champions["updated_at"] = datetime.now().isoformat(timespec="seconds")
+    json_dump(CHAMPIONS_JSON, champions)
     if metrics.get("candidate", {}).get("is_baseline") or not BASELINE_METRICS_JSON.exists():
         json_dump(BASELINE_METRICS_JSON, champion_payload)
 
