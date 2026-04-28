@@ -9,6 +9,7 @@ TP = RP / "autoresearch/train.py"
 CHAMP = RP / "autoresearch/evidence/champions.json"
 RESULTS = RP / "autoresearch/evidence/results.tsv"
 LOOP_STATE = RP / "autoresearch/evidence/loop_state.json"
+GIT_QUEUE = RP / "autoresearch/scratch/git_queue"
 
 def champion(): 
     return json.load(open(CHAMP))["pricing"]["aggregate"]["capped_pp_gini_mean"]
@@ -86,11 +87,15 @@ def gen(i, champ):
     TP.write_text(f'from prepare import run_experiment\nCANDIDATE = {content}\nif __name__ == "__main__": run_experiment(CANDIDATE)\n')
 
 def commit_and_push(message, paths):
-    sh(["git", "add", *paths])
-    result = sh(["git", "commit", "-m", message])
-    if result.returncode == 0:
-        sh(["git", "push", "origin", "autoresearch-mtpl-v1"])
-    return result.returncode == 0
+    GIT_QUEUE.mkdir(parents=True, exist_ok=True)
+    job_name = f"{int(time.time() * 1000)}_{message.lower().replace(' ', '_').replace(':', '')}.json"
+    job_path = GIT_QUEUE / job_name
+    job_path.write_text(json.dumps({"message": message, "paths": paths, "push": True}, indent=2) + "\n")
+
+    deadline = time.time() + 120
+    while job_path.exists() and time.time() < deadline:
+        time.sleep(1)
+    return not job_path.exists()
 
 def main():
     parser = argparse.ArgumentParser()
