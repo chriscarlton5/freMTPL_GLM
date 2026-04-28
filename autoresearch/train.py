@@ -8,25 +8,23 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_midleaf_frequency_forced_aggressive_capped",
+    "id": "lightgbm_regularized_challenger",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "LightGBM challenger combining the mid-leaf frequency probe with a "
-        "forced aggressive capped-severity grid, while keeping raw severity at "
-        "the champion settings."
+        "Regularized LightGBM challenger using constrained leaf counts and "
+        "moderate L2 penalties for frequency, raw severity, and capped severity."
     ),
     "hypothesis": (
-        "Mid-leaf frequency improved capped Gini with fold agreement, while "
-        "the aggressive capped-severity run produced the highest mean capped "
-        "Gini so far. Combining them may clear the segmentation Gini threshold, "
-        "though it must still pass fold agreement and calibration gates."
+        "A constrained LightGBM may improve capped pure premium ranking enough "
+        "to qualify as a segmentation/research champion while preserving capped "
+        "calibration and error stability."
     ),
     "actuarial_rationale": (
-        "This is an intentionally aggressive segmentation-research test, not a "
-        "pricing-level candidate. It is only acceptable if the ranking lift is "
-        "broad across folds and the capped severity flexibility does not create "
-        "unexplained instability."
+        "The existing report showed LightGBM can find segmentation signal, but "
+        "it is not accepted as a pricing level unless calibration and stability "
+        "also pass. This candidate intentionally limits flexibility to avoid a "
+        "black-box gift."
     ),
     "lightgbm": {
         "nrounds": 120,
@@ -47,14 +45,6 @@ CANDIDATE = {
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
-            },
-            {
-                "num_leaves": 31,
-                "min_data_in_leaf": 500,
-                "learning_rate": 0.05,
-                "feature_fraction": 0.8,
-                "bagging_fraction": 0.8,
-                "lambda_l2": 5,
             },
         ],
         "severity_grid": [
@@ -77,20 +67,20 @@ CANDIDATE = {
         ],
         "capped_severity_grid": [
             {
-                "num_leaves": 31,
-                "min_data_in_leaf": 100,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.8,
+                "num_leaves": 7,
+                "min_data_in_leaf": 150,
+                "learning_rate": 0.04,
+                "feature_fraction": 0.9,
                 "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "lambda_l2": 5,
             },
             {
-                "num_leaves": 31,
-                "min_data_in_leaf": 75,
-                "learning_rate": 0.025,
-                "feature_fraction": 0.75,
-                "bagging_fraction": 0.85,
-                "lambda_l2": 15,
+                "num_leaves": 15,
+                "min_data_in_leaf": 200,
+                "learning_rate": 0.03,
+                "feature_fraction": 0.85,
+                "bagging_fraction": 0.9,
+                "lambda_l2": 10,
             },
         ],
     },
