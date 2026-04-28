@@ -8,36 +8,35 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_lower_lr_more_iter",
+    "id": "lightgbm_optimal_balance",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Best 0.1851 with leaves 15/24, LR 0.04/0.035. Try lower LR (0.03/0.025) "
-        "with more rounds for more stable convergence."
+        "Best still 0.1851. Try intermediate: 16/23 leaves, 0.042 LR to find "
+        "optimum between capacity and overfitting."
     ),
     "hypothesis": (
-        "Lower LR + more iterations may find better local minimum. "
-        "Standard tuning practice."
+        "15/24 @ 0.04 = 0.1851, 16/28 @ 0.04 = 0.1834. Try 16/23 with 0.042 LR."
     ),
     "actuarial_rationale": (
-        "Slower learning with more iterations for better convergence."
+        "Balance between best configs - fine-tuned hyperparameter search."
     ),
     "lightgbm": {
-        "nrounds": 180,
-        "early_stopping_rounds": 20,
+        "nrounds": 125,
+        "early_stopping_rounds": 16,
         "frequency_grid": [
             {
-                "num_leaves": 15,
+                "num_leaves": 16,
                 "min_data_in_leaf": 1550,
-                "learning_rate": 0.03,
+                "learning_rate": 0.042,
                 "feature_fraction": 0.87,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 10,
             },
             {
-                "num_leaves": 24,
+                "num_leaves": 23,
                 "min_data_in_leaf": 1250,
-                "learning_rate": 0.025,
+                "learning_rate": 0.036,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 8,
@@ -45,17 +44,17 @@ CANDIDATE = {
         ],
         "severity_grid": [
             {
-                "num_leaves": 7,
-                "min_data_in_leaf": 180,
-                "learning_rate": 0.03,
+                "num_leaves": 8,
+                "min_data_in_leaf": 170,
+                "learning_rate": 0.042,
                 "feature_fraction": 0.87,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 8,
             },
             {
                 "num_leaves": 11,
-                "min_data_in_leaf": 140,
-                "learning_rate": 0.025,
+                "min_data_in_leaf": 130,
+                "learning_rate": 0.036,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 6,
@@ -63,17 +62,17 @@ CANDIDATE = {
         ],
         "capped_severity_grid": [
             {
-                "num_leaves": 7,
-                "min_data_in_leaf": 180,
-                "learning_rate": 0.03,
+                "num_leaves": 8,
+                "min_data_in_leaf": 170,
+                "learning_rate": 0.042,
                 "feature_fraction": 0.87,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 8,
             },
             {
                 "num_leaves": 11,
-                "min_data_in_leaf": 140,
-                "learning_rate": 0.025,
+                "min_data_in_leaf": 130,
+                "learning_rate": 0.036,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.87,
                 "lambda_l2": 6,
