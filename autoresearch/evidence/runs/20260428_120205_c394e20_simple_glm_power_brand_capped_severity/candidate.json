@@ -1,0 +1,22 @@
+{
+  "actuarial_rationale": "This is a transparent parsimony test. Linear continuous effects are easier to explain than splines, but the model must not give up too much predictive power or calibration.",
+  "capped_severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": false
+  },
+  "description": "Simpler GLM using linear DriverAge, CarAge, and logDensity terms in all components; adds Power:Brand to capped severity only.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": false
+  },
+  "hypothesis": "The Power:Brand capped-severity signal may not require spline flexibility. A simpler linear GLM could retain the small capped-pricing gain with better parsimony and stability.",
+  "id": "simple_glm_power_brand_capped_severity",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": false
+  }
+}

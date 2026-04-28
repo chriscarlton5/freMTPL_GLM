@@ -48,6 +48,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_agefreq_powerbrand_dual_severity`: combining the best transparent frequency and severity signals improved raw Gini to `0.1643`, but capped Gini fell to `0.1678` and parameter count rose to `277`.
 - `enhanced_glm_power_brand_raw_severity`: isolated the raw-severity signal cleanly, raising raw Gini to `0.1624` while leaving capped pricing metrics at the baseline; useful monitoring signal but not a pricing improvement.
 - `lightgbm_shorter_midleaf_stronger_capped`: shorter boosting preserved fold agreement and improved MAE, but capped Gini was only `0.1847`, below the strongest `0.1875` near miss.
+- `simple_glm_power_brand_capped_severity`: removing splines for parsimony dropped capped Gini to `0.1366`; the baseline spline terms are doing essential transparent work.
 
 ## Next Ideas
 
@@ -55,6 +56,7 @@ Baseline evidence has been established through the autoresearch harness.
 - Revisit `Power:Brand` capped severity only if paired with a parsimony mechanism or stricter sparse-cell pooling.
 - `Power:Brand` in both severity components is the best transparent raw-Gini signal so far, but it is too parameter-heavy to defend without sparse-cell pooling or a smaller interaction encoding.
 - If raw pure premium monitoring becomes a separate workstream, start from `enhanced_glm_power_brand_raw_severity`; it isolates raw lift without disturbing capped pricing, though it does not advance the primary capped target.
+- Do not remove the spline terms from the transparent GLM baseline; linear continuous effects lose too much predictive power to be an acceptable parsimony tradeoff.
 - Do not stack DriverAgeBand:CarAgeBand frequency with Power:Brand severity in the current GLM form; it increases complexity and helps raw monitoring more than capped pricing performance.
 - Do not apply blunt component calibration scalars to the Power:Brand capped-severity GLM; the fold-level scalars overcorrected level and degraded both ranking and error.
 - Do not combine sparse `Power:Brand` across multiple GLM components without a pooling or selection mechanism.

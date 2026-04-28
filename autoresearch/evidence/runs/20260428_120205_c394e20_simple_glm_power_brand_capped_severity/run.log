@@ -1,0 +1,14 @@
+[stderr]
+Warning messages:
+1: In predict.lm(object, newdata, se.fit, scale = 1, type = if (type ==  :
+  prediction from rank-deficient fit; attr(*, "non-estim") has doubtful cases
+2: In predict.lm(object, newdata, se.fit, scale = 1, type = if (type ==  :
+  prediction from rank-deficient fit; attr(*, "non-estim") has doubtful cases
+3: In predict.lm(object, newdata, se.fit, scale = 1, type = if (type ==  :
+  prediction from rank-deficient fit; attr(*, "non-estim") has doubtful cases
+4: In predict.lm(object, newdata, se.fit, scale = 1, type = if (type ==  :
+  prediction from rank-deficient fit; attr(*, "non-estim") has doubtful cases
+5: In predict.lm(object, newdata, se.fit, scale = 1, type = if (type ==  :
+  prediction from rank-deficient fit; attr(*, "non-estim") has doubtful cases
+6: In predict.lm(object, newdata, se.fit, scale = 1, type = if (type ==  :
+  prediction from rank-deficient fit; attr(*, "non-estim") has doubtful cases
