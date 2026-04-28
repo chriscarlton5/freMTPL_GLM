@@ -8,31 +8,31 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-  "id": "lightgbm_ft_0006",
+  "id": "lightgbm_ft_0007",
   "is_baseline": False,
   "model_type": "lightgbm",
-  "description": "Fine-tune: l2. FF=0.515, L2=13.3",
-  "hypothesis": "Targeted l2 variation",
+  "description": "Fine-tune: leaves. FF=0.515, L2=13.4",
+  "hypothesis": "Targeted leaves variation",
   "actuarial_rationale": "Exploiting sweet spot",
   "lightgbm": {
     "nrounds": 178,
     "early_stopping_rounds": 22,
     "frequency_grid": [
       {
-        "num_leaves": 16,
+        "num_leaves": 17,
         "min_data_in_leaf": 1795,
         "learning_rate": 0.0365,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
-        "lambda_l2": 13.30733587652696
+        "lambda_l2": 13.4
       },
       {
-        "num_leaves": 24,
+        "num_leaves": 25,
         "min_data_in_leaf": 1436,
         "learning_rate": 0.0315,
         "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
-        "lambda_l2": 11.30733587652696
+        "lambda_l2": 11.4
       }
     ],
     "severity_grid": [
@@ -42,7 +42,7 @@ CANDIDATE = {
         "learning_rate": 0.0365,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
-        "lambda_l2": 10.30733587652696
+        "lambda_l2": 10.4
       },
       {
         "num_leaves": 11,
@@ -50,7 +50,7 @@ CANDIDATE = {
         "learning_rate": 0.0315,
         "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
-        "lambda_l2": 9.30733587652696
+        "lambda_l2": 9.4
       }
     ],
     "capped_severity_grid": [
@@ -60,7 +60,7 @@ CANDIDATE = {
         "learning_rate": 0.0365,
         "feature_fraction": 0.515,
         "bagging_fraction": 0.515,
-        "lambda_l2": 10.30733587652696
+        "lambda_l2": 10.4
       },
       {
         "num_leaves": 11,
@@ -68,7 +68,7 @@ CANDIDATE = {
         "learning_rate": 0.0315,
         "feature_fraction": 0.465,
         "bagging_fraction": 0.515,
-        "lambda_l2": 9.30733587652696
+        "lambda_l2": 9.4
       }
     ]
   }
