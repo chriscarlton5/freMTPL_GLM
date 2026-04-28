@@ -8,27 +8,27 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_frequency_ranking_push",
+    "id": "lightgbm_regularized_challenger",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "LightGBM challenger that keeps champion severity and capped severity "
-        "settings while adding a more flexible, still regularized frequency "
-        "option to test whether fold-balanced segmentation lift is frequency-led."
+        "Regularized LightGBM challenger using constrained leaf counts and "
+        "moderate L2 penalties for frequency, raw severity, and capped severity."
     ),
     "hypothesis": (
-        "Prior capped-severity flexibility mainly helped fold 3. A controlled "
-        "frequency-ranking push may improve capped pure premium Gini across at "
-        "least two folds without worsening capped MAE or calibration."
+        "A constrained LightGBM may improve capped pure premium ranking enough "
+        "to qualify as a segmentation/research champion while preserving capped "
+        "calibration and error stability."
     ),
     "actuarial_rationale": (
-        "Frequency is generally the more stable component in MTPL pricing. This "
-        "candidate keeps severity stable and limits the extra flexibility to one "
-        "frequency-grid option with minimum leaf and L2 controls."
+        "The existing report showed LightGBM can find segmentation signal, but "
+        "it is not accepted as a pricing level unless calibration and stability "
+        "also pass. This candidate intentionally limits flexibility to avoid a "
+        "black-box gift."
     ),
     "lightgbm": {
-        "nrounds": 150,
-        "early_stopping_rounds": 20,
+        "nrounds": 120,
+        "early_stopping_rounds": 15,
         "frequency_grid": [
             {
                 "num_leaves": 15,
@@ -45,14 +45,6 @@ CANDIDATE = {
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
-            },
-            {
-                "num_leaves": 63,
-                "min_data_in_leaf": 900,
-                "learning_rate": 0.025,
-                "feature_fraction": 0.8,
-                "bagging_fraction": 0.85,
-                "lambda_l2": 15,
             },
         ],
         "severity_grid": [
