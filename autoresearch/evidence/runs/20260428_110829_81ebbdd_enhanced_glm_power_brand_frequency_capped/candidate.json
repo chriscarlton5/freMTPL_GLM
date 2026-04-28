@@ -1,0 +1,27 @@
+{
+  "actuarial_rationale": "Vehicle power and brand are standard actuarial rating dimensions. The combined term set is still transparent, but it adds many sparse cells, so it must improve ranking or error enough to justify its complexity.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds Power:Brand to frequency and capped severity.",
+  "frequency": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  },
+  "hypothesis": "Power:Brand frequency improved raw ranking while Power:Brand capped severity slightly improved capped MAE and calibration. Combining the two transparent terms may produce enough stable pure premium movement to clear the pricing gate.",
+  "id": "enhanced_glm_power_brand_frequency_capped",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}
