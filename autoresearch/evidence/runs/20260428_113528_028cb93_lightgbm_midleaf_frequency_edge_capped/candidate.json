@@ -1,0 +1,74 @@
+{
+  "actuarial_rationale": "This is the last justified local search around the capped-severity edge. It is segmentation research only and must be rejected if the incremental lift is not broad and stable.",
+  "description": "LightGBM challenger using the mid-leaf frequency probe with one edge capped-severity grid adjacent to the strongest near miss.",
+  "hypothesis": "The previous stronger capped candidate missed the segmentation Gini gate by 0.0002 with all folds improved. A small adjacent capped severity adjustment may clear the gate while remaining inside the calibration and error tolerances.",
+  "id": "lightgbm_midleaf_frequency_edge_capped",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.75,
+        "lambda_l2": 12,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 60,
+        "num_leaves": 63
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.7,
+        "lambda_l2": 18,
+        "learning_rate": 0.02,
+        "min_data_in_leaf": 45,
+        "num_leaves": 63
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.8,
+        "feature_fraction": 0.8,
+        "lambda_l2": 5,
+        "learning_rate": 0.05,
+        "min_data_in_leaf": 500,
+        "num_leaves": 31
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
