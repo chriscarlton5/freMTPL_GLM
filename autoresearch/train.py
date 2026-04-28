@@ -8,11 +8,11 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-  "id": "lightgbm_ft_0002",
+  "id": "lightgbm_ft_0003",
   "is_baseline": False,
   "model_type": "lightgbm",
-  "description": "Fine-tune: lr. FF=0.518, L2=13.2",
-  "hypothesis": "Targeted lr variation",
+  "description": "Fine-tune: min_data. FF=0.518, L2=13.2",
+  "hypothesis": "Targeted min_data variation",
   "actuarial_rationale": "Exploiting sweet spot",
   "lightgbm": {
     "nrounds": 178,
@@ -20,16 +20,16 @@ CANDIDATE = {
     "frequency_grid": [
       {
         "num_leaves": 17,
-        "min_data_in_leaf": 1700,
-        "learning_rate": 0.038785716911016385,
+        "min_data_in_leaf": 1600,
+        "learning_rate": 0.036,
         "feature_fraction": 0.5179,
         "bagging_fraction": 0.5179,
         "lambda_l2": 13.2142
       },
       {
         "num_leaves": 25,
-        "min_data_in_leaf": 1360,
-        "learning_rate": 0.03378571691101639,
+        "min_data_in_leaf": 1280,
+        "learning_rate": 0.030999999999999996,
         "feature_fraction": 0.46790000000000004,
         "bagging_fraction": 0.5179,
         "lambda_l2": 11.2142
@@ -39,7 +39,7 @@ CANDIDATE = {
       {
         "num_leaves": 7,
         "min_data_in_leaf": 215,
-        "learning_rate": 0.038785716911016385,
+        "learning_rate": 0.036,
         "feature_fraction": 0.5179,
         "bagging_fraction": 0.5179,
         "lambda_l2": 10.2142
@@ -47,7 +47,7 @@ CANDIDATE = {
       {
         "num_leaves": 11,
         "min_data_in_leaf": 165,
-        "learning_rate": 0.03378571691101639,
+        "learning_rate": 0.030999999999999996,
         "feature_fraction": 0.46790000000000004,
         "bagging_fraction": 0.5179,
         "lambda_l2": 9.2142
@@ -57,7 +57,7 @@ CANDIDATE = {
       {
         "num_leaves": 7,
         "min_data_in_leaf": 215,
-        "learning_rate": 0.038785716911016385,
+        "learning_rate": 0.036,
         "feature_fraction": 0.5179,
         "bagging_fraction": 0.5179,
         "lambda_l2": 10.2142
@@ -65,7 +65,7 @@ CANDIDATE = {
       {
         "num_leaves": 11,
         "min_data_in_leaf": 165,
-        "learning_rate": 0.03378571691101639,
+        "learning_rate": 0.030999999999999996,
         "feature_fraction": 0.46790000000000004,
         "bagging_fraction": 0.5179,
         "lambda_l2": 9.2142
