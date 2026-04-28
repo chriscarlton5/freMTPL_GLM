@@ -8,23 +8,23 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_midleaf_frequency_mild_capped",
+    "id": "lightgbm_regularized_challenger",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "LightGBM challenger combining the mid-leaf frequency probe with one "
-        "mild capped-severity option while retaining all champion grid options."
+        "Regularized LightGBM challenger using constrained leaf counts and "
+        "moderate L2 penalties for frequency, raw severity, and capped severity."
     ),
     "hypothesis": (
-        "The mid-leaf frequency option passed fold agreement but missed the "
-        "minimum Gini gain. Adding a mild capped-severity option may provide "
-        "enough additional capped pure premium lift while preserving the fold "
-        "agreement and MAE improvements."
+        "A constrained LightGBM may improve capped pure premium ranking enough "
+        "to qualify as a segmentation/research champion while preserving capped "
+        "calibration and error stability."
     ),
     "actuarial_rationale": (
-        "This combines two near-miss ideas sparingly. Frequency remains the "
-        "primary stable signal, while capped severity gets only one additional "
-        "regularized option rather than another broad severity search."
+        "The existing report showed LightGBM can find segmentation signal, but "
+        "it is not accepted as a pricing level unless calibration and stability "
+        "also pass. This candidate intentionally limits flexibility to avoid a "
+        "black-box gift."
     ),
     "lightgbm": {
         "nrounds": 120,
@@ -45,14 +45,6 @@ CANDIDATE = {
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
-            },
-            {
-                "num_leaves": 31,
-                "min_data_in_leaf": 500,
-                "learning_rate": 0.05,
-                "feature_fraction": 0.8,
-                "bagging_fraction": 0.8,
-                "lambda_l2": 5,
             },
         ],
         "severity_grid": [
@@ -89,14 +81,6 @@ CANDIDATE = {
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
-            },
-            {
-                "num_leaves": 31,
-                "min_data_in_leaf": 200,
-                "learning_rate": 0.025,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 15,
             },
         ],
     },
