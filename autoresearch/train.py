@@ -8,79 +8,76 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_regularized_challenger",
+    "id": "lightgbm_frequency_deeper",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Regularized LightGBM challenger using constrained leaf counts and "
-        "moderate L2 penalties for frequency, raw severity, and capped severity."
+        "LightGBM with more leaves on frequency (16-24), regular severity (6-10). "
+        "Frequency drives Gini - give it more capacity."
     ),
     "hypothesis": (
-        "A constrained LightGBM may improve capped pure premium ranking enough "
-        "to qualify as a segmentation/research champion while preserving capped "
-        "calibration and error stability."
+        "Frequency is the main Gini driver. Previous best was at 14-22 leaves. "
+        "Try 16-24 to see if more capacity helps."
     ),
     "actuarial_rationale": (
-        "The existing report showed LightGBM can find segmentation signal, but "
-        "it is not accepted as a pricing level unless calibration and stability "
-        "also pass. This candidate intentionally limits flexibility to avoid a "
-        "black-box gift."
+        "Focus capacity where signal is strongest - standard practice. "
+        "Severity keeps regularization."
     ),
     "lightgbm": {
-        "nrounds": 120,
-        "early_stopping_rounds": 15,
+        "nrounds": 115,
+        "early_stopping_rounds": 14,
         "frequency_grid": [
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 1200,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
+                "num_leaves": 16,
+                "min_data_in_leaf": 1500,
+                "learning_rate": 0.038,
+                "feature_fraction": 0.86,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 10,
             },
             {
-                "num_leaves": 31,
-                "min_data_in_leaf": 1500,
-                "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "num_leaves": 24,
+                "min_data_in_leaf": 1300,
+                "learning_rate": 0.032,
+                "feature_fraction": 0.82,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 8,
             },
         ],
         "severity_grid": [
             {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
+                "num_leaves": 6,
+                "min_data_in_leaf": 180,
+                "learning_rate": 0.036,
+                "feature_fraction": 0.86,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 8,
             },
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
+                "num_leaves": 10,
+                "min_data_in_leaf": 150,
                 "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "feature_fraction": 0.82,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 6,
             },
         ],
         "capped_severity_grid": [
             {
-                "num_leaves": 7,
-                "min_data_in_leaf": 150,
-                "learning_rate": 0.04,
-                "feature_fraction": 0.9,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 5,
+                "num_leaves": 6,
+                "min_data_in_leaf": 180,
+                "learning_rate": 0.036,
+                "feature_fraction": 0.86,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 8,
             },
             {
-                "num_leaves": 15,
-                "min_data_in_leaf": 200,
+                "num_leaves": 10,
+                "min_data_in_leaf": 150,
                 "learning_rate": 0.03,
-                "feature_fraction": 0.85,
-                "bagging_fraction": 0.9,
-                "lambda_l2": 10,
+                "feature_fraction": 0.82,
+                "bagging_fraction": 0.86,
+                "lambda_l2": 6,
             },
         ],
     },
