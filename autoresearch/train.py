@@ -8,20 +8,19 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_frequency_deeper",
+    "id": "lightgbm_frequency_16_20",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "LightGBM with more leaves on frequency (16-24), regular severity (6-10). "
-        "Frequency drives Gini - give it more capacity."
+        "LightGBM with exact params from best run (14,22 leaves) but with "
+        "frequency at (16,20) to see if 16 leaves helps."
     ),
     "hypothesis": (
-        "Frequency is the main Gini driver. Previous best was at 14-22 leaves. "
-        "Try 16-24 to see if more capacity helps."
+        "Best run had 14,22 leaves at 0.1845 Gini. Try 16,20 leaves for even "
+        "more granular frequency splits."
     ),
     "actuarial_rationale": (
-        "Focus capacity where signal is strongest - standard practice. "
-        "Severity keeps regularization."
+        "Fine-tuning leaf counts is standard. Keep balanced regularization."
     ),
     "lightgbm": {
         "nrounds": 115,
@@ -29,15 +28,15 @@ CANDIDATE = {
         "frequency_grid": [
             {
                 "num_leaves": 16,
-                "min_data_in_leaf": 1500,
+                "min_data_in_leaf": 1600,
                 "learning_rate": 0.038,
                 "feature_fraction": 0.86,
                 "bagging_fraction": 0.86,
                 "lambda_l2": 10,
             },
             {
-                "num_leaves": 24,
-                "min_data_in_leaf": 1300,
+                "num_leaves": 20,
+                "min_data_in_leaf": 1400,
                 "learning_rate": 0.032,
                 "feature_fraction": 0.82,
                 "bagging_fraction": 0.86,
