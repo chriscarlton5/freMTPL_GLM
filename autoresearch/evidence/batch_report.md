@@ -34,6 +34,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_aggressive_capped_severity`: improved capped Gini to `0.1856` and lowered capped MAE, but the lift came mainly from fold 3 while folds 1 and 2 were slightly worse than the champion.
 - `lightgbm_expanded_regularized_grid`: improved capped MAE and raw calibration versus champion, but capped Gini fell to `0.1820` and fold agreement still failed.
 - `lightgbm_frequency_ranking_push`: matched champion capped Gini and slightly improved capped MAE, but did not produce a material segmentation gain or fold agreement.
+- `lightgbm_moderate_capped_severity_push`: improved capped MAE substantially but reduced capped Gini to `0.1808` and worsened capped calibration, reinforcing that capped-severity flexibility is optimizing error rather than lift.
 
 ## Next Ideas
 
@@ -44,6 +45,7 @@ Baseline evidence has been established through the autoresearch harness.
 - Try capped-severity-specific stabilization while preserving the LightGBM frequency signal.
 - Broad LightGBM grids that include conservative alternatives may optimize MAE/calibration at the expense of ranking; require capped Gini to remain the primary segmentation hurdle.
 - Frequency-only LightGBM flexibility appears to improve error more than ranking; further segmentation attempts likely need new features or a different transparent synthesis path, not just more tree depth.
+- Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
 - Avoid severity-side `DensityBand` interactions until the immutable R bridge uses one shared density-band reference across frequency and severity scoring frames.
 - Avoid further pure capped-severity flexibility unless it improves fold 1 and fold 2, not just fold 3.

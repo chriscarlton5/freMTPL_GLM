@@ -1,0 +1,82 @@
+{
+  "actuarial_rationale": "This is segmentation research only. It keeps the more stable frequency signal fixed and tests whether capped severity can add controlled lift without creating an unsupported black-box severity artifact.",
+  "description": "LightGBM challenger that preserves the current frequency and raw severity grids while adding moderate capped-severity flexibility between the prior flexible and aggressive attempts.",
+  "hypothesis": "The flexible capped-severity run improved two folds but not enough on mean Gini, while the aggressive run lifted mean Gini mostly through fold 3. A moderate capped-severity grid may increase mean capped Gini without sacrificing fold 1 or fold 2.",
+  "id": "lightgbm_moderate_capped_severity_push",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.82,
+        "lambda_l2": 12,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 140,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 15,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 180,
+        "num_leaves": 31
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
