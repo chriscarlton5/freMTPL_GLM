@@ -47,6 +47,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_longer_midleaf_stronger_capped`: longer boosting around the strongest near miss improved capped MAE to `216.3352` but dropped capped Gini to `0.1828`; more rounds shift the objective toward error, not ranking.
 - `enhanced_glm_agefreq_powerbrand_dual_severity`: combining the best transparent frequency and severity signals improved raw Gini to `0.1643`, but capped Gini fell to `0.1678` and parameter count rose to `277`.
 - `enhanced_glm_power_brand_raw_severity`: isolated the raw-severity signal cleanly, raising raw Gini to `0.1624` while leaving capped pricing metrics at the baseline; useful monitoring signal but not a pricing improvement.
+- `lightgbm_shorter_midleaf_stronger_capped`: shorter boosting preserved fold agreement and improved MAE, but capped Gini was only `0.1847`, below the strongest `0.1875` near miss.
 
 ## Next Ideas
 
@@ -68,6 +69,7 @@ Baseline evidence has been established through the autoresearch harness.
 - The adjacent capped-severity edge variant worsened the ranking/calibration tradeoff; stop local capped-severity edge search unless new features or constraints are introduced.
 - Local tuning around `lightgbm_midleaf_frequency_stronger_capped` appears exhausted; preserve it as a near miss but do not keep nudging the same tree hyperparameters.
 - Longer boosting budgets around `lightgbm_midleaf_frequency_stronger_capped` are not promising; they improved MAE while losing the fold-balanced ranking lift.
+- Shorter boosting budgets around `lightgbm_midleaf_frequency_stronger_capped` also do not clear the gate; the strongest local setting remains the original `120` rounds / `15` early-stopping setup.
 - Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
 - Restricting LightGBM severity too hard removes the ranking lift; future tree candidates need a more targeted way to stabilize severity rather than simply raising all severity leaf floors.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
