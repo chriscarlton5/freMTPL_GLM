@@ -1,0 +1,74 @@
+{
+  "actuarial_rationale": "Frequency is generally the more stable component in MTPL pricing. This candidate keeps severity stable and limits the extra flexibility to one frequency-grid option with minimum leaf and L2 controls.",
+  "description": "LightGBM challenger that keeps champion severity and capped severity settings while adding a more flexible, still regularized frequency option to test whether fold-balanced segmentation lift is frequency-led.",
+  "hypothesis": "Prior capped-severity flexibility mainly helped fold 3. A controlled frequency-ranking push may improve capped pure premium Gini across at least two folds without worsening capped MAE or calibration.",
+  "id": "lightgbm_frequency_ranking_push",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ],
+    "early_stopping_rounds": 20,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 15,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 900,
+        "num_leaves": 63
+      }
+    ],
+    "nrounds": 150,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
