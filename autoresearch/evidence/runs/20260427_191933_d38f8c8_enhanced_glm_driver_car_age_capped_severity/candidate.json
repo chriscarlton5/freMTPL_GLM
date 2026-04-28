@@ -1,0 +1,25 @@
+{
+  "actuarial_rationale": "Driver age and vehicle age have plausible claim-size relationships, but severity is tail-sensitive. This candidate uses the capped target only and requires cross-fold support before any pricing-level change.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [
+      "DriverAgeBand:CarAgeBand"
+    ],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds DriverAgeBand:CarAgeBand to the capped severity component only.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "hypothesis": "The GBM interaction review showed large age-by-vehicle-age pure premium differences. Putting this term in capped severity may improve stable loss-cost ranking while leaving frequency calibration intact.",
+  "id": "enhanced_glm_driver_car_age_capped_severity",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}
