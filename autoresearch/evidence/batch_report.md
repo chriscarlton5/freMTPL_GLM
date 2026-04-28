@@ -45,12 +45,14 @@ Baseline evidence has been established through the autoresearch harness.
 - `lightgbm_midleaf_frequency_restrained_severity`: preserving conservative raw/capped severity lowered capped Gini to `0.1818`; this suggests the prior LightGBM near-miss lift was not frequency-only.
 - `enhanced_glm_power_brand_dual_severity`: transparent and coherent; preserved the capped Power:Brand near-miss result and improved raw Gini to `0.1624`, but parameter count rose to `252` and capped Gini gain stayed immaterial.
 - `lightgbm_longer_midleaf_stronger_capped`: longer boosting around the strongest near miss improved capped MAE to `216.3352` but dropped capped Gini to `0.1828`; more rounds shift the objective toward error, not ranking.
+- `enhanced_glm_agefreq_powerbrand_dual_severity`: combining the best transparent frequency and severity signals improved raw Gini to `0.1643`, but capped Gini fell to `0.1678` and parameter count rose to `277`.
 
 ## Next Ideas
 
 - Try translating the LightGBM gain back into a transparent GLM term set.
 - Revisit `Power:Brand` capped severity only if paired with a parsimony mechanism or stricter sparse-cell pooling.
 - `Power:Brand` in both severity components is the best transparent raw-Gini signal so far, but it is too parameter-heavy to defend without sparse-cell pooling or a smaller interaction encoding.
+- Do not stack DriverAgeBand:CarAgeBand frequency with Power:Brand severity in the current GLM form; it increases complexity and helps raw monitoring more than capped pricing performance.
 - Do not apply blunt component calibration scalars to the Power:Brand capped-severity GLM; the fold-level scalars overcorrected level and degraded both ranking and error.
 - Do not combine sparse `Power:Brand` across multiple GLM components without a pooling or selection mechanism.
 - Try a slightly more regularized LightGBM variant to see whether calibration improves without losing the capped Gini gain.
