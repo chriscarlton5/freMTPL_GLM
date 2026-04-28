@@ -1,0 +1,25 @@
+{
+  "actuarial_rationale": "Territory and density are plausible exposure/risk modifiers, but the term is kept in frequency only because claim count is the more stable component for geographic segmentation. The interaction remains auditable as a banded GLM term.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds Region:DensityBand to the frequency component only.",
+  "frequency": {
+    "interactions": [
+      "Region:DensityBand"
+    ],
+    "use_splines": true
+  },
+  "hypothesis": "Regional density interaction may recover transparent frequency segmentation that the LightGBM found, while preserving the pricing GLM's strong capped pure premium calibration.",
+  "id": "enhanced_glm_region_density_frequency",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}
