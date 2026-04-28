@@ -44,6 +44,7 @@ Baseline evidence has been established through the autoresearch harness.
 - `enhanced_glm_power_brand_capped_calibrated`: fold-internal component calibration turned the transparent Power:Brand capped-severity near miss into a clear deterioration, with capped Gini `0.1675`, capped calibration gap `0.0265`, capped MAE `221.5002`, and raw Gini `0.1467`.
 - `lightgbm_midleaf_frequency_restrained_severity`: preserving conservative raw/capped severity lowered capped Gini to `0.1818`; this suggests the prior LightGBM near-miss lift was not frequency-only.
 - `enhanced_glm_power_brand_dual_severity`: transparent and coherent; preserved the capped Power:Brand near-miss result and improved raw Gini to `0.1624`, but parameter count rose to `252` and capped Gini gain stayed immaterial.
+- `lightgbm_longer_midleaf_stronger_capped`: longer boosting around the strongest near miss improved capped MAE to `216.3352` but dropped capped Gini to `0.1828`; more rounds shift the objective toward error, not ranking.
 
 ## Next Ideas
 
@@ -62,6 +63,7 @@ Baseline evidence has been established through the autoresearch harness.
 - Stronger forced capped severity nearly cleared the segmentation gate; one adjacent variant is justified, but treat this as the edge of acceptable black-box severity flexibility.
 - The adjacent capped-severity edge variant worsened the ranking/calibration tradeoff; stop local capped-severity edge search unless new features or constraints are introduced.
 - Local tuning around `lightgbm_midleaf_frequency_stronger_capped` appears exhausted; preserve it as a near miss but do not keep nudging the same tree hyperparameters.
+- Longer boosting budgets around `lightgbm_midleaf_frequency_stronger_capped` are not promising; they improved MAE while losing the fold-balanced ranking lift.
 - Capped-severity LightGBM flexibility now repeatedly trades ranking for lower MAE; do not continue pure capped-severity tuning without a new hypothesis.
 - Restricting LightGBM severity too hard removes the ranking lift; future tree candidates need a more targeted way to stabilize severity rather than simply raising all severity leaf floors.
 - Avoid isolated frequency-only geographic interactions unless paired with evidence from the LightGBM feature pattern.
