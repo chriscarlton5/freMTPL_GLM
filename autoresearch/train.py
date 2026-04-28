@@ -8,27 +8,30 @@ from prepare import run_experiment
 
 
 CANDIDATE = {
-    "id": "lightgbm_regularized_challenger",
+    "id": "lightgbm_expanded_regularized_grid",
     "is_baseline": False,
     "model_type": "lightgbm",
     "description": (
-        "Regularized LightGBM challenger using constrained leaf counts and "
-        "moderate L2 penalties for frequency, raw severity, and capped severity."
+        "Regularized LightGBM challenger with an expanded inner-validation "
+        "grid. It keeps the current champion settings available while adding "
+        "more conservative frequency options and previously useful capped "
+        "severity options."
     ),
     "hypothesis": (
-        "A constrained LightGBM may improve capped pure premium ranking enough "
-        "to qualify as a segmentation/research champion while preserving capped "
-        "calibration and error stability."
+        "The aggressive capped-severity run improved fold 3 but hurt folds 1 "
+        "and 2. Keeping champion options in the grid while adding conservative "
+        "alternatives may allow fold-specific inner validation to improve capped "
+        "pure premium Gini without sacrificing fold agreement."
     ),
     "actuarial_rationale": (
-        "The existing report showed LightGBM can find segmentation signal, but "
-        "it is not accepted as a pricing level unless calibration and stability "
-        "also pass. This candidate intentionally limits flexibility to avoid a "
-        "black-box gift."
+        "This remains a segmentation/research candidate only. The broader grid "
+        "is still constrained by minimum leaf sizes, feature/bagging fractions, "
+        "and L2 regularization so that any gain is less likely to be a sparse "
+        "black-box artifact."
     ),
     "lightgbm": {
-        "nrounds": 120,
-        "early_stopping_rounds": 15,
+        "nrounds": 160,
+        "early_stopping_rounds": 20,
         "frequency_grid": [
             {
                 "num_leaves": 15,
@@ -45,6 +48,14 @@ CANDIDATE = {
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
+            },
+            {
+                "num_leaves": 15,
+                "min_data_in_leaf": 2000,
+                "learning_rate": 0.025,
+                "feature_fraction": 0.8,
+                "bagging_fraction": 0.85,
+                "lambda_l2": 20,
             },
         ],
         "severity_grid": [
@@ -64,6 +75,14 @@ CANDIDATE = {
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
             },
+            {
+                "num_leaves": 7,
+                "min_data_in_leaf": 300,
+                "learning_rate": 0.025,
+                "feature_fraction": 0.8,
+                "bagging_fraction": 0.85,
+                "lambda_l2": 20,
+            },
         ],
         "capped_severity_grid": [
             {
@@ -81,6 +100,22 @@ CANDIDATE = {
                 "feature_fraction": 0.85,
                 "bagging_fraction": 0.9,
                 "lambda_l2": 10,
+            },
+            {
+                "num_leaves": 31,
+                "min_data_in_leaf": 150,
+                "learning_rate": 0.025,
+                "feature_fraction": 0.8,
+                "bagging_fraction": 0.9,
+                "lambda_l2": 10,
+            },
+            {
+                "num_leaves": 31,
+                "min_data_in_leaf": 100,
+                "learning_rate": 0.025,
+                "feature_fraction": 0.75,
+                "bagging_fraction": 0.85,
+                "lambda_l2": 15,
             },
         ],
     },
