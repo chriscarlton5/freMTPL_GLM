@@ -17,12 +17,12 @@ The central question was:
 
 The practical goals were to:
 
-- build a basic GLM/GBM as best I could as a non-expert
+- build a basic GLM/GBM as best as I could as a non-expert
 - estimate expected annual loss cost from frequency and severity components
 - compare a transparent GLM against a more flexible LightGBM
 - evaluate ranking, calibration, and error rather than a single leaderboard metric
 - use GBM feature importance, partial dependence plots, and interaction summaries to understand what the challenger learned
-- test whether an autonomous research loop could improve the baseline modeling results while preserving an auditable evidence trail.
+- test whether an autonomous research loop could improve the baseline modeling results while preserving an auditable evidence trail
 
 ## Data and Actuarial Target
 
@@ -37,17 +37,19 @@ The actuarial target is expected annual pure premium:
 expected annual pure premium = expected annual claim frequency * expected claim severity
 ```
 
-The baseline GLM uses a Poisson frequency model with an exposure offset and Gamma severity models on positive claim amounts. The LightGBM challenger mirrors that structure with a Poisson objective for frequency and Gamma objectives for raw and capped severity. The capped severity view uses a 99.5% severity cap as a stability check on body-of-loss behavior; raw pure premium remains the main business target.
+The baseline GLM uses a Poisson frequency model with an exposure offset and Gamma severity models on positive claim amounts. The LightGBM mirrors that structure with a Poisson objective for frequency and Gamma objectives for raw and capped severity. The capped severity view uses a 99.5% severity cap as a stability check on body-of-loss behavior; raw pure premium remains the main business target.
 
 ## Modeling Workflow
 
-The project has three modeling layers.
+The project has four modeling layers.
 
 First, I built a transparent GLM benchmark. This is the actuarially familiar starting point: easy to explain, easy to inspect, and strong for aggregate calibration.
 
-Second, I trained a LightGBM challenger to test whether a more flexible model could improve risk segmentation. The GBM was evaluated on the same frequency/severity structure as the GLM, with pure premium derived from the component predictions rather than modeled directly.
+Second, I trained a LightGBM model to test whether a more flexible model could improve risk segmentation. The GBM was evaluated on the same frequency/severity structure as the GLM, with pure premium derived from the component predictions rather than modeled directly.
 
 Third, I used the GBM as a diagnostic tool for a GBM-informed GLM synthesis. The report tests splines and candidate interactions suggested by the boosted model, but retains only transparent terms that improve validation metrics without unacceptable calibration deterioration.
+
+Fourth, and finally, I let the autonomous research harness run for 24+ hours so it could propose and conduct 300+ well-documented micro-experiments (changing model assumptions and inputs) to see if it could improve our pricing model's output. 
 
 Throughout the project, I treated Gini, calibration, MAE, decile lift, leakage checks, and finite/nonnegative predictions as complementary diagnostics. The goal was not simply to make the most complex model win; it was to understand whether the extra complexity created actuarially useful signal.
 
