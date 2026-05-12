@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "candidate_id": "lightgbm_best_191",
+  "idea_family": "hyperparameter_tuning",
+  "hypothesis": "Replay the v1 CV-selected autoresearch champion as a known non-promoted example for the v2 promotion gates.",
+  "expected_mechanism": "High randomization may improve repeated-CV ranking, but prior holdout evidence suggests it does not beat the initial regularized LightGBM on capped pure-premium Gini.",
+  "intended_metric_improvements": ["capped_pp_gini", "raw_pp_gini", "capped_pp_mae"],
+  "known_tradeoff_risk": "May optimize repeated CV while failing blind holdout capped pure-premium Gini.",
+  "parent_candidate_id": "lightgbm_regularized_challenger",
+  "model_spec": {
+    "actuarial_rationale": "Champion config",
+    "description": "Best config: FF=0.515 L2=13.4 leaves=16/24",
+    "hypothesis": "High randomization approach",
+    "id": "lightgbm_best_191",
+    "is_baseline": false,
+    "lightgbm": {
+      "capped_severity_grid": [
+        {
+          "bagging_fraction": 0.515,
+          "feature_fraction": 0.515,
+          "lambda_l2": 10.4,
+          "learning_rate": 0.0365,
+          "min_data_in_leaf": 218,
+          "num_leaves": 7
+        },
+        {
+          "bagging_fraction": 0.515,
+          "feature_fraction": 0.465,
+          "lambda_l2": 8.4,
+          "learning_rate": 0.0315,
+          "min_data_in_leaf": 168,
+          "num_leaves": 11
+        }
+      ],
+      "early_stopping_rounds": 22,
+      "frequency_grid": [
+        {
+          "bagging_fraction": 0.515,
+          "feature_fraction": 0.515,
+          "lambda_l2": 13.4,
+          "learning_rate": 0.0365,
+          "min_data_in_leaf": 1795,
+          "num_leaves": 16
+        },
+        {
+          "bagging_fraction": 0.515,
+          "feature_fraction": 0.465,
+          "lambda_l2": 11.4,
+          "learning_rate": 0.0315,
+          "min_data_in_leaf": 1495,
+          "num_leaves": 24
+        }
+      ],
+      "nrounds": 175,
+      "severity_grid": [
+        {
+          "bagging_fraction": 0.515,
+          "feature_fraction": 0.515,
+          "lambda_l2": 10.4,
+          "learning_rate": 0.0365,
+          "min_data_in_leaf": 218,
+          "num_leaves": 7
+        },
+        {
+          "bagging_fraction": 0.515,
+          "feature_fraction": 0.465,
+          "lambda_l2": 8.4,
+          "learning_rate": 0.0315,
+          "min_data_in_leaf": 168,
+          "num_leaves": 11
+        }
+      ]
+    },
+    "model_type": "lightgbm"
+  }
+}

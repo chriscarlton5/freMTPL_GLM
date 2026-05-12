@@ -1,0 +1,17 @@
+{
+  "benchmark_model_id": "lightgbm_regularized_challenger",
+  "candidate_id": "v2_lgb_stronger_l2",
+  "deltas": {
+    "bad_prediction_count": 0,
+    "candidate_abs_capped_pp_calibration_gap": 0.00543439777465492,
+    "capped_pp_calibration_abs_deterioration": -0.00020785727483792985,
+    "capped_pp_mae_deterioration": 8.913046214600775e-05,
+    "capped_pp_rmse_deterioration": -9.410383593263973e-06,
+    "holdout_capped_pp_gini_gain": 0.0013807970999079877,
+    "holdout_raw_pp_gini_gain": -0.00021484699488000247,
+    "policy_leakage_count": 0
+  },
+  "gate_failures": [],
+  "model_id": "v2_lgb_stronger_l2",
+  "status": "promote"
+}

@@ -1,0 +1,240 @@
+{
+  "generated_at": "2026-05-12 14:59:37.030411",
+  "base_seed": 20260423,
+  "stability_seeds": [20260423, 20260431, 20260439, 20260447, 20260455],
+  "holdout_metrics": [
+    {
+      "model_id": "baseline_enhanced_glm_splines",
+      "model_type": "glm",
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3228.6796,
+      "frequency_gini": 0.1746,
+      "frequency_mae": 0.1323,
+      "frequency_rmse": 0.4689,
+      "frequency_poisson_deviance": 0.2507,
+      "raw_pp_gini": 0.3517,
+      "raw_pp_mae": 295.4483,
+      "raw_pp_rmse": 20355.7718,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 141.8035,
+      "raw_pp_calibration_gap": -0.1555,
+      "capped_pp_gini": 0.2005,
+      "capped_pp_mae": 217.052,
+      "capped_pp_rmse": 1755.4411,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 115.0195,
+      "capped_pp_calibration_gap": 0.0118,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0,
+      "_row": "baseline_enhanced_glm_splines"
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "model_type": "lightgbm",
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3229.4248,
+      "frequency_gini": 0.1774,
+      "frequency_mae": 0.1325,
+      "frequency_rmse": 0.469,
+      "frequency_poisson_deviance": 0.2508,
+      "raw_pp_gini": 0.386,
+      "raw_pp_mae": 287.1962,
+      "raw_pp_rmse": 20355.7134,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 132.5886,
+      "raw_pp_calibration_gap": -0.2103,
+      "capped_pp_gini": 0.2075,
+      "capped_pp_mae": 215.4846,
+      "capped_pp_rmse": 1755.4406,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 113.0387,
+      "capped_pp_calibration_gap": -0.0056,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0,
+      "_row": "lightgbm_regularized_challenger"
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "model_type": "lightgbm",
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3231.7901,
+      "frequency_gini": 0.1816,
+      "frequency_mae": 0.1325,
+      "frequency_rmse": 0.469,
+      "frequency_poisson_deviance": 0.2507,
+      "raw_pp_gini": 0.3879,
+      "raw_pp_mae": 282.9749,
+      "raw_pp_rmse": 20356.3958,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 127.8135,
+      "raw_pp_calibration_gap": -0.2388,
+      "capped_pp_gini": 0.2065,
+      "capped_pp_mae": 215.0472,
+      "capped_pp_rmse": 1755.5323,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 112.5533,
+      "capped_pp_calibration_gap": -0.0099,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0,
+      "_row": "lightgbm_best_191"
+    }
+  ],
+  "seed_summary": [
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "metric": "capped_pp_gini",
+      "mean": 0.2082,
+      "sd": 0.0022,
+      "min": 0.2062,
+      "max": 0.2115,
+      "worst_abs_delta_from_mean": 0.0033
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "metric": "raw_pp_gini",
+      "mean": 0.3865,
+      "sd": 0.003,
+      "min": 0.3816,
+      "max": 0.3893,
+      "worst_abs_delta_from_mean": 0.0049
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "metric": "capped_pp_mae",
+      "mean": 215.6989,
+      "sd": 1.1356,
+      "min": 214.2095,
+      "max": 217.1355,
+      "worst_abs_delta_from_mean": 1.4894
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "metric": "capped_pp_calibration_gap",
+      "mean": -0.0036,
+      "sd": 0.011,
+      "min": -0.0181,
+      "max": 0.0104,
+      "worst_abs_delta_from_mean": 0.0145
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "metric": "capped_pp_gini",
+      "mean": 0.2054,
+      "sd": 0.0027,
+      "min": 0.2013,
+      "max": 0.2084,
+      "worst_abs_delta_from_mean": 0.0041
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "metric": "raw_pp_gini",
+      "mean": 0.3773,
+      "sd": 0.0103,
+      "min": 0.3654,
+      "max": 0.3883,
+      "worst_abs_delta_from_mean": 0.0119
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "metric": "capped_pp_mae",
+      "mean": 215.128,
+      "sd": 1.1803,
+      "min": 214.0018,
+      "max": 216.9021,
+      "worst_abs_delta_from_mean": 1.7742
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "metric": "capped_pp_calibration_gap",
+      "mean": -0.0088,
+      "sd": 0.0116,
+      "min": -0.0197,
+      "max": 0.0088,
+      "worst_abs_delta_from_mean": 0.0176
+    }
+  ],
+  "prediction_stability_summary": [
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "prediction": "capped_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0.048,
+      "p95_cv": 0.0916,
+      "max_cv": 0.137
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "prediction": "raw_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0.0635,
+      "p95_cv": 0.1253,
+      "max_cv": 0.2752
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "prediction": "capped_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0.0497,
+      "p95_cv": 0.0889,
+      "max_cv": 0.1454
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "prediction": "raw_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0.0831,
+      "p95_cv": 0.1364,
+      "max_cv": 0.2022
+    }
+  ],
+  "feature_importance_summary": [
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "component": "frequency",
+      "mean_top5_jaccard": 1,
+      "most_common_top_feature": "DriverAge",
+      "status": "stable"
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "component": "severity",
+      "mean_top5_jaccard": 1,
+      "most_common_top_feature": "DriverAge",
+      "status": "stable"
+    },
+    {
+      "model_id": "lightgbm_regularized_challenger",
+      "component": "capped_severity",
+      "mean_top5_jaccard": 1,
+      "most_common_top_feature": "DriverAge",
+      "status": "stable"
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "component": "frequency",
+      "mean_top5_jaccard": 1,
+      "most_common_top_feature": "DriverAge",
+      "status": "stable"
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "component": "severity",
+      "mean_top5_jaccard": 1,
+      "most_common_top_feature": "DriverAge",
+      "status": "stable"
+    },
+    {
+      "model_id": "lightgbm_best_191",
+      "component": "capped_severity",
+      "mean_top5_jaccard": 1,
+      "most_common_top_feature": "DriverAge",
+      "status": "stable"
+    }
+  ]
+}

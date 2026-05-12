@@ -1,0 +1,3 @@
+status: research_only
+run_dir: autoresearch\evidence\v2\runs\20260512_160959_v2_lgb_lower_learning_rate
+report: autoresearch\evidence\v2\runs\20260512_160959_v2_lgb_lower_learning_rate\promotion_report.md

@@ -1,0 +1,10 @@
+{
+  "benchmark_model_id": "lightgbm_regularized_challenger",
+  "candidate_id": "lightgbm_regularized_challenger",
+  "deltas": {
+    "current_champion": true
+  },
+  "gate_failures": [],
+  "model_id": "lightgbm_regularized_challenger",
+  "status": "current_champion"
+}

@@ -1,0 +1,46 @@
+{
+  "candidate_id": "v2_glm_age_powerbrand",
+  "expected_mechanism": "Replace local LightGBM tuning with stable, reviewable interactions across frequency and severity components.",
+  "hypothesis": "Combine the strongest transparent driver/vehicle structure with vehicle-type segmentation.",
+  "idea_family": "transparent_glm",
+  "intended_metric_improvements": [
+    "holdout_capped_pp_gini",
+    "calibration",
+    "interpretability"
+  ],
+  "known_tradeoff_risk": "Transparent interactions may be too rigid or too parameter-heavy to beat the LightGBM benchmark.",
+  "model_spec": {
+    "actuarial_rationale": "Transparent GLM structure tests whether stable actuarial interactions can improve pricing without black-box search.",
+    "calibration": {
+      "component_scalars": false
+    },
+    "capped_severity": {
+      "interactions": [
+        "DriverAgeBand:CarAgeBand",
+        "Power:Brand"
+      ],
+      "use_splines": true
+    },
+    "description": "V2 transparent GLM with splines=True and interactions=DriverAgeBand:CarAgeBand,Power:Brand.",
+    "frequency": {
+      "interactions": [
+        "DriverAgeBand:CarAgeBand",
+        "Power:Brand"
+      ],
+      "use_splines": true
+    },
+    "hypothesis": "Combine the strongest transparent driver/vehicle structure with vehicle-type segmentation.",
+    "id": "v2_glm_age_powerbrand",
+    "is_baseline": false,
+    "model_type": "glm",
+    "severity": {
+      "interactions": [
+        "DriverAgeBand:CarAgeBand",
+        "Power:Brand"
+      ],
+      "use_splines": true
+    }
+  },
+  "parent_candidate_id": "baseline_enhanced_glm_splines",
+  "schema_version": 1
+}

@@ -61,35 +61,45 @@ The key governance idea was to make autonomous experimentation behave more like 
 
 ## Results
 
-The autoresearch loop improved the GBM challenger, not merely the GLM comparison. The selected final LightGBM produced stronger ranking than the initial GBM while also improving absolute capped calibration error.
+The autoresearch loop improved the GBM challenger on its cross-validation gates, not merely the GLM comparison. A later locked holdout check is more cautious: `lightgbm_best_191` remains the CV-selected autoresearch champion, but the initial regularized LightGBM is still the more defensible capped-Gini challenger on blind holdout.
 
 | Model | Role | Capped PP Gini | Raw PP Gini | Capped PP MAE | Capped calibration gap |
 | --- | --- | ---: | ---: | ---: | ---: |
 | Enhanced GLM splines | Transparent baseline | `0.1684` | `0.1540` | `219.0904` | `+0.19%` |
 | Regularized LightGBM | Initial GBM challenger | `0.1827` | `0.1980` | `217.6245` | `-1.45%` |
-| Autoresearch LightGBM | Final pricing challenger | `0.1909` | `0.2140` | `218.1074` | `-0.97%` |
+| Autoresearch LightGBM | CV-selected research champion | `0.1909` | `0.2140` | `218.1074` | `-0.97%` |
 
-Compared with the GLM baseline, the final LightGBM improved capped pure-premium Gini from `0.1684` to `0.1909`, raw pure-premium Gini from `0.1540` to `0.2140`, and capped pure-premium MAE from `219.0904` to `218.1074`.
+Compared with the GLM baseline, the CV-selected LightGBM improved capped pure-premium Gini from `0.1684` to `0.1909`, raw pure-premium Gini from `0.1540` to `0.2140`, and capped pure-premium MAE from `219.0904` to `218.1074`.
 
-Compared with the initial GBM, the final LightGBM improved capped pure-premium Gini from `0.1827` to `0.1909`, raw pure-premium Gini from `0.1980` to `0.2140`, and absolute capped calibration error from `1.45%` to `0.97%`. The main tradeoff was a small capped MAE deterioration versus the initial GBM, from `217.6245` to `218.1074`, or about `0.22%`. I consider that acceptable in this research context because the final model delivered stronger ranking and better calibration while passing the harness gates.
+Compared with the initial GBM inside the autoresearch CV loop, the CV-selected LightGBM improved capped pure-premium Gini from `0.1827` to `0.1909`, raw pure-premium Gini from `0.1980` to `0.2140`, and absolute capped calibration error from `1.45%` to `0.97%`. The main CV tradeoff was a small capped MAE deterioration versus the initial GBM, from `217.6245` to `218.1074`, or about `0.22%`. That is acceptable as research evidence, but it is not enough by itself to make the model a production pricing choice.
 
-The source of truth for these results is `autoresearch/evidence/results.tsv`, with selected champions summarized in `autoresearch/evidence/champions.json`.
+The source of truth for the CV results is `autoresearch/evidence/results.tsv`, with selected champions summarized in `autoresearch/evidence/champions.json`. The post-selection robustness report is written by `python autoresearch/robustness.py` to `autoresearch/evidence/robustness/latest/robustness_report.md`.
+
+### Post-Selection Robustness
+
+The robustness layer scores the transparent GLM baseline, the initial LightGBM challenger, and `lightgbm_best_191` on the existing blind holdout split. On that holdout, `lightgbm_best_191` has the best raw pure-premium Gini (`0.3879`) and capped MAE (`215.0472`), but its capped pure-premium Gini (`0.2065`) is slightly below the initial regularized LightGBM (`0.2075`). The correct conclusion is that autoresearch found a useful signal, not that the final CV-selected model is unambiguously better for pricing.
+
+The same robustness run checks seed stability and feature-importance stability across fixed LightGBM seeds. The top-five feature-importance sets were stable in this run, but policy-level pure-premium predictions still moved enough across seeds to justify human model-owner review before treating either GBM as a filing-ready pricing model.
+
+The next-generation autonomous researcher lives under `autoresearch/v2/`. It started from `lightgbm_regularized_challenger` as the pricing champion and promoted `v2_lgb_stronger_l2`, a stronger-L2 variant, after staged CV, seed-stability, and blind-holdout promotion gates passed.
 
 ## What the Autoresearch Loop Changed
 
 The autoresearch loop did not simply discover that "GBM beats GLM." The initial LightGBM already improved segmentation over the transparent GLM. The loop improved the GBM itself by testing more regularized and more randomized LightGBM configurations.
 
-The initial kept GBM, `lightgbm_regularized_challenger`, used constrained leaf counts and moderate L2 penalties. Its hypothesis was that a restrained LightGBM could improve capped pure-premium ranking while preserving calibration and error stability. The final pricing challenger, `lightgbm_best_191`, pushed a "high randomization" hypothesis: lower feature and bagging fractions, stronger frequency L2 regularization, constrained leaf counts, higher minimum leaf sizes, and a longer boosting budget.
+The initial kept GBM, `lightgbm_regularized_challenger`, used constrained leaf counts and moderate L2 penalties. Its hypothesis was that a restrained LightGBM could improve capped pure-premium ranking while preserving calibration and error stability. The CV-selected research champion, `lightgbm_best_191`, pushed a "high randomization" hypothesis: lower feature and bagging fractions, stronger frequency L2 regularization, constrained leaf counts, higher minimum leaf sizes, and a longer boosting budget.
 
-That change made the model better at ranking risk without creating an unacceptable calibration tradeoff. Capped pure-premium Gini improved from `0.1827` to `0.1909`, raw pure-premium Gini improved from `0.1980` to `0.2140`, and absolute capped calibration error improved from `1.45%` to `0.97%`. The fold-level capped Gini also improved in all three folds, which made the result more defensible than a single aggregate lift. The only meaningful tradeoff was capped MAE, which moved from `217.6245` to `218.1074`, about a `0.22%` deterioration.
+That change made the model better at ranking risk in the CV loop without creating an unacceptable calibration tradeoff. Capped pure-premium Gini improved from `0.1827` to `0.1909`, raw pure-premium Gini improved from `0.1980` to `0.2140`, and absolute capped calibration error improved from `1.45%` to `0.97%`. The fold-level capped Gini also improved in all three folds, which made the result more defensible than a single aggregate lift. The only meaningful CV tradeoff was capped MAE, which moved from `217.6245` to `218.1074`, about a `0.22%` deterioration.
 
-The winning GBM was still trained in R. Python orchestrated the autonomous research loop: it wrote candidate specs, launched runs, applied gates, and recorded evidence. The actual GLM and LightGBM training stayed in the R workflow through `autoresearch/r/candidate_runner.R` and `autoresearch/r/harness.R`, preserving consistency with the original actuarial modeling code.
+The high-randomization settings should be read as an empirical regularization result, not as actuarial constants. Lower feature and bagging fractions were tested because noisy claim data and sparse severity experience can reward variance control. The exact feature-fraction and L2 values were selected inside a constrained search and require holdout, seed, and interpretability review before any pricing recommendation.
+
+The winning CV GBM was still trained in R. Python orchestrated the autonomous research loop: it wrote candidate specs, launched runs, applied gates, and recorded evidence. The actual GLM and LightGBM training stayed in the R workflow through `autoresearch/r/candidate_runner.R` and `autoresearch/r/harness.R`, preserving consistency with the original actuarial modeling code. A human model owner still has to authorize the metric priority and final selection; the agent-generated specification is evidence, not governance approval.
 
 ## Actuarial Interpretation
 
-My conclusion is that GBM added real segmentation value. The GLM remained the clean transparent benchmark, but the LightGBM challenger was better at ranking policies by observed loss cost. The autoresearch loop then found a stronger GBM candidate than the initial hand-built challenger.
+My conclusion is that GBM added real segmentation value. The GLM remained the clean transparent benchmark, and the LightGBM challengers were better at ranking policies by observed loss cost. The autoresearch loop then found a stronger CV candidate than the initial hand-built challenger, but blind holdout evidence does not make that final CV candidate unambiguously superior.
 
-That does not mean the final GBM is automatically a filed pricing model. A production filing would require broader governance: explainability review, proxy-variable review, stability testing, reasonableness checks, and business signoff. This repo includes baseline explainability through the GLM comparison, feature importance, partial dependence plots, interaction summaries, and decile-level calibration/lift diagnostics, but it remains an exploratory project.
+That does not mean either GBM is automatically a filed pricing model. A production filing would require broader governance: explainability review, proxy-variable review, stability testing, reasonableness checks, and business signoff. This repo includes baseline explainability through the GLM comparison, feature importance, partial dependence plots, interaction summaries, decile-level calibration/lift diagnostics, and a locked post-selection robustness report, but it remains an exploratory project.
 
 The strongest story is that the project moved from classical actuarial modeling, to GBM challenger modeling, to autonomous model research, while keeping the analysis grounded in expected loss cost, calibration, ranking, and transparent evidence.
 

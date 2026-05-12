@@ -1,0 +1,3 @@
+"model_id","prediction","sampled_policies","median_cv","p95_cv","max_cv"
+"lightgbm_regularized_challenger","capped_pp",1000,0.0440511979663088,0.102111015122279,0.157189042055679
+"lightgbm_regularized_challenger","raw_pp",1000,0.058574909006308,0.131102931143235,0.224136170779646

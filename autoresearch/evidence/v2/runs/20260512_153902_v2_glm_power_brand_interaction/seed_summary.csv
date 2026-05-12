@@ -1,0 +1,5 @@
+"model_id","metric","mean","sd","min","max","worst_abs_delta_from_mean"
+"v2_glm_power_brand_interaction","capped_pp_gini",0.191221216468649,0,0.191221216468649,0.191221216468649,0
+"v2_glm_power_brand_interaction","raw_pp_gini",0.340959210356621,0,0.340959210356621,0.340959210356621,0
+"v2_glm_power_brand_interaction","capped_pp_mae",217.14689428639,0,217.14689428639,217.14689428639,0
+"v2_glm_power_brand_interaction","capped_pp_calibration_gap",0.0125071994947424,0,0.0125071994947424,0.0125071994947424,0

@@ -1,0 +1,5 @@
+"model_id","metric","mean","sd","min","max","worst_abs_delta_from_mean"
+"v2_glm_age_car_interaction","capped_pp_gini",0.210124400143134,0,0.210124400143134,0.210124400143134,0
+"v2_glm_age_car_interaction","raw_pp_gini",0.372755288168798,0,0.372755288168798,0.372755288168798,0
+"v2_glm_age_car_interaction","capped_pp_mae",217.074788730261,0,217.074788730261,217.074788730261,0
+"v2_glm_age_car_interaction","capped_pp_calibration_gap",0.0117357601581656,0,0.0117357601581656,0.0117357601581656,0

@@ -1,0 +1,3 @@
+"model_id","prediction","sampled_policies","median_cv","p95_cv","max_cv"
+"v2_glm_age_powerbrand","capped_pp",1000,0,0,0
+"v2_glm_age_powerbrand","raw_pp",1000,0,0,0

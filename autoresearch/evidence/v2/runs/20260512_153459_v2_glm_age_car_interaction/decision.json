@@ -1,0 +1,21 @@
+{
+  "benchmark_model_id": "lightgbm_regularized_challenger",
+  "candidate_id": "v2_glm_age_car_interaction",
+  "deltas": {
+    "bad_prediction_count": 0,
+    "candidate_abs_capped_pp_calibration_gap": 0.0117357601581656,
+    "capped_pp_calibration_abs_deterioration": 0.00609350510867275,
+    "capped_pp_mae_deterioration": 0.007379724222532174,
+    "capped_pp_rmse_deterioration": -5.667816549036109e-05,
+    "holdout_capped_pp_gini_gain": 0.0025947771582799928,
+    "holdout_raw_pp_gini_gain": -0.01325752383238199,
+    "policy_leakage_count": 0
+  },
+  "gate_failures": [
+    "capped PP MAE deterioration exceeded tolerance",
+    "capped PP calibration deterioration exceeded tolerance",
+    "raw PP Gini deteriorated beyond tolerance"
+  ],
+  "model_id": "v2_glm_age_car_interaction",
+  "status": "research_only"
+}

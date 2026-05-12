@@ -1,0 +1,4 @@
+"model_id","component","mean_top5_jaccard","status"
+"lightgbm_regularized_challenger","frequency",1,"stable"
+"lightgbm_regularized_challenger","severity",1,"stable"
+"lightgbm_regularized_challenger","capped_severity",1,"stable"

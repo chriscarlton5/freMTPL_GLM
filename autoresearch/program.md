@@ -145,3 +145,25 @@ Each run creates a short lab note in `decision.md`:
 - decision: `keep`, `discard`, or `crash`
 
 `run.log` is tracked up to 1 MB. If a log is larger, `prepare.py` writes a truncated head/tail log and records truncation in the decision memo.
+
+## Post-Selection Robustness
+
+After naming or changing a champion, run:
+
+```powershell
+python autoresearch/robustness.py
+```
+
+This evaluates the transparent GLM baseline, `lightgbm_regularized_challenger`, and `lightgbm_best_191` on the existing holdout split, then checks LightGBM seed stability and feature-importance stability. The robustness runner is evidence-only: it must not update `champions.json`, historical CV evidence, split logic, or hard gates.
+
+Treat `lightgbm_best_191` as a CV-selected research champion unless the holdout and stability report supports promotion. If holdout capped Gini lift disappears, calibration/MAE materially worsens, or seed-level predictions are unstable, keep the model as an autoresearch signal and favor the initial regularized LightGBM or transparent GLM for defensibility.
+
+## V2 Governed Research Loop
+
+Use `autoresearch/v2/` for new autonomous research. V2 candidates must be structured JSON files with an idea family, hypothesis, expected mechanism, intended metric improvements, known tradeoff risk, parent candidate, and model spec. Run a candidate with:
+
+```powershell
+python autoresearch/v2/controller.py autoresearch/v2/candidates/<candidate>.json
+```
+
+The controller blocks duplicate specs, enforces idea-family budgets, runs R-owned CV/holdout/stability evaluation, and writes a promotion report under `autoresearch/evidence/v2/runs/`. It does not edit `train.py`, update v1 champions, or rewrite historical evidence.

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "current_pricing_champion_id": "v2_lgb_stronger_l2",
+  "current_pricing_champion_candidate": "autoresearch/v2/generated/v2_lgb_stronger_l2.json",
+  "final_validation": "existing_holdout_split",
+  "stability_seeds": [20260423, 20260431, 20260439],
+  "promotion_gates": {
+    "min_holdout_capped_pp_gini_gain": 0.001,
+    "max_capped_pp_mae_deterioration": 0.005,
+    "max_capped_pp_rmse_deterioration": 0.005,
+    "max_abs_capped_pp_calibration_gap": 0.03,
+    "max_capped_pp_calibration_abs_deterioration": 0.005,
+    "max_raw_pp_gini_deterioration": 0.002
+  },
+  "idea_family_budgets": {
+    "new_feature": 20,
+    "transparent_glm": 20,
+    "model_structure": 12,
+    "calibration": 10,
+    "stability": 10,
+    "hyperparameter_tuning": 6
+  },
+  "allowed_idea_families": [
+    "new_feature",
+    "transparent_glm",
+    "model_structure",
+    "calibration",
+    "stability",
+    "hyperparameter_tuning"
+  ],
+  "known_non_promoted": [
+    {
+      "candidate_id": "lightgbm_best_191",
+      "reason": "CV-selected autoresearch champion did not beat the initial regularized LightGBM on blind holdout capped pure-premium Gini."
+    }
+  ],
+  "promotion_history": [
+    {
+      "candidate_id": "v2_lgb_stronger_l2",
+      "previous_champion_id": "lightgbm_regularized_challenger",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_161535_v2_lgb_stronger_l2",
+      "reason": "Improved blind holdout capped pure-premium Gini by 0.00138 with no promotion gate failures."
+    }
+  ]
+}

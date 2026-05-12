@@ -1,0 +1,4 @@
+"model_id","component","mean_top5_jaccard","status"
+"v2_lgb_higher_leaf_floor","frequency",1,"stable"
+"v2_lgb_higher_leaf_floor","severity",1,"stable"
+"v2_lgb_higher_leaf_floor","capped_severity",1,"stable"
