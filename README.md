@@ -53,6 +53,8 @@ Fourth, and finally, I let the autonomous research harness run for 24+ hours so 
 
 Throughout the project, I treated Gini, calibration, MAE, decile lift, leakage checks, and finite/nonnegative predictions as complementary diagnostics. The goal was not simply to make the most complex model win; it was to understand whether the extra complexity created actuarially useful signal.
 
+Experiments which did not improve the above model metrics with reasonable tradeoffs were discarded. Experiments which did improve our pricing model with acceptable tradeoffs were kept, the changes were documented, and the new model branch became the baseline.
+
 ## Autoresearch Experiment
 
 After building the initial GLM and GBM workflows, I adapted an autonomous research loop inspired by Karpathy's `autoresearch` framework. In this repo, Python orchestrates the loop while R remains the source of truth for the actuarial modeling code, feature treatment, splits, and metrics.
