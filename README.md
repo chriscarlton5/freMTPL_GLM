@@ -75,6 +75,16 @@ Compared with the initial GBM, the final LightGBM improved capped pure-premium G
 
 The source of truth for these results is `autoresearch/evidence/results.tsv`, with selected champions summarized in `autoresearch/evidence/champions.json`.
 
+## What the Autoresearch Loop Changed
+
+The autoresearch loop did not simply discover that "GBM beats GLM." The initial LightGBM already improved segmentation over the transparent GLM. The loop improved the GBM itself by testing more regularized and more randomized LightGBM configurations.
+
+The initial kept GBM, `lightgbm_regularized_challenger`, used constrained leaf counts and moderate L2 penalties. Its hypothesis was that a restrained LightGBM could improve capped pure-premium ranking while preserving calibration and error stability. The final pricing challenger, `lightgbm_best_191`, pushed a "high randomization" hypothesis: lower feature and bagging fractions, stronger frequency L2 regularization, constrained leaf counts, higher minimum leaf sizes, and a longer boosting budget.
+
+That change made the model better at ranking risk without creating an unacceptable calibration tradeoff. Capped pure-premium Gini improved from `0.1827` to `0.1909`, raw pure-premium Gini improved from `0.1980` to `0.2140`, and absolute capped calibration error improved from `1.45%` to `0.97%`. The fold-level capped Gini also improved in all three folds, which made the result more defensible than a single aggregate lift. The only meaningful tradeoff was capped MAE, which moved from `217.6245` to `218.1074`, about a `0.22%` deterioration.
+
+The winning GBM was still trained in R. Python orchestrated the autonomous research loop: it wrote candidate specs, launched runs, applied gates, and recorded evidence. The actual GLM and LightGBM training stayed in the R workflow through `autoresearch/r/candidate_runner.R` and `autoresearch/r/harness.R`, preserving consistency with the original actuarial modeling code.
+
 ## Actuarial Interpretation
 
 My conclusion is that GBM added real segmentation value. The GLM remained the clean transparent benchmark, but the LightGBM challenger was better at ranking policies by observed loss cost. The autoresearch loop then found a stronger GBM candidate than the initial hand-built challenger.
