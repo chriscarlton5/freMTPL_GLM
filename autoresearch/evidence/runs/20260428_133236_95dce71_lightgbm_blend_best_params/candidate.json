@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Standard hyperparameter tuning - combine best settings found. Still regularized to maintain defensibility.",
+  "description": "Blend of best params: tuned aggressive num_leaves (12-20), high LR from best run (0.038), moderate bagging (0.88). Combination that hit 0.1845 Gini as base.",
+  "hypothesis": "Combine the best hyperparameters found: higher LR from best run + balanced tree depth. Target 0.185+ Gini.",
+  "id": "lightgbm_blend_best_params",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.85,
+        "lambda_l2": 8,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 190,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.8,
+        "lambda_l2": 6,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 13,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 12
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.8,
+        "lambda_l2": 8,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 20
+      }
+    ],
+    "nrounds": 110,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.85,
+        "lambda_l2": 8,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 190,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.8,
+        "lambda_l2": 6,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

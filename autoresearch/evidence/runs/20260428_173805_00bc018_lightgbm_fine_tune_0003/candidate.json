@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Autonomous research",
+  "description": "FINE_TUNE: FF=0.522 L2=13.3 L=14",
+  "hypothesis": "FINE_TUNE approach",
+  "id": "lightgbm_fine_tune_0003",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.5218389760467065,
+        "feature_fraction": 0.5218389760467065,
+        "lambda_l2": 11.345678051421144,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.5218389760467065,
+        "feature_fraction": 0.4718389760467065,
+        "lambda_l2": 10.345678051421144,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.5218389760467065,
+        "feature_fraction": 0.5218389760467065,
+        "lambda_l2": 13.345678051421144,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1700,
+        "num_leaves": 14
+      },
+      {
+        "bagging_fraction": 0.5218389760467065,
+        "feature_fraction": 0.4718389760467065,
+        "lambda_l2": 11.345678051421144,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 1400,
+        "num_leaves": 22
+      }
+    ],
+    "nrounds": 175,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.5218389760467065,
+        "feature_fraction": 0.5218389760467065,
+        "lambda_l2": 11.345678051421144,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.5218389760467065,
+        "feature_fraction": 0.4718389760467065,
+        "lambda_l2": 10.345678051421144,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Leaf variation.",
+  "description": "Diverse sweet: feature 0.52 / bagging 0.52 + 15/23 leaves + moderate L2. Different leaf config.",
+  "hypothesis": "Different leaf combination may work.",
+  "id": "lightgbm_diverse_sweet",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.52,
+        "lambda_l2": 11,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 220,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.47,
+        "lambda_l2": 9,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 170,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.52,
+        "lambda_l2": 14,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1800,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.47,
+        "lambda_l2": 12,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 172,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.52,
+        "lambda_l2": 11,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 220,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.52,
+        "feature_fraction": 0.47,
+        "lambda_l2": 9,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 170,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

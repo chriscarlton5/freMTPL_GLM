@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Slower learning with more iterations for better convergence.",
+  "description": "Best 0.1851 with leaves 15/24, LR 0.04/0.035. Try lower LR (0.03/0.025) with more rounds for more stable convergence.",
+  "hypothesis": "Lower LR + more iterations may find better local minimum. Standard tuning practice.",
+  "id": "lightgbm_lower_lr_more_iter",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 180,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 140,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 20,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1550,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 1250,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 180,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 180,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 140,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

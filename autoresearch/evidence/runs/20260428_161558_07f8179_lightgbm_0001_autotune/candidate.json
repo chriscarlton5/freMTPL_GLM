@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Testing leaves variation for potential improvement.",
+  "description": "Auto-generated: leaves variation on champion. FF=0.515, L2=13.4, leaves=18/26",
+  "hypothesis": "Fine-tuning leaves from champion config.",
+  "id": "lightgbm_0001_autotune",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.515,
+        "feature_fraction": 0.515,
+        "lambda_l2": 10.4,
+        "learning_rate": 0.0365,
+        "min_data_in_leaf": 218,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.515,
+        "feature_fraction": 0.465,
+        "lambda_l2": 9.4,
+        "learning_rate": 0.0315,
+        "min_data_in_leaf": 168,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.515,
+        "feature_fraction": 0.515,
+        "lambda_l2": 13.4,
+        "learning_rate": 0.0365,
+        "min_data_in_leaf": 1795,
+        "num_leaves": 18
+      },
+      {
+        "bagging_fraction": 0.515,
+        "feature_fraction": 0.465,
+        "lambda_l2": 11.4,
+        "learning_rate": 0.0315,
+        "min_data_in_leaf": 1436,
+        "num_leaves": 26
+      }
+    ],
+    "nrounds": 175,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.515,
+        "feature_fraction": 0.515,
+        "lambda_l2": 10.4,
+        "learning_rate": 0.0365,
+        "min_data_in_leaf": 218,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.515,
+        "feature_fraction": 0.465,
+        "lambda_l2": 9.4,
+        "learning_rate": 0.0315,
+        "min_data_in_leaf": 168,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

@@ -1,0 +1,23 @@
+{
+  "actuarial_rationale": "GLM with higher df splines is fully transparent. Actuaries often use degree 4-6 splines. This is within standard practice and auditable. No interactions = no sparse cell risk.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "GLM baseline with increased spline degrees (df=6 vs df=5). Conservative enhancement - higher flexibility in continuous terms only, no interactions that could cause instability.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "hypothesis": "The LightGBM advantage appears structural. Try max GLM flexibility via higher spline df to get as close as possible. This tests whether GLM can get within 1% of LightGBM on ranking.",
+  "id": "glm_baseline_plus_spline_degrees",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}

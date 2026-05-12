@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Capped severity is the stability-oriented severity view. Flexibility is increased only there, while the frequency and raw severity components remain on the current constrained grids.",
+  "description": "Regularized LightGBM challenger that keeps the current frequency and raw severity grids but gives capped severity a more flexible grid.",
+  "hypothesis": "The segmentation champion may be limited by capped-severity ranking. A more flexible capped-severity component may improve capped pure premium Gini without weakening frequency or raw severity behavior.",
+  "id": "lightgbm_flexible_capped_severity",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 100,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 63
+      }
+    ],
+    "early_stopping_rounds": 20,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      }
+    ],
+    "nrounds": 150,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

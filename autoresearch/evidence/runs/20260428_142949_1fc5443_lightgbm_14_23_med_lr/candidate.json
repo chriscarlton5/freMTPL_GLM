@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Different balance.",
+  "description": "14/23 leaves, 0.045 LR, medium L2. Alternative.",
+  "hypothesis": "Medium complexity + higher LR.",
+  "id": "lightgbm_14_23_med_lr",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 8,
+        "learning_rate": 0.045,
+        "min_data_in_leaf": 200,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.81,
+        "lambda_l2": 6,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 160,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 14,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 10,
+        "learning_rate": 0.045,
+        "min_data_in_leaf": 1650,
+        "num_leaves": 14
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.81,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1350,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 110,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 8,
+        "learning_rate": 0.045,
+        "min_data_in_leaf": 200,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.81,
+        "lambda_l2": 6,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 160,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

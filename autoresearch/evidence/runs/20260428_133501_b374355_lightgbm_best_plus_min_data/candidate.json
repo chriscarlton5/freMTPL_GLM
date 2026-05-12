@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Lower min_data allows more splits - but with early stopping and L2. Actuaries balance complexity vs stability.",
+  "description": "LightGBM with best LR (0.038) but slightly lower min_data_in_leaf to allow more granular splits. Keep regularization.",
+  "hypothesis": "The best run (0.1845) used min_data 1600-2000. Try reducing to 1200-1500 for more granularity while keeping strong L2.",
+  "id": "lightgbm_best_plus_min_data",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 8,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 150,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 180,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 14,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 10,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 14
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 20
+      }
+    ],
+    "nrounds": 115,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 8,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 150,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 180,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

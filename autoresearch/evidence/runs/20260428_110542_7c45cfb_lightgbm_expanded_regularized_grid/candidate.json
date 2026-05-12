@@ -1,0 +1,98 @@
+{
+  "actuarial_rationale": "This remains a segmentation/research candidate only. The broader grid is still constrained by minimum leaf sizes, feature/bagging fractions, and L2 regularization so that any gain is less likely to be a sparse black-box artifact.",
+  "description": "Regularized LightGBM challenger with an expanded inner-validation grid. It keeps the current champion settings available while adding more conservative frequency options and previously useful capped severity options.",
+  "hypothesis": "The aggressive capped-severity run improved fold 3 but hurt folds 1 and 2. Keeping champion options in the grid while adding conservative alternatives may allow fold-specific inner validation to improve capped pure premium Gini without sacrificing fold agreement.",
+  "id": "lightgbm_expanded_regularized_grid",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.8,
+        "lambda_l2": 10,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 150,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.75,
+        "lambda_l2": 15,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 100,
+        "num_leaves": 31
+      }
+    ],
+    "early_stopping_rounds": 20,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 20,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 2000,
+        "num_leaves": 15
+      }
+    ],
+    "nrounds": 160,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 20,
+        "learning_rate": 0.025,
+        "min_data_in_leaf": 300,
+        "num_leaves": 7
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

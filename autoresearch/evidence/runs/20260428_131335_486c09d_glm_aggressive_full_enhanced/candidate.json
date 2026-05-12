@@ -1,0 +1,30 @@
+{
+  "actuarial_rationale": "All components are GLM with natural splines - fully transparent and defensible. Multiple interactions capture the interaction effects LightGBM discovered. Component scalars calibrate on training fold only to avoid leakage.",
+  "calibration": {
+    "component_scalars": true
+  },
+  "capped_severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  },
+  "description": "GLM with max spline flexibility (df=5), multiple interactions (DriverAge:CarAge, Power:Brand), and component calibration scalars to test whether combining all terms outperforms the baseline.",
+  "frequency": {
+    "interactions": [
+      "DriverAgeBand:CarAgeBand",
+      "Power:Brand"
+    ],
+    "use_splines": true
+  },
+  "hypothesis": "Past GLM attempts tested one change at a time. LightGBM wins because it captures combined nonlinearities + interactions. This candidate tests that theory by combining spline flexibility with multiple interactions and calibration in one model.",
+  "id": "glm_aggressive_full_enhanced",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Early stopping is critical hyperparameter. Standard practice to tune.",
+  "description": "NEW HYPOTHESIS: Use more aggressive early stopping (25-30 rounds vs 15). Find more optimal stopping point - less overfitting.",
+  "hypothesis": "Current uses 15 rounds. Higher allows model more iterations to find optimal. May prevent early underfitting.",
+  "id": "lightgbm_higher_early_stop",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 25,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 140,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

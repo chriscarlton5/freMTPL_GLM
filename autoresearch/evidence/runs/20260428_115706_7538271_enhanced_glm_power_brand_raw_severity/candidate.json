@@ -1,0 +1,22 @@
+{
+  "actuarial_rationale": "Power and brand are plausible repair-cost variables for large raw claims. This candidate intentionally leaves capped severity unchanged to protect the stable pricing target.",
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds Power:Brand to raw severity only.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "hypothesis": "Power:Brand materially improved raw monitoring when added to both severity components. Restricting it to raw severity may keep that signal while avoiding extra capped-pricing complexity.",
+  "id": "enhanced_glm_power_brand_raw_severity",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  }
+}

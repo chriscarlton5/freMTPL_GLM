@@ -1,0 +1,60 @@
+{
+  "actuarial_rationale": "Alternative algorithm exploration.",
+  "catboost": {
+    "capped_severity_grid": [
+      {
+        "depth": 4,
+        "l2_leaf_reg": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "rsm": 0.88
+      },
+      {
+        "depth": 6,
+        "l2_leaf_reg": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "rsm": 0.83
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "depth": 6,
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "rsm": 0.88
+      },
+      {
+        "depth": 8,
+        "l2_leaf_reg": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "rsm": 0.83
+      }
+    ],
+    "iterations": 120,
+    "severity_grid": [
+      {
+        "depth": 4,
+        "l2_leaf_reg": 8,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "rsm": 0.88
+      },
+      {
+        "depth": 6,
+        "l2_leaf_reg": 6,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "rsm": 0.83
+      }
+    ]
+  },
+  "description": "CatBoost instead of LightGBM. Different gradient boosting algorithm. May find different patterns.",
+  "hypothesis": "CatBoost's ordered boosting may perform differently on freMTPL.",
+  "id": "catboost_baseline",
+  "is_baseline": false,
+  "model_type": "catboost"
+}

@@ -1,0 +1,23 @@
+{
+  "actuarial_rationale": "Natural splines allow smooth nonlinear age and density effects while remaining reviewable, parsimonious, and defensible compared with a direct black-box pricing level.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "Baseline transparent enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; no interactions or calibration scalars.",
+  "frequency": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "hypothesis": "The current report's enhanced GLM structure is the right starting champion for transparent actuarial segmentation.",
+  "id": "baseline_enhanced_glm_splines",
+  "is_baseline": true,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}

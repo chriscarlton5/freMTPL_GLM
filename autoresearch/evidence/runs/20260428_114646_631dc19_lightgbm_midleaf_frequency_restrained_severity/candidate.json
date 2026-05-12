@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "This is a segmentation research candidate, not a pricing-level model. It tests whether the incremental lift is coming from a plausible claim frequency segmentation signal rather than unstable severity slicing.",
+  "description": "LightGBM challenger adding one mid-leaf frequency option while restraining raw and capped severity grids to conservative leaf sizes.",
+  "hypothesis": "The strongest near misses came from mid-leaf frequency lift plus capped-severity flexibility. Holding severity conservative may retain the frequency ranking signal while avoiding capped severity overfit.",
+  "id": "lightgbm_midleaf_frequency_restrained_severity",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 300,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 20,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 500,
+        "num_leaves": 7
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 8,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 900,
+        "num_leaves": 31
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 10,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 300,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 20,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 500,
+        "num_leaves": 7
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

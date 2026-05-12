@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "More regularization = more stable. Keep predictions for pricing.",
+  "description": "NEW HYPOTHESIS: Strengthen L2 regularization (12-15 vs 8-10) to reduce variance. Previous run hit 0.1862 but high MAE - overfitting.",
+  "hypothesis": "Higher L2 reduces variance from aggressive fits. May find more generalizable solution while keeping high Gini.",
+  "id": "lightgbm_smoother_more_reg",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 12,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 10,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 15,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 15,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 12,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 120,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 12,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 190,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 10,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

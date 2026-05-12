@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "This remains a research-champion candidate, not an automatic pricing level. The depth increase is deliberately modest and still constrained by minimum leaf sizes and L2 penalties.",
+  "description": "LightGBM challenger with slightly deeper frequency and capped-severity trees, retaining L2 regularization and minimum leaf-size controls.",
+  "hypothesis": "The current LightGBM champion may be underfitting capped pure-premium ranking; modestly deeper trees may improve segmentation while staying inside the capped calibration and error gates.",
+  "id": "lightgbm_deeper_frequency_capped",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ],
+    "early_stopping_rounds": 20,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 900,
+        "num_leaves": 31
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 12,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 63
+      }
+    ],
+    "nrounds": 160,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 12,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 250,
+        "num_leaves": 31
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

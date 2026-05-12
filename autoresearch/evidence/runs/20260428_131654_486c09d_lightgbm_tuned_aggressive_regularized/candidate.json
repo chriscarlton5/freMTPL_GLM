@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "LightGBM with balanced regularization - less constrained than before but still regularized to prevent overfitting. Uses early stopping on validation fold. Methodology fully documented. Standard actuarial practice.",
+  "description": "Tuned LightGBM between ultra-regularized and champion: moderate leaves (12-20), balanced regularization (L2 10-15), target Gini 0.183+ while maintaining calibration < 1%.",
+  "hypothesis": "Ultra-regularized achieved Gini 0.1788, calibration -0.95%, MAE 218.33. A bit more flexibility should push Gini past 0.1827 while keeping calibrated. Balance between ranking and stability.",
+  "id": "lightgbm_tuned_aggressive_regularized",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 220,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 8,
+        "learning_rate": 0.028,
+        "min_data_in_leaf": 180,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 12,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.85,
+        "lambda_l2": 12,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 1800,
+        "num_leaves": 12
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 10,
+        "learning_rate": 0.028,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 20
+      }
+    ],
+    "nrounds": 110,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.035,
+        "min_data_in_leaf": 220,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.85,
+        "feature_fraction": 0.8,
+        "lambda_l2": 8,
+        "learning_rate": 0.028,
+        "min_data_in_leaf": 180,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

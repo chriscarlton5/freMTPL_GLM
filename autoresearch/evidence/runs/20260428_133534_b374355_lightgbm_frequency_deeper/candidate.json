@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Focus capacity where signal is strongest - standard practice. Severity keeps regularization.",
+  "description": "LightGBM with more leaves on frequency (16-24), regular severity (6-10). Frequency drives Gini - give it more capacity.",
+  "hypothesis": "Frequency is the main Gini driver. Previous best was at 14-22 leaves. Try 16-24 to see if more capacity helps.",
+  "id": "lightgbm_frequency_deeper",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 8,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 180,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 14,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 10,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 16
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 115,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 8,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 180,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 150,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

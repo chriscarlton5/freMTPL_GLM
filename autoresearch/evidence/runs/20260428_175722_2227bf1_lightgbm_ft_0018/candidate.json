@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "auto",
+  "description": "ft: FF=0.514 L2=12.9",
+  "hypothesis": "ft",
+  "id": "lightgbm_ft_0018",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.5135511362512325,
+        "feature_fraction": 0.5135511362512325,
+        "lambda_l2": 10.861406987463276,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.5135511362512325,
+        "feature_fraction": 0.4635511362512325,
+        "lambda_l2": 9.861406987463276,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 22,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.5135511362512325,
+        "feature_fraction": 0.5135511362512325,
+        "lambda_l2": 12.861406987463276,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1700,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.5135511362512325,
+        "feature_fraction": 0.4635511362512325,
+        "lambda_l2": 10.861406987463276,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 1400,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 175,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.5135511362512325,
+        "feature_fraction": 0.5135511362512325,
+        "lambda_l2": 10.861406987463276,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.5135511362512325,
+        "feature_fraction": 0.4635511362512325,
+        "lambda_l2": 9.861406987463276,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 150,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

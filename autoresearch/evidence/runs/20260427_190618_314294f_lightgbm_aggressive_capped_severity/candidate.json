@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "This intentionally concentrates extra flexibility in capped severity, the stable severity target, while preserving the existing frequency and raw severity settings. It must still pass calibration and fold gates.",
+  "description": "LightGBM challenger that preserves the current frequency and raw severity grids while testing a more aggressive capped-severity grid.",
+  "hypothesis": "The previous capped-severity-only variant improved capped Gini but not enough to pass the champion gate. A stronger capped-severity search may extract additional stable segmentation signal.",
+  "id": "lightgbm_aggressive_capped_severity",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 3,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 80,
+        "num_leaves": 63
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 5,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 100,
+        "num_leaves": 127
+      }
+    ],
+    "early_stopping_rounds": 25,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 1200,
+        "num_leaves": 15
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1500,
+        "num_leaves": 31
+      }
+    ],
+    "nrounds": 180,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.9,
+        "lambda_l2": 5,
+        "learning_rate": 0.04,
+        "min_data_in_leaf": 150,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.9,
+        "feature_fraction": 0.85,
+        "lambda_l2": 10,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 200,
+        "num_leaves": 15
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

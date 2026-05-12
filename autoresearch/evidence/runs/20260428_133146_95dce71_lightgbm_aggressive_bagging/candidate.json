@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Bagging is standard ensemble technique - reduces variance. Combined with L2 regularization maintains defensibility.",
+  "description": "LightGBM with more aggressive bagging (0.92) and slight feature sampling to introduce more randomness, prevent correlated trees.",
+  "hypothesis": "More aggressive bagging + feature sampling adds diversity. Often improves generalization. Earlier runs showed ~0.184-0.185 range.",
+  "id": "lightgbm_aggressive_bagging",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.92,
+        "feature_fraction": 0.84,
+        "lambda_l2": 9,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.92,
+        "feature_fraction": 0.79,
+        "lambda_l2": 7,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 160,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 14,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.92,
+        "feature_fraction": 0.84,
+        "lambda_l2": 11,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1700,
+        "num_leaves": 14
+      },
+      {
+        "bagging_fraction": 0.92,
+        "feature_fraction": 0.79,
+        "lambda_l2": 9,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 1400,
+        "num_leaves": 22
+      }
+    ],
+    "nrounds": 115,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.92,
+        "feature_fraction": 0.84,
+        "lambda_l2": 9,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 200,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.92,
+        "feature_fraction": 0.79,
+        "lambda_l2": 7,
+        "learning_rate": 0.03,
+        "min_data_in_leaf": 160,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Reduced L2 for less constrained fit. Still uses early stopping and bagging to prevent overfitting. Standard tuning practice.",
+  "description": "LightGBM with reduced L2 (4-7 vs 10) to capture more signal. Less constrained trees may find better patterns.",
+  "hypothesis": "Too much regularization suppresses signal. Earlier runs at L2=10 hit 0.184+. Try L2=4-7 to find more signal while keeping some regularization.",
+  "id": "lightgbm_less_regularized",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.86,
+        "lambda_l2": 6,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 180,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.82,
+        "lambda_l2": 4,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 140,
+        "num_leaves": 10
+      }
+    ],
+    "early_stopping_rounds": 14,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.86,
+        "lambda_l2": 7,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 1600,
+        "num_leaves": 14
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.82,
+        "lambda_l2": 4,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 1300,
+        "num_leaves": 20
+      }
+    ],
+    "nrounds": 115,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.86,
+        "lambda_l2": 6,
+        "learning_rate": 0.038,
+        "min_data_in_leaf": 180,
+        "num_leaves": 6
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.82,
+        "lambda_l2": 4,
+        "learning_rate": 0.032,
+        "min_data_in_leaf": 140,
+        "num_leaves": 10
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

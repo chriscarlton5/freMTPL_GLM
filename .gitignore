@@ -1,1 +1,10 @@
 r_libs/
+autoresearch/scratch/
+autoresearch/**/__pycache__/
+autoresearch/**/*.RData
+autoresearch/**/*.Rds
+autoresearch/**/*.model
+autoresearch/**/*.predictions.csv
+autoresearch/**/*.full.log
+autoresearch_work/
+scratch_git_permission_test_*/

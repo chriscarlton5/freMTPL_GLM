@@ -1,0 +1,316 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#1f2933}.axis{stroke:#2f3a45;stroke-width:1.2}.grid{stroke:#d8dee5;stroke-width:1}.fail{fill:#c9d1d9;fill-opacity:.72}.keep{fill:#111827;fill-opacity:.92}.best{fill:#0f172a;stroke:#ffffff;stroke-width:1.5}.run{fill:none;stroke:#2563eb;stroke-width:2;stroke-opacity:.85}</style>
+<text x="78" y="27" font-size="22" font-weight="700">Pricing: Selection Score</text>
+<text x="78" y="51" font-size="13">Higher is better; score balances capped Gini, calibration, and complexity | 270 plotted experiments | dark = accepted for this chart | light = not accepted | blue = running best</text>
+<line class="grid" x1="78" y1="642.00" x2="1166" y2="642.00"/>
+<text x="66" y="646.00" font-size="12" text-anchor="end">0.130</text>
+<line class="grid" x1="78" y1="567.25" x2="1166" y2="567.25"/>
+<text x="66" y="571.25" font-size="12" text-anchor="end">0.138</text>
+<line class="grid" x1="78" y1="492.50" x2="1166" y2="492.50"/>
+<text x="66" y="496.50" font-size="12" text-anchor="end">0.146</text>
+<line class="grid" x1="78" y1="417.75" x2="1166" y2="417.75"/>
+<text x="66" y="421.75" font-size="12" text-anchor="end">0.154</text>
+<line class="grid" x1="78" y1="343.00" x2="1166" y2="343.00"/>
+<text x="66" y="347.00" font-size="12" text-anchor="end">0.163</text>
+<line class="grid" x1="78" y1="268.25" x2="1166" y2="268.25"/>
+<text x="66" y="272.25" font-size="12" text-anchor="end">0.171</text>
+<line class="grid" x1="78" y1="193.50" x2="1166" y2="193.50"/>
+<text x="66" y="197.50" font-size="12" text-anchor="end">0.179</text>
+<line class="grid" x1="78" y1="118.75" x2="1166" y2="118.75"/>
+<text x="66" y="122.75" font-size="12" text-anchor="end">0.187</text>
+<line class="grid" x1="78" y1="44.00" x2="1166" y2="44.00"/>
+<text x="66" y="48.00" font-size="12" text-anchor="end">0.195</text>
+<line class="grid" x1="78.00" y1="44" x2="78.00" y2="642"/>
+<text x="78.00" y="666" font-size="12" text-anchor="middle">1</text>
+<line class="grid" x1="295.60" y1="44" x2="295.60" y2="642"/>
+<text x="295.60" y="666" font-size="12" text-anchor="middle">55</text>
+<line class="grid" x1="513.20" y1="44" x2="513.20" y2="642"/>
+<text x="513.20" y="666" font-size="12" text-anchor="middle">109</text>
+<line class="grid" x1="730.80" y1="44" x2="730.80" y2="642"/>
+<text x="730.80" y="666" font-size="12" text-anchor="middle">163</text>
+<line class="grid" x1="948.40" y1="44" x2="948.40" y2="642"/>
+<text x="948.40" y="666" font-size="12" text-anchor="middle">217</text>
+<line class="grid" x1="1166.00" y1="44" x2="1166.00" y2="642"/>
+<text x="1166.00" y="666" font-size="12" text-anchor="middle">271</text>
+<path class="run" d="M78.00,403.49 L82.03,403.49 L86.06,403.49 L90.09,403.49 L94.12,190.51 L98.15,190.51 L102.18,185.68 L106.21,185.68 L110.24,185.68 L114.27,185.68 L118.30,185.68 L122.33,185.68 L126.36,185.68 L130.39,185.68 L134.41,185.68 L138.44,185.68 L142.47,171.88 L146.50,171.88 L150.53,144.97 L154.56,144.97 L158.59,144.97 L162.62,144.97 L166.65,144.97 L170.68,144.97 L174.71,144.97 L178.74,144.97 L182.77,144.97 L186.80,144.97 L190.83,144.97 L194.86,144.97 L198.89,144.97 L202.92,144.97 L206.95,144.97 L210.98,144.97 L215.01,144.97 L219.04,144.97 L223.07,144.97 L227.10,144.97 L231.13,144.97 L235.16,144.97 L239.19,144.97 L243.21,144.97 L247.24,144.97 L251.27,144.97 L255.30,144.97 L259.33,144.97 L263.36,144.97 L267.39,144.97 L271.42,144.97 L275.45,144.97 L279.48,144.97 L283.51,144.97 L287.54,144.97 L291.57,144.97 L295.60,144.97 L299.63,144.97 L303.66,144.97 L307.69,144.97 L311.72,144.97 L315.75,144.97 L319.78,144.97 L323.81,144.97 L327.84,144.97 L331.87,144.97 L335.90,144.97 L339.93,144.97 L343.96,144.97 L347.99,144.97 L352.01,144.97 L356.04,144.97 L360.07,144.97 L364.10,144.97 L368.13,144.97 L372.16,144.97 L376.19,144.97 L380.22,144.97 L384.25,144.97 L388.28,144.97 L392.31,144.97 L396.34,144.97 L400.37,144.97 L404.40,144.97 L408.43,144.97 L412.46,144.97 L416.49,144.97 L420.52,144.97 L424.55,144.97 L428.58,144.97 L432.61,144.97 L436.64,119.21 L440.67,119.21 L444.70,119.21 L448.73,119.21 L452.76,119.21 L456.79,112.54 L460.81,112.54 L464.84,104.95 L468.87,104.95 L472.90,104.95 L476.93,104.95 L480.96,104.95 L484.99,104.95 L489.02,104.95 L493.05,104.95 L497.08,104.95 L501.11,104.95 L505.14,104.95 L509.17,104.95 L513.20,104.03 L517.23,104.03 L521.26,102.65 L525.29,102.65 L529.32,102.65 L533.35,102.65 L537.38,102.65 L541.41,102.65 L545.44,102.65 L549.47,99.89 L553.50,99.89 L557.53,99.89 L561.56,99.89 L565.59,99.89 L569.61,99.89 L573.64,99.89 L577.67,99.89 L581.70,99.89 L585.73,99.89 L589.76,99.89 L593.79,99.89 L597.82,99.89 L601.85,99.89 L605.88,96.44 L609.91,96.44 L613.94,96.44 L617.97,96.44 L622.00,96.44 L626.03,96.44 L630.06,96.44 L634.09,96.44 L638.12,96.44 L642.15,96.44 L646.18,96.44 L650.21,96.44 L654.24,96.44 L658.27,96.44 L662.30,96.44 L666.33,96.44 L670.36,96.44 L674.39,96.44 L678.41,96.44 L682.44,96.44 L686.47,96.44 L690.50,96.44 L694.53,96.44 L698.56,96.44 L702.59,96.44 L706.62,96.44 L710.65,96.44 L714.68,96.44 L718.71,96.44 L722.74,96.44 L726.77,96.44 L730.80,96.44 L734.83,96.44 L738.86,96.44 L742.89,96.44 L746.92,96.44 L750.95,96.44 L754.98,96.44 L759.01,96.44 L763.04,96.44 L767.07,96.44 L771.10,96.44 L775.13,96.44 L779.16,96.44 L783.19,96.44 L787.21,96.44 L791.24,96.44 L795.27,96.44 L799.30,96.44 L803.33,96.44 L807.36,96.44 L811.39,96.44 L815.42,96.44 L819.45,96.44 L823.48,96.44 L827.51,96.44 L831.54,96.44 L835.57,96.44 L839.60,96.44 L843.63,96.44 L847.66,96.44 L851.69,96.44 L855.72,96.44 L859.75,96.44 L863.78,96.44 L867.81,96.44 L871.84,96.44 L875.87,96.44 L879.90,96.44 L883.93,96.44 L887.96,96.44 L891.99,96.44 L896.01,96.44 L900.04,96.44 L904.07,96.44 L908.10,96.44 L912.13,96.44 L916.16,96.44 L920.19,96.44 L924.22,96.44 L928.25,96.44 L932.28,96.44 L936.31,96.44 L940.34,96.44 L944.37,96.44 L948.40,96.44 L952.43,96.44 L956.46,96.44 L960.49,96.44 L964.52,96.44 L968.55,96.44 L972.58,96.44 L976.61,96.44 L980.64,96.44 L984.67,96.44 L988.70,96.44 L992.73,96.44 L996.76,96.44 L1000.79,96.44 L1004.81,96.44 L1008.84,96.44 L1012.87,96.44 L1016.90,96.44 L1020.93,96.44 L1024.96,96.44 L1028.99,96.44 L1033.02,96.44 L1037.05,96.44 L1041.08,96.44 L1045.11,96.44 L1049.14,96.44 L1053.17,96.44 L1057.20,96.44 L1061.23,96.44 L1065.26,96.44 L1069.29,96.44 L1073.32,96.44 L1077.35,96.44 L1081.38,96.44 L1085.41,96.44 L1089.44,96.44 L1093.47,96.44 L1097.50,96.44 L1101.53,96.44 L1105.56,96.44 L1109.59,96.44 L1113.61,96.44 L1117.64,96.44 L1121.67,96.44 L1125.70,96.44 L1129.73,96.44 L1133.76,96.44 L1137.79,96.44 L1141.82,96.44 L1145.85,96.44 L1149.88,96.44 L1153.91,96.44 L1157.94,96.44 L1161.97,96.44 L1166.00,96.44"/>
+<circle class="fail" cx="78.00" cy="403.49" r="3.2"><title>#1 baseline_enhanced_glm_splines: 0.1559</title></circle>
+<circle class="fail" cx="82.03" cy="490.66" r="3.2"><title>#2 enhanced_glm_component_scalars: 0.1464</title></circle>
+<circle class="fail" cx="86.06" cy="438.45" r="3.2"><title>#3 enhanced_glm_driver_car_age_interaction: 0.1521</title></circle>
+<circle class="fail" cx="90.09" cy="478.24" r="3.2"><title>#4 enhanced_glm_power_brand_frequency: 0.1478</title></circle>
+<circle class="fail" cx="94.12" cy="190.51" r="3.2"><title>#5 lightgbm_regularized_challenger: 0.1791</title></circle>
+<circle class="fail" cx="98.15" cy="190.97" r="3.2"><title>#6 lightgbm_deeper_frequency_capped: 0.1790</title></circle>
+<circle class="fail" cx="102.18" cy="185.68" r="3.2"><title>#7 lightgbm_flexible_capped_severity: 0.1796</title></circle>
+<circle class="fail" cx="106.21" cy="189.36" r="3.2"><title>#8 lightgbm_aggressive_capped_severity: 0.1792</title></circle>
+<circle class="fail" cx="110.24" cy="455.01" r="3.2"><title>#9 enhanced_glm_region_density_frequency: 0.1503</title></circle>
+<circle class="fail" cx="118.30" cy="523.55" r="3.2"><title>#11 enhanced_glm_driver_car_age_capped_severity: 0.1429</title></circle>
+<circle class="fail" cx="122.33" cy="458.69" r="3.2"><title>#12 enhanced_glm_power_brand_capped_severity: 0.1499</title></circle>
+<circle class="fail" cx="126.36" cy="196.26" r="3.2"><title>#13 lightgbm_expanded_regularized_grid: 0.1784</title></circle>
+<circle class="fail" cx="130.39" cy="485.14" r="3.2"><title>#14 enhanced_glm_power_brand_frequency_capped: 0.1470</title></circle>
+<circle class="fail" cx="134.41" cy="190.28" r="3.2"><title>#15 lightgbm_frequency_ranking_push: 0.1791</title></circle>
+<circle class="fail" cx="138.44" cy="227.08" r="3.2"><title>#16 lightgbm_moderate_capped_severity_push: 0.1751</title></circle>
+<circle class="fail" cx="142.47" cy="171.88" r="3.2"><title>#17 lightgbm_midleaf_frequency_probe: 0.1811</title></circle>
+<circle class="fail" cx="146.50" cy="171.88" r="3.2"><title>#18 lightgbm_midleaf_frequency_mild_capped: 0.1811</title></circle>
+<circle class="fail" cx="150.53" cy="144.97" r="3.2"><title>#19 lightgbm_midleaf_frequency_forced_aggressive_capped: 0.1840</title></circle>
+<circle class="fail" cx="154.56" cy="147.96" r="3.2"><title>#20 lightgbm_midleaf_frequency_stronger_capped: 0.1837</title></circle>
+<circle class="fail" cx="158.59" cy="219.95" r="3.2"><title>#21 lightgbm_midleaf_frequency_edge_capped: 0.1759</title></circle>
+<circle class="fail" cx="162.62" cy="163.14" r="3.2"><title>#22 lightgbm_tuned_midleaf_stronger_capped: 0.1820</title></circle>
+<circle class="fail" cx="166.65" cy="529.07" r="3.2"><title>#23 enhanced_glm_power_brand_capped_calibrated: 0.1423</title></circle>
+<circle class="fail" cx="170.68" cy="197.87" r="3.2"><title>#24 lightgbm_midleaf_frequency_restrained_severity: 0.1783</title></circle>
+<circle class="fail" cx="174.71" cy="471.57" r="3.2"><title>#25 enhanced_glm_power_brand_dual_severity: 0.1485</title></circle>
+<circle class="fail" cx="178.74" cy="216.27" r="3.2"><title>#26 lightgbm_longer_midleaf_stronger_capped: 0.1763</title></circle>
+<circle class="fail" cx="182.77" cy="480.77" r="3.2"><title>#27 enhanced_glm_agefreq_powerbrand_dual_severity: 0.1475</title></circle>
+<circle class="fail" cx="186.80" cy="464.21" r="3.2"><title>#28 enhanced_glm_power_brand_raw_severity: 0.1493</title></circle>
+<circle class="fail" cx="190.83" cy="175.79" r="3.2"><title>#29 lightgbm_shorter_midleaf_stronger_capped: 0.1807</title></circle>
+<circle class="fail" cx="194.86" cy="642.00" r="3.2"><title>#30 simple_glm_power_brand_capped_severity: 0.1206</title></circle>
+<circle class="fail" cx="198.89" cy="147.96" r="3.2"><title>#31 lightgbm_midleaf_stronger_capped_raw_severity_push: 0.1837</title></circle>
+<circle class="fail" cx="202.92" cy="578.06" r="3.2"><title>#32 glm_aggressive_full_enhanced: 0.1369</title></circle>
+<circle class="fail" cx="206.95" cy="214.89" r="3.2"><title>#33 lightgbm_ultra_regularized: 0.1764</title></circle>
+<circle class="fail" cx="210.98" cy="172.34" r="3.2"><title>#34 lightgbm_tuned_aggressive_regularized: 0.1810</title></circle>
+<circle class="fail" cx="215.01" cy="193.04" r="3.2"><title>#35 lightgbm_frequency_focused: 0.1788</title></circle>
+<circle class="fail" cx="219.04" cy="403.49" r="3.2"><title>#36 glm_baseline_plus_spline_degrees: 0.1559</title></circle>
+<circle class="fail" cx="223.07" cy="190.51" r="3.2"><title>#37 lightgbm_regularized_challenger: 0.1791</title></circle>
+<circle class="fail" cx="227.10" cy="194.19" r="3.2"><title>#38 lightgbm_deeper_boosting: 0.1787</title></circle>
+<circle class="fail" cx="231.13" cy="169.81" r="3.2"><title>#39 lightgbm_best_plus_learning_rate: 0.1813</title></circle>
+<circle class="fail" cx="235.16" cy="184.53" r="3.2"><title>#40 lightgbm_aggressive_bagging: 0.1797</title></circle>
+<circle class="fail" cx="239.19" cy="210.98" r="3.2"><title>#41 lightgbm_blend_best_params: 0.1769</title></circle>
+<circle class="fail" cx="243.21" cy="224.32" r="3.2"><title>#42 lightgbm_less_regularized: 0.1754</title></circle>
+<circle class="fail" cx="247.24" cy="190.51" r="3.2"><title>#43 lightgbm_regularized_challenger: 0.1791</title></circle>
+<circle class="fail" cx="251.27" cy="184.07" r="3.2"><title>#44 lightgbm_best_plus_min_data: 0.1798</title></circle>
+<circle class="fail" cx="255.30" cy="176.94" r="3.2"><title>#45 lightgbm_frequency_deeper: 0.1805</title></circle>
+<circle class="fail" cx="259.33" cy="177.86" r="3.2"><title>#46 lightgbm_frequency_16_20: 0.1804</title></circle>
+<circle class="fail" cx="263.36" cy="169.81" r="3.2"><title>#47 lightgbm_best_plus_learning_rate: 0.1813</title></circle>
+<circle class="fail" cx="275.45" cy="181.77" r="3.2"><title>#50 lightgbm_even_more_leaves: 0.1800</title></circle>
+<circle class="fail" cx="299.63" cy="165.21" r="3.2"><title>#56 lightgbm_optimal_balance: 0.1818</title></circle>
+<circle class="fail" cx="307.69" cy="157.62" r="3.2"><title>#58 lightgbm_class_weight: 0.1827</title></circle>
+<circle class="fail" cx="311.72" cy="157.62" r="3.2"><title>#59 lightgbm_huber_loss: 0.1827</title></circle>
+<circle class="fail" cx="315.75" cy="157.62" r="3.2"><title>#60 lightgbm_dart_booster: 0.1827</title></circle>
+<circle class="fail" cx="319.78" cy="164.06" r="3.2"><title>#61 lightgbm_higher_early_stop: 0.1820</title></circle>
+<circle class="fail" cx="323.81" cy="173.72" r="3.2"><title>#62 lightgbm_best_seed_avg: 0.1809</title></circle>
+<circle class="fail" cx="327.84" cy="163.14" r="3.2"><title>#63 lightgbm_smoother_more_reg: 0.1820</title></circle>
+<circle class="fail" cx="331.87" cy="181.77" r="3.2"><title>#64 lightgbm_fewer_leaves_better: 0.1800</title></circle>
+<circle class="fail" cx="347.99" cy="220.64" r="3.2"><title>#68 lightgbm_deeper_less_reg: 0.1758</title></circle>
+<circle class="fail" cx="356.04" cy="192.58" r="3.2"><title>#70 lightgbm_mid_leaves_mid_reg: 0.1789</title></circle>
+<circle class="fail" cx="360.07" cy="194.42" r="3.2"><title>#71 lightgbm_compact_search: 0.1787</title></circle>
+<circle class="fail" cx="376.19" cy="187.52" r="3.2"><title>#75 lightgbm_exact_best_plus: 0.1794</title></circle>
+<circle class="fail" cx="384.25" cy="180.39" r="3.2"><title>#77 lightgbm_18_26_lr043: 0.1802</title></circle>
+<circle class="fail" cx="396.34" cy="207.53" r="3.2"><title>#80 lightgbm_15_24_v2: 0.1772</title></circle>
+<circle class="fail" cx="400.37" cy="222.71" r="3.2"><title>#81 lightgbm_15_24_low_lr: 0.1756</title></circle>
+<circle class="fail" cx="404.40" cy="188.90" r="3.2"><title>#82 lightgbm_12_20_high_min: 0.1792</title></circle>
+<circle class="fail" cx="408.43" cy="575.76" r="3.2"><title>#83 catboost_baseline: 0.1372</title></circle>
+<circle class="fail" cx="424.55" cy="194.19" r="3.2"><title>#87 lightgbm_ultra_random: 0.1787</title></circle>
+<circle class="fail" cx="428.58" cy="202.93" r="3.2"><title>#88 lightgbm_optimal_random: 0.1777</title></circle>
+<circle class="fail" cx="440.67" cy="188.44" r="3.2"><title>#91 lightgbm_diverse_v2: 0.1793</title></circle>
+<circle class="fail" cx="444.70" cy="168.20" r="3.2"><title>#92 lightgbm_diverse_v3: 0.1815</title></circle>
+<circle class="fail" cx="448.73" cy="119.21" r="3.2"><title>#93 lightgbm_diverse_repro: 0.1868</title></circle>
+<circle class="fail" cx="452.76" cy="191.66" r="3.2"><title>#94 lightgbm_19_breaker: 0.1789</title></circle>
+<circle class="fail" cx="460.81" cy="194.65" r="3.2"><title>#96 lightgbm_19_plus: 0.1786</title></circle>
+<circle class="fail" cx="464.84" cy="104.95" r="3.2"><title>#97 lightgbm_19_final: 0.1884</title></circle>
+<circle class="fail" cx="468.87" cy="183.38" r="3.2"><title>#98 lightgbm_191_push: 0.1799</title></circle>
+<circle class="fail" cx="480.96" cy="207.99" r="3.2"><title>#101 lightgbm_191_slight: 0.1772</title></circle>
+<circle class="fail" cx="484.99" cy="135.31" r="3.2"><title>#102 lightgbm_191_more_rounds: 0.1851</title></circle>
+<circle class="fail" cx="497.08" cy="168.66" r="3.2"><title>#105 lightgbm_191_lower_min: 0.1815</title></circle>
+<circle class="fail" cx="505.14" cy="107.25" r="3.2"><title>#107 lightgbm_191_higher_lr: 0.1881</title></circle>
+<circle class="fail" cx="509.17" cy="133.47" r="3.2"><title>#108 lightgbm_191_compact: 0.1853</title></circle>
+<circle class="fail" cx="517.23" cy="105.41" r="3.2"><title>#110 lightgbm_191_exact_v3: 0.1883</title></circle>
+<circle class="fail" cx="521.26" cy="102.65" r="3.2"><title>#111 lightgbm_191_exact_v4: 0.1886</title></circle>
+<circle class="fail" cx="525.29" cy="103.80" r="3.2"><title>#112 lightgbm_191_try: 0.1885</title></circle>
+<circle class="fail" cx="529.32" cy="127.72" r="3.2"><title>#113 lightgbm_191_sweeter: 0.1859</title></circle>
+<circle class="fail" cx="533.35" cy="105.87" r="3.2"><title>#114 lightgbm_0001_autotune: 0.1883</title></circle>
+<circle class="fail" cx="537.38" cy="111.62" r="3.2"><title>#115 lightgbm_0002_autotune: 0.1877</title></circle>
+<circle class="fail" cx="541.41" cy="111.62" r="3.2"><title>#116 lightgbm_0002_autotune: 0.1877</title></circle>
+<circle class="fail" cx="545.44" cy="111.62" r="3.2"><title>#117 lightgbm_0002_autotune: 0.1877</title></circle>
+<circle class="fail" cx="549.47" cy="99.89" r="3.2"><title>#118 lightgbm_0001_autotune: 0.1889</title></circle>
+<circle class="fail" cx="553.50" cy="99.89" r="3.2"><title>#119 lightgbm_0001_autotune: 0.1889</title></circle>
+<circle class="fail" cx="557.53" cy="104.95" r="3.2"><title>#120 lightgbm_0001_autotune: 0.1884</title></circle>
+<circle class="fail" cx="561.56" cy="101.73" r="3.2"><title>#121 lightgbm_0001_autotune: 0.1887</title></circle>
+<circle class="fail" cx="565.59" cy="134.39" r="3.2"><title>#122 lightgbm_0001_autotune: 0.1852</title></circle>
+<circle class="fail" cx="569.61" cy="113.92" r="3.2"><title>#123 lightgbm_0001_autotune: 0.1874</title></circle>
+<circle class="fail" cx="573.64" cy="144.97" r="3.2"><title>#124 lightgbm_0002_autotune: 0.1840</title></circle>
+<circle class="fail" cx="577.67" cy="109.09" r="3.2"><title>#125 lightgbm_0003_autotune: 0.1879</title></circle>
+<circle class="fail" cx="581.70" cy="104.95" r="3.2"><title>#126 lightgbm_0004_autotune: 0.1884</title></circle>
+<circle class="fail" cx="585.73" cy="104.95" r="3.2"><title>#127 lightgbm_0005_autotune: 0.1884</title></circle>
+<circle class="fail" cx="589.76" cy="197.18" r="3.2"><title>#128 lightgbm_ft_0001: 0.1784</title></circle>
+<circle class="fail" cx="593.79" cy="101.96" r="3.2"><title>#129 lightgbm_ft_0002: 0.1887</title></circle>
+<circle class="fail" cx="597.82" cy="101.04" r="3.2"><title>#130 lightgbm_ft_0003: 0.1888</title></circle>
+<circle class="fail" cx="601.85" cy="193.50" r="3.2"><title>#131 lightgbm_ft_0004: 0.1787</title></circle>
+<circle class="fail" cx="605.88" cy="96.44" r="3.2"><title>#132 lightgbm_ft_0005: 0.1893</title></circle>
+<circle class="fail" cx="609.91" cy="101.96" r="3.2"><title>#133 lightgbm_ft_0006: 0.1887</title></circle>
+<circle class="fail" cx="613.94" cy="97.82" r="3.2"><title>#134 lightgbm_ft_0007: 0.1892</title></circle>
+<circle class="fail" cx="617.97" cy="96.44" r="3.2"><title>#135 lightgbm_ft_0008: 0.1893</title></circle>
+<circle class="fail" cx="622.00" cy="141.29" r="3.2"><title>#136 lightgbm_ex_0009: 0.1844</title></circle>
+<circle class="fail" cx="626.03" cy="133.24" r="3.2"><title>#137 lightgbm_ex_0010: 0.1853</title></circle>
+<circle class="fail" cx="630.06" cy="183.61" r="3.2"><title>#138 lightgbm_ex_0011: 0.1798</title></circle>
+<circle class="fail" cx="634.09" cy="187.52" r="3.2"><title>#139 lightgbm_ex_0012: 0.1794</title></circle>
+<circle class="fail" cx="638.12" cy="186.83" r="3.2"><title>#140 lightgbm_ex_0013: 0.1795</title></circle>
+<circle class="fail" cx="646.18" cy="213.74" r="3.2"><title>#142 lightgbm_ex_0015: 0.1766</title></circle>
+<circle class="fail" cx="658.27" cy="125.88" r="3.2"><title>#145 lightgbm_ex_0018: 0.1861</title></circle>
+<circle class="fail" cx="662.30" cy="175.56" r="3.2"><title>#146 lightgbm_ex_0019: 0.1807</title></circle>
+<circle class="fail" cx="666.33" cy="113.00" r="3.2"><title>#147 lightgbm_ex_0020: 0.1875</title></circle>
+<circle class="fail" cx="670.36" cy="167.05" r="3.2"><title>#148 lightgbm_ft_0001: 0.1816</title></circle>
+<circle class="fail" cx="674.39" cy="182.23" r="3.2"><title>#149 lightgbm_ft_0002: 0.1800</title></circle>
+<circle class="fail" cx="678.41" cy="195.80" r="3.2"><title>#150 lightgbm_ft_0003: 0.1785</title></circle>
+<circle class="fail" cx="694.53" cy="161.99" r="3.2"><title>#154 lightgbm_ft_0007: 0.1822</title></circle>
+<circle class="fail" cx="706.62" cy="179.01" r="3.2"><title>#157 lightgbm_ex_0010: 0.1803</title></circle>
+<circle class="fail" cx="714.68" cy="205.46" r="3.2"><title>#159 lightgbm_ps_0001: 0.1774</title></circle>
+<circle class="fail" cx="722.74" cy="187.06" r="3.2"><title>#161 lightgbm_ft_0001: 0.1794</title></circle>
+<circle class="fail" cx="726.77" cy="194.42" r="3.2"><title>#162 lightgbm_ft_0001: 0.1787</title></circle>
+<circle class="fail" cx="738.86" cy="200.63" r="3.2"><title>#165 lightgbm_ft_0004: 0.1780</title></circle>
+<circle class="fail" cx="742.89" cy="181.31" r="3.2"><title>#166 lightgbm_ft_0005: 0.1801</title></circle>
+<circle class="fail" cx="746.92" cy="239.73" r="3.2"><title>#167 lightgbm_ft_0006: 0.1737</title></circle>
+<circle class="fail" cx="759.01" cy="123.81" r="3.2"><title>#170 lightgbm_ft_0001: 0.1863</title></circle>
+<circle class="fail" cx="763.04" cy="130.25" r="3.2"><title>#171 lightgbm_ft_0002: 0.1856</title></circle>
+<circle class="fail" cx="767.07" cy="144.97" r="3.2"><title>#172 lightgbm_ex_0001: 0.1840</title></circle>
+<circle class="fail" cx="775.13" cy="175.79" r="3.2"><title>#174 lightgbm_ft_0003: 0.1807</title></circle>
+<circle class="fail" cx="779.16" cy="142.21" r="3.2"><title>#175 lightgbm_ft_0004: 0.1843</title></circle>
+<circle class="fail" cx="795.27" cy="186.37" r="3.2"><title>#179 lightgbm_explore_0001: 0.1795</title></circle>
+<circle class="fail" cx="799.30" cy="155.78" r="3.2"><title>#180 lightgbm_fine_tune_0002: 0.1829</title></circle>
+<circle class="fail" cx="803.33" cy="173.03" r="3.2"><title>#181 lightgbm_explore_0003: 0.1810</title></circle>
+<circle class="fail" cx="807.36" cy="163.60" r="3.2"><title>#182 lightgbm_fine_tune_0004: 0.1820</title></circle>
+<circle class="fail" cx="811.39" cy="180.85" r="3.2"><title>#183 lightgbm_fine_tune_0005: 0.1801</title></circle>
+<circle class="fail" cx="815.42" cy="179.24" r="3.2"><title>#184 lightgbm_fine_tune_0006: 0.1803</title></circle>
+<circle class="fail" cx="819.45" cy="135.54" r="3.2"><title>#185 lightgbm_fine_tune_0007: 0.1850</title></circle>
+<circle class="fail" cx="827.51" cy="179.93" r="3.2"><title>#187 lightgbm_explore_0009: 0.1802</title></circle>
+<circle class="fail" cx="831.54" cy="167.51" r="3.2"><title>#188 lightgbm_fine_tune_0010: 0.1816</title></circle>
+<circle class="fail" cx="839.60" cy="133.01" r="3.2"><title>#190 lightgbm_fine_tune_0012: 0.1853</title></circle>
+<circle class="fail" cx="851.69" cy="141.52" r="3.2"><title>#193 lightgbm_fine_tune_0015: 0.1844</title></circle>
+<circle class="fail" cx="891.99" cy="144.51" r="3.2"><title>#203 lightgbm_fine_tune_0006: 0.1841</title></circle>
+<circle class="fail" cx="908.10" cy="179.93" r="3.2"><title>#207 lightgbm_fine_tune_0010: 0.1802</title></circle>
+<circle class="fail" cx="924.22" cy="143.13" r="3.2"><title>#211 lightgbm_fine_tune_0014: 0.1842</title></circle>
+<circle class="fail" cx="936.31" cy="110.70" r="3.2"><title>#214 lightgbm_explore_0017: 0.1878</title></circle>
+<circle class="fail" cx="940.34" cy="164.52" r="3.2"><title>#215 lightgbm_fine_tune_0018: 0.1819</title></circle>
+<circle class="fail" cx="944.37" cy="168.89" r="3.2"><title>#216 lightgbm_explore_0019: 0.1814</title></circle>
+<circle class="fail" cx="948.40" cy="206.84" r="3.2"><title>#217 lightgbm_fine_tune_0020: 0.1773</title></circle>
+<circle class="fail" cx="956.46" cy="195.57" r="3.2"><title>#219 lightgbm_ps_0001: 0.1785</title></circle>
+<circle class="fail" cx="960.49" cy="183.61" r="3.2"><title>#220 lightgbm_ps_0002: 0.1798</title></circle>
+<circle class="fail" cx="964.52" cy="146.35" r="3.2"><title>#221 lightgbm_ex_0003: 0.1839</title></circle>
+<circle class="fail" cx="968.55" cy="164.29" r="3.2"><title>#222 lightgbm_ps_0004: 0.1819</title></circle>
+<circle class="fail" cx="972.58" cy="183.84" r="3.2"><title>#223 lightgbm_ex_0005: 0.1798</title></circle>
+<circle class="fail" cx="976.61" cy="169.81" r="3.2"><title>#224 lightgbm_ft_0006: 0.1813</title></circle>
+<circle class="fail" cx="980.64" cy="130.25" r="3.2"><title>#225 lightgbm_ex_0007: 0.1856</title></circle>
+<circle class="fail" cx="984.67" cy="138.53" r="3.2"><title>#226 lightgbm_ex_0008: 0.1847</title></circle>
+<circle class="fail" cx="988.70" cy="128.87" r="3.2"><title>#227 lightgbm_ps_0009: 0.1858</title></circle>
+<circle class="fail" cx="992.73" cy="167.74" r="3.2"><title>#228 lightgbm_ft_0010: 0.1815</title></circle>
+<circle class="fail" cx="996.76" cy="138.76" r="3.2"><title>#229 lightgbm_ft_0011: 0.1847</title></circle>
+<circle class="fail" cx="1004.81" cy="212.82" r="3.2"><title>#231 lightgbm_ft_0013: 0.1767</title></circle>
+<circle class="fail" cx="1008.84" cy="153.02" r="3.2"><title>#232 lightgbm_ft_0014: 0.1832</title></circle>
+<circle class="fail" cx="1012.87" cy="154.63" r="3.2"><title>#233 lightgbm_ft_0015: 0.1830</title></circle>
+<circle class="fail" cx="1020.93" cy="160.84" r="3.2"><title>#235 lightgbm_ex_0017: 0.1823</title></circle>
+<circle class="fail" cx="1033.02" cy="182.23" r="3.2"><title>#238 lightgbm_ps_0020: 0.1800</title></circle>
+<circle class="fail" cx="1037.05" cy="168.66" r="3.2"><title>#239 lightgbm_ft_0001: 0.1815</title></circle>
+<circle class="fail" cx="1041.08" cy="173.49" r="3.2"><title>#240 lightgbm_ex_0002: 0.1809</title></circle>
+<circle class="fail" cx="1045.11" cy="164.98" r="3.2"><title>#241 lightgbm_ps_0003: 0.1819</title></circle>
+<circle class="fail" cx="1049.14" cy="192.58" r="3.2"><title>#242 lightgbm_ft_0004: 0.1789</title></circle>
+<circle class="fail" cx="1053.17" cy="164.98" r="3.2"><title>#243 lightgbm_ex_0005: 0.1819</title></circle>
+<circle class="fail" cx="1057.20" cy="197.18" r="3.2"><title>#244 lightgbm_ft_0006: 0.1784</title></circle>
+<circle class="fail" cx="1061.23" cy="200.40" r="3.2"><title>#245 lightgbm_ft_0007: 0.1780</title></circle>
+<circle class="fail" cx="1065.26" cy="137.38" r="3.2"><title>#246 lightgbm_ps_0008: 0.1848</title></circle>
+<circle class="fail" cx="1069.29" cy="178.09" r="3.2"><title>#247 lightgbm_ft_0009: 0.1804</title></circle>
+<circle class="fail" cx="1073.32" cy="186.83" r="3.2"><title>#248 lightgbm_ft_0010: 0.1795</title></circle>
+<circle class="fail" cx="1077.35" cy="141.29" r="3.2"><title>#249 lightgbm_ft_0011: 0.1844</title></circle>
+<circle class="fail" cx="1081.38" cy="176.71" r="3.2"><title>#250 lightgbm_ft_0012: 0.1806</title></circle>
+<circle class="fail" cx="1085.41" cy="165.67" r="3.2"><title>#251 lightgbm_ft_0013: 0.1818</title></circle>
+<circle class="fail" cx="1089.44" cy="188.67" r="3.2"><title>#252 lightgbm_ps_0014: 0.1793</title></circle>
+<circle class="fail" cx="1093.47" cy="170.50" r="3.2"><title>#253 lightgbm_ft_0015: 0.1812</title></circle>
+<circle class="fail" cx="1097.50" cy="173.72" r="3.2"><title>#254 lightgbm_ft_0016: 0.1809</title></circle>
+<circle class="fail" cx="1101.53" cy="168.20" r="3.2"><title>#255 lightgbm_ex_0017: 0.1815</title></circle>
+<circle class="fail" cx="1105.56" cy="167.51" r="3.2"><title>#256 lightgbm_ft_0018: 0.1816</title></circle>
+<circle class="fail" cx="1109.59" cy="196.95" r="3.2"><title>#257 lightgbm_ps_0019: 0.1784</title></circle>
+<circle class="fail" cx="1113.61" cy="127.03" r="3.2"><title>#258 lightgbm_ft_0020: 0.1860</title></circle>
+<circle class="fail" cx="1117.64" cy="173.26" r="3.2"><title>#259 lightgbm_ft_0021: 0.1809</title></circle>
+<circle class="fail" cx="1121.67" cy="137.61" r="3.2"><title>#260 lightgbm_ft_0022: 0.1848</title></circle>
+<circle class="fail" cx="1125.70" cy="161.30" r="3.2"><title>#261 lightgbm_ft_0023: 0.1822</title></circle>
+<circle class="fail" cx="1129.73" cy="171.19" r="3.2"><title>#262 lightgbm_ex_0024: 0.1812</title></circle>
+<circle class="fail" cx="1133.76" cy="177.17" r="3.2"><title>#263 lightgbm_ft_0025: 0.1805</title></circle>
+<circle class="fail" cx="1137.79" cy="202.47" r="3.2"><title>#264 lightgbm_ft_0026: 0.1778</title></circle>
+<circle class="fail" cx="1141.82" cy="158.77" r="3.2"><title>#265 lightgbm_ex_0027: 0.1825</title></circle>
+<circle class="fail" cx="1145.85" cy="151.41" r="3.2"><title>#266 lightgbm_ex_0028: 0.1833</title></circle>
+<circle class="fail" cx="1149.88" cy="149.80" r="3.2"><title>#267 lightgbm_ft_0029: 0.1835</title></circle>
+<circle class="fail" cx="1153.91" cy="188.21" r="3.2"><title>#268 lightgbm_ft_0030: 0.1793</title></circle>
+<circle class="fail" cx="1157.94" cy="205.00" r="3.2"><title>#269 lightgbm_ft_0031: 0.1775</title></circle>
+<circle class="fail" cx="1161.97" cy="167.97" r="3.2"><title>#270 lightgbm_ex_0032: 0.1815</title></circle>
+<circle class="fail" cx="1166.00" cy="196.26" r="3.2"><title>#271 lightgbm_ex_0033: 0.1784</title></circle>
+<circle class="keep" cx="267.39" cy="169.81" r="4.0"><title>#48 lightgbm_best_plus_learning_rate: 0.1813</title></circle>
+<circle class="keep" cx="271.42" cy="157.62" r="4.0"><title>#49 lightgbm_slightly_more_aggressive: 0.1827</title></circle>
+<circle class="keep" cx="279.48" cy="195.57" r="4.0"><title>#51 lightgbm_flexible_severity: 0.1785</title></circle>
+<circle class="keep" cx="283.51" cy="171.88" r="4.0"><title>#52 lightgbm_lower_lr_more_iter: 0.1811</title></circle>
+<circle class="keep" cx="287.54" cy="201.78" r="4.0"><title>#53 lightgbm_slightly_more_aggressive: 0.1779</title></circle>
+<circle class="keep" cx="291.57" cy="193.50" r="4.0"><title>#54 lightgbm_best_variant: 0.1787</title></circle>
+<circle class="keep" cx="295.60" cy="179.47" r="4.0"><title>#55 lightgbm_boosting_rounds: 0.1803</title></circle>
+<circle class="keep" cx="303.66" cy="157.62" r="4.0"><title>#57 lightgbm_tweedie_direct: 0.1827</title></circle>
+<circle class="keep" cx="335.90" cy="197.18" r="4.0"><title>#65 lightgbm_aggressive_lr: 0.1784</title></circle>
+<circle class="keep" cx="339.93" cy="206.61" r="4.0"><title>#66 lightgbm_optimal_balance_v2: 0.1773</title></circle>
+<circle class="keep" cx="343.96" cy="191.66" r="4.0"><title>#67 lightgbm_optimal_exploration: 0.1789</title></circle>
+<circle class="keep" cx="352.01" cy="156.93" r="4.0"><title>#69 lightgbm_varying_gamma: 0.1827</title></circle>
+<circle class="keep" cx="364.10" cy="199.25" r="4.0"><title>#72 lightgbm_extreme_bagging: 0.1781</title></circle>
+<circle class="keep" cx="368.13" cy="177.86" r="4.0"><title>#73 lightgbm_very_high_lr: 0.1804</title></circle>
+<circle class="keep" cx="372.16" cy="184.99" r="4.0"><title>#74 lightgbm_mid_high_lr: 0.1797</title></circle>
+<circle class="keep" cx="380.22" cy="172.11" r="4.0"><title>#76 lightgbm_17_25_explore: 0.1811</title></circle>
+<circle class="keep" cx="388.28" cy="201.78" r="4.0"><title>#78 lightgbm_13_21_balanced: 0.1779</title></circle>
+<circle class="keep" cx="392.31" cy="190.05" r="4.0"><title>#79 lightgbm_14_23_med_lr: 0.1791</title></circle>
+<circle class="keep" cx="412.46" cy="172.57" r="4.0"><title>#84 lightgbm_deep_diversity: 0.1810</title></circle>
+<circle class="keep" cx="416.49" cy="179.01" r="4.0"><title>#85 lightgbm_extreme_random: 0.1803</title></circle>
+<circle class="keep" cx="420.52" cy="164.52" r="4.0"><title>#86 lightgbm_extreme_variant: 0.1819</title></circle>
+<circle class="keep" cx="432.61" cy="159.69" r="4.0"><title>#89 lightgbm_extreme_v2: 0.1824</title></circle>
+<circle class="keep" cx="436.64" cy="119.21" r="4.0"><title>#90 lightgbm_diverse_sweet: 0.1868</title></circle>
+<circle class="keep" cx="456.79" cy="112.54" r="4.0"><title>#95 lightgbm_diverse_closer: 0.1875</title></circle>
+<circle class="keep" cx="472.90" cy="169.58" r="4.0"><title>#99 lightgbm_191_v2: 0.1814</title></circle>
+<circle class="keep" cx="476.93" cy="104.95" r="4.0"><title>#100 lightgbm_191_exact: 0.1884</title></circle>
+<circle class="keep" cx="489.02" cy="114.15" r="4.0"><title>#103 lightgbm_191_mid: 0.1874</title></circle>
+<circle class="keep" cx="493.05" cy="185.45" r="4.0"><title>#104 lightgbm_191_17_leaves: 0.1796</title></circle>
+<circle class="keep" cx="501.11" cy="136.46" r="4.0"><title>#106 lightgbm_191_slide: 0.1850</title></circle>
+<circle class="keep" cx="513.20" cy="104.03" r="4.0"><title>#109 lightgbm_191_exact_v2: 0.1885</title></circle>
+<circle class="keep" cx="642.15" cy="162.22" r="4.0"><title>#141 lightgbm_ex_0014: 0.1822</title></circle>
+<circle class="keep" cx="650.21" cy="141.29" r="4.0"><title>#143 lightgbm_ex_0016: 0.1844</title></circle>
+<circle class="keep" cx="654.24" cy="166.36" r="4.0"><title>#144 lightgbm_ex_0017: 0.1817</title></circle>
+<circle class="keep" cx="682.44" cy="182.46" r="4.0"><title>#151 lightgbm_ft_0004: 0.1799</title></circle>
+<circle class="keep" cx="686.47" cy="177.86" r="4.0"><title>#152 lightgbm_ft_0005: 0.1804</title></circle>
+<circle class="keep" cx="690.50" cy="165.90" r="4.0"><title>#153 lightgbm_ft_0006: 0.1817</title></circle>
+<circle class="keep" cx="698.56" cy="187.52" r="4.0"><title>#155 lightgbm_ft_0008: 0.1794</title></circle>
+<circle class="keep" cx="702.59" cy="171.19" r="4.0"><title>#156 lightgbm_ex_0009: 0.1812</title></circle>
+<circle class="keep" cx="710.65" cy="188.90" r="4.0"><title>#158 lightgbm_ex_0011: 0.1792</title></circle>
+<circle class="keep" cx="718.71" cy="193.27" r="4.0"><title>#160 lightgbm_ft_0001: 0.1788</title></circle>
+<circle class="keep" cx="730.80" cy="197.64" r="4.0"><title>#163 lightgbm_ft_0002: 0.1783</title></circle>
+<circle class="keep" cx="734.83" cy="190.97" r="4.0"><title>#164 lightgbm_ft_0003: 0.1790</title></circle>
+<circle class="keep" cx="750.95" cy="186.14" r="4.0"><title>#168 lightgbm_ft_0007: 0.1795</title></circle>
+<circle class="keep" cx="754.98" cy="127.49" r="4.0"><title>#169 lightgbm_ft_0008: 0.1859</title></circle>
+<circle class="keep" cx="771.10" cy="143.13" r="4.0"><title>#173 lightgbm_ft_0002: 0.1842</title></circle>
+<circle class="keep" cx="783.19" cy="184.99" r="4.0"><title>#176 lightgbm_ft_0005: 0.1797</title></circle>
+<circle class="keep" cx="787.21" cy="181.08" r="4.0"><title>#177 lightgbm_ex_0006: 0.1801</title></circle>
+<circle class="keep" cx="791.24" cy="104.03" r="4.0"><title>#178 lightgbm_restart: 0.1885</title></circle>
+<circle class="keep" cx="823.48" cy="167.51" r="4.0"><title>#186 lightgbm_fine_tune_0008: 0.1816</title></circle>
+<circle class="keep" cx="835.57" cy="129.10" r="4.0"><title>#189 lightgbm_explore_0011: 0.1857</title></circle>
+<circle class="keep" cx="843.63" cy="156.24" r="4.0"><title>#191 lightgbm_fine_tune_0013: 0.1828</title></circle>
+<circle class="keep" cx="847.66" cy="156.93" r="4.0"><title>#192 lightgbm_explore_0014: 0.1827</title></circle>
+<circle class="keep" cx="855.72" cy="163.60" r="4.0"><title>#194 lightgbm_fine_tune_0016: 0.1820</title></circle>
+<circle class="keep" cx="859.75" cy="136.92" r="4.0"><title>#195 lightgbm_fine_tune_0017: 0.1849</title></circle>
+<circle class="keep" cx="863.78" cy="132.55" r="4.0"><title>#196 lightgbm_fine_tune_0018: 0.1854</title></circle>
+<circle class="keep" cx="867.81" cy="180.85" r="4.0"><title>#197 lightgbm_fine_tune_0019: 0.1801</title></circle>
+<circle class="keep" cx="871.84" cy="136.92" r="4.0"><title>#198 lightgbm_fine_tune_0001: 0.1849</title></circle>
+<circle class="keep" cx="875.87" cy="173.72" r="4.0"><title>#199 lightgbm_fine_tune_0002: 0.1809</title></circle>
+<circle class="keep" cx="879.90" cy="167.97" r="4.0"><title>#200 lightgbm_fine_tune_0003: 0.1815</title></circle>
+<circle class="keep" cx="883.93" cy="144.74" r="4.0"><title>#201 lightgbm_explore_0004: 0.1840</title></circle>
+<circle class="keep" cx="887.96" cy="122.66" r="4.0"><title>#202 lightgbm_fine_tune_0005: 0.1865</title></circle>
+<circle class="keep" cx="896.01" cy="166.82" r="4.0"><title>#204 lightgbm_fine_tune_0007: 0.1817</title></circle>
+<circle class="keep" cx="900.04" cy="161.53" r="4.0"><title>#205 lightgbm_fine_tune_0008: 0.1822</title></circle>
+<circle class="keep" cx="904.07" cy="175.56" r="4.0"><title>#206 lightgbm_fine_tune_0009: 0.1807</title></circle>
+<circle class="keep" cx="912.13" cy="185.22" r="4.0"><title>#208 lightgbm_fine_tune_0011: 0.1797</title></circle>
+<circle class="keep" cx="916.16" cy="170.04" r="4.0"><title>#209 lightgbm_fine_tune_0012: 0.1813</title></circle>
+<circle class="keep" cx="920.19" cy="124.27" r="4.0"><title>#210 lightgbm_fine_tune_0013: 0.1863</title></circle>
+<circle class="keep" cx="928.25" cy="181.08" r="4.0"><title>#212 lightgbm_fine_tune_0015: 0.1801</title></circle>
+<circle class="keep" cx="932.28" cy="169.58" r="4.0"><title>#213 lightgbm_fine_tune_0016: 0.1814</title></circle>
+<circle class="keep" cx="952.43" cy="104.03" r="4.0"><title>#218 lightgbm_best_191: 0.1885</title></circle>
+<circle class="keep" cx="1000.79" cy="147.50" r="4.0"><title>#230 lightgbm_ex_0012: 0.1837</title></circle>
+<circle class="keep" cx="1016.90" cy="139.91" r="4.0"><title>#234 lightgbm_ex_0016: 0.1846</title></circle>
+<circle class="keep" cx="1024.96" cy="199.25" r="4.0"><title>#236 lightgbm_ft_0018: 0.1781</title></circle>
+<circle class="keep" cx="1028.99" cy="169.35" r="4.0"><title>#237 lightgbm_ft_0019: 0.1814</title></circle>
+<circle class="best" cx="605.88" cy="96.44" r="5.5"><title>Best #132 lightgbm_ft_0005: 0.1893</title></circle>
+<line class="axis" x1="78" y1="642" x2="1166" y2="642"/>
+<line class="axis" x1="78" y1="44" x2="78" y2="642"/>
+<text x="600.0" y="696" font-size="15" text-anchor="middle">Experiment number</text>
+<text transform="translate(22 360.0) rotate(-90)" font-size="15" text-anchor="middle">Selection Score</text>
+<rect x="925" y="62" width="240" height="96" rx="6" fill="#ffffff" stroke="#d8dee5"/>
+<circle class="keep" cx="943" cy="84" r="4"/><text x="957" y="88" font-size="13">Accepted (74)</text>
+<circle class="fail" cx="943" cy="112" r="4"/><text x="957" y="116" font-size="13">Not accepted (196)</text>
+<line class="run" x1="935" y1="140" x2="951" y2="140"/><text x="957" y="144" font-size="13">Running best</text>
+</svg>

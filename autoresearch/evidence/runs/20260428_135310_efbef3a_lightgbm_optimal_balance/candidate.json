@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Balance between best configs - fine-tuned hyperparameter search.",
+  "description": "Best still 0.1851. Try intermediate: 16/23 leaves, 0.042 LR to find optimum between capacity and overfitting.",
+  "hypothesis": "15/24 @ 0.04 = 0.1851, 16/28 @ 0.04 = 0.1834. Try 16/23 with 0.042 LR.",
+  "id": "lightgbm_optimal_balance",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 170,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 130,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 16,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 10,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 1550,
+        "num_leaves": 16
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 8,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1250,
+        "num_leaves": 23
+      }
+    ],
+    "nrounds": 125,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.87,
+        "lambda_l2": 8,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 170,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.87,
+        "feature_fraction": 0.82,
+        "lambda_l2": 6,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 130,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

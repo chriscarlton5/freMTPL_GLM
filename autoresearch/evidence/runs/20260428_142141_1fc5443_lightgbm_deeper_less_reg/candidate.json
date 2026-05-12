@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Opposite direction exploration.",
+  "description": "NEW: Try deeper trees (17-26) with reduced regularization (L2=5). Opposite of best - see if different optima found.",
+  "hypothesis": "Deeper + less reg explores different solution space.",
+  "id": "lightgbm_deeper_less_reg",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 4,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 170,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 3,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 130,
+        "num_leaves": 12
+      }
+    ],
+    "early_stopping_rounds": 16,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 5,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 1400,
+        "num_leaves": 17
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 4,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1100,
+        "num_leaves": 26
+      }
+    ],
+    "nrounds": 130,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.88,
+        "lambda_l2": 4,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 170,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.88,
+        "feature_fraction": 0.83,
+        "lambda_l2": 3,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 130,
+        "num_leaves": 12
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

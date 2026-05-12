@@ -1,0 +1,26 @@
+{
+  "actuarial_rationale": "Driver age, car age, power, and brand are plausible rating dimensions. The combined interaction set remains interpretable but must overcome a high parsimony burden and sparse-cell stability risk.",
+  "capped_severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in all components; adds DriverAgeBand:CarAgeBand to frequency and Power:Brand to raw and capped severity.",
+  "frequency": {
+    "interactions": [
+      "DriverAgeBand:CarAgeBand"
+    ],
+    "use_splines": true
+  },
+  "hypothesis": "The strongest transparent frequency and severity near misses may be complementary: age-car segmentation captures claim propensity while Power:Brand captures repair-cost severity.",
+  "id": "enhanced_glm_agefreq_powerbrand_dual_severity",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [
+      "Power:Brand"
+    ],
+    "use_splines": true
+  }
+}

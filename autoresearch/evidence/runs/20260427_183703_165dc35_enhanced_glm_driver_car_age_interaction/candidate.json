@@ -1,0 +1,25 @@
+{
+  "actuarial_rationale": "Driver age and vehicle age are standard actuarial rating dimensions. A limited banded interaction is easier to defend than a black-box effect, but should be rejected if sparse cells reduce stability.",
+  "calibration": {
+    "component_scalars": false
+  },
+  "capped_severity": {
+    "interactions": [],
+    "use_splines": true
+  },
+  "description": "Enhanced GLM using natural splines for DriverAge, CarAge, and logDensity in frequency, raw severity, and capped severity; adds DriverAgeBand:CarAgeBand to the frequency component only.",
+  "frequency": {
+    "interactions": [
+      "DriverAgeBand:CarAgeBand"
+    ],
+    "use_splines": true
+  },
+  "hypothesis": "A transparent young-driver by vehicle-age interaction may improve frequency risk segmentation without compromising capped pure premium stability.",
+  "id": "enhanced_glm_driver_car_age_interaction",
+  "is_baseline": false,
+  "model_type": "glm",
+  "severity": {
+    "interactions": [],
+    "use_splines": true
+  }
+}

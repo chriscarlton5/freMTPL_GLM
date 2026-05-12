@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Refine sweet spot.",
+  "description": "Diverse v3: feature 0.53 / bagging 0.53 + 16/24 leaves. Fine-tune around 0.1897 winner.",
+  "hypothesis": "Fine-tune the sweet spot.",
+  "id": "lightgbm_diverse_v3",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.53,
+        "feature_fraction": 0.53,
+        "lambda_l2": 11,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 225,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.53,
+        "feature_fraction": 0.48,
+        "lambda_l2": 9,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 175,
+        "num_leaves": 11
+      }
+    ],
+    "early_stopping_rounds": 21,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.53,
+        "feature_fraction": 0.53,
+        "lambda_l2": 14,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 1820,
+        "num_leaves": 16
+      },
+      {
+        "bagging_fraction": 0.53,
+        "feature_fraction": 0.48,
+        "lambda_l2": 12,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 1520,
+        "num_leaves": 24
+      }
+    ],
+    "nrounds": 170,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.53,
+        "feature_fraction": 0.53,
+        "lambda_l2": 11,
+        "learning_rate": 0.036,
+        "min_data_in_leaf": 225,
+        "num_leaves": 7
+      },
+      {
+        "bagging_fraction": 0.53,
+        "feature_fraction": 0.48,
+        "lambda_l2": 9,
+        "learning_rate": 0.031,
+        "min_data_in_leaf": 175,
+        "num_leaves": 11
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}

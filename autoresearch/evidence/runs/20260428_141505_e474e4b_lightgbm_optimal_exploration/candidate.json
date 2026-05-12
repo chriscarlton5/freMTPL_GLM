@@ -1,0 +1,66 @@
+{
+  "actuarial_rationale": "Final boundary test.",
+  "description": "Final exploration: 18 leaves at 0.048 LR, extreme L2=15 for safety. Testing boundary of hyperparameter space.",
+  "hypothesis": "Push to boundary to find potential new optimum. High L2 prevents wild fits.",
+  "id": "lightgbm_optimal_exploration",
+  "is_baseline": false,
+  "lightgbm": {
+    "capped_severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 12,
+        "learning_rate": 0.048,
+        "min_data_in_leaf": 200,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.81,
+        "lambda_l2": 10,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 160,
+        "num_leaves": 12
+      }
+    ],
+    "early_stopping_rounds": 18,
+    "frequency_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 15,
+        "learning_rate": 0.048,
+        "min_data_in_leaf": 1700,
+        "num_leaves": 18
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.81,
+        "lambda_l2": 12,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 1350,
+        "num_leaves": 26
+      }
+    ],
+    "nrounds": 130,
+    "severity_grid": [
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.86,
+        "lambda_l2": 12,
+        "learning_rate": 0.048,
+        "min_data_in_leaf": 200,
+        "num_leaves": 8
+      },
+      {
+        "bagging_fraction": 0.86,
+        "feature_fraction": 0.81,
+        "lambda_l2": 10,
+        "learning_rate": 0.042,
+        "min_data_in_leaf": 160,
+        "num_leaves": 12
+      }
+    ]
+  },
+  "model_type": "lightgbm"
+}
