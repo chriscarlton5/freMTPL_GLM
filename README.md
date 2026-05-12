@@ -37,6 +37,16 @@ pure premium = expected annual claim frequency * expected claim severity
   - Test GBM-inspired splines and interactions on the holdout set.
   - Retain only transparent terms that improve the relevant holdout metric without unacceptable calibration deterioration.
 
+## Conclusion
+
+The autoresearch harness improved the project story beyond the original GLM-vs-GBM comparison. The GLM remains the transparent benchmark: it is easy to explain and had very tight capped pure-premium calibration, with a `+0.19%` calibration gap. But its ranking was weaker. The final selected LightGBM pricing challenger improved capped pure-premium Gini from `0.1684` to `0.1909`, raw pure-premium Gini from `0.1540` to `0.2140`, and capped pure-premium MAE from `219.0904` to `218.1074`, while keeping capped calibration within about one percent at `-0.97%`.
+
+The harness also improved on the initial GBM challenger, not just on the GLM. Capped pure-premium Gini increased from `0.1827` for the initial regularized LightGBM to `0.1909` for the final LightGBM, and raw pure-premium Gini increased from `0.1980` to `0.2140`. Absolute capped calibration error improved from `1.45%` to `0.97%`. The main tradeoff was a small capped MAE deterioration versus the initial GBM, from `217.6245` to `218.1074`, or about `0.22%`; that was acceptable because the final model delivered stronger ranking and better calibration while passing the harness gates.
+
+My actuarial interpretation is that GBM added real segmentation value, but the lift alone is not the same thing as a production rate indication. The final LightGBM is a strong challenger model and research result; the GLM remains the clean benchmark for transparency. For a filing-oriented workflow, the GBM result would still need governance around explainability, proxy-variable review, stability, and business reasonableness. This project already includes baseline explainability through the GLM comparison, feature importance, partial dependence plots, interaction summaries, and decile-level calibration/lift diagnostics.
+
+The source of truth for the autoresearch summary is `autoresearch/evidence/results.tsv`, with the selected pricing and segmentation champions summarized in `autoresearch/evidence/champions.json`.
+
 ## Project Rules
 
 - Prefer stock `R` functionality for the GLM baseline and minimal external packages for the GBM comparison.
