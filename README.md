@@ -1,6 +1,6 @@
 # French MTPL Actuarial Modeling Project
 
-I built this project as an exploratory exercise to learn the fundamentals of actuarial modeling and property-and-casualty price modeling. The dataset is the French motor third-party liability (MTPL) frequency/severity data, and the modeling target is policy-level expected annual loss cost, also called pure premium:
+I built this project as an exploratory exercise to 'learn-by-doing' the fundamentals of actuarial modeling and property-and-casualty price modeling. The dataset is the French motor third-party liability (freMTPL) frequency/severity data, and the modeling target is policy-level expected annual loss cost, also called pure premium:
 
 ```text
 pure premium = expected annual claim frequency * expected claim severity
@@ -8,20 +8,20 @@ pure premium = expected annual claim frequency * expected claim severity
 
 The project starts with a classical frequency/severity GLM, adds a LightGBM challenger, then adapts an autonomous research loop inspired by Andrej Karpathy's `autoresearch` pattern to test whether systematic model iteration could improve the pricing and segmentation results. The answer was yes: the loop found a stronger LightGBM challenger than both the transparent GLM baseline and the initial GBM.
 
-This is a side-project pricing study, not a production rate filing. I use the project to demonstrate modeling judgment, validation discipline, and the tradeoff between transparent actuarial models and higher-performing machine-learning challengers.
-
+This was a fun side project for educational purposes only. I used this project to learn about GLM/GBM models and halfway through had kind of a wild idea to see if I could adapt current AI-research methods to actuarial modeling in order to improve pricing models autonomously. It appears the answer is yes! 
 ## Project Goal
 
 The central question was:
 
-> Can a transparent actuarial GLM and a GBM challenger estimate expected annual loss cost credibly, and can an autonomous research harness improve the challenger without losing calibration or governance discipline?
+> Can an autonomous research harness improve property and casualty pricing models?
 
 The practical goals were to:
 
-- estimate expected annual loss cost from frequency and severity components,
-- compare a transparent GLM against a more flexible LightGBM,
-- evaluate ranking, calibration, and error rather than a single leaderboard metric,
-- use GBM feature importance, partial dependence plots, and interaction summaries to understand what the challenger learned,
+- build a basic GLM/GBM as best I could as a non-expert
+- estimate expected annual loss cost from frequency and severity components
+- compare a transparent GLM against a more flexible LightGBM
+- evaluate ranking, calibration, and error rather than a single leaderboard metric
+- use GBM feature importance, partial dependence plots, and interaction summaries to understand what the challenger learned
 - test whether an autonomous research loop could improve the baseline modeling results while preserving an auditable evidence trail.
 
 ## Data and Actuarial Target
@@ -87,11 +87,7 @@ The winning GBM was still trained in R. Python orchestrated the autonomous resea
 
 ## Actuarial Interpretation
 
-My conclusion is that GBM added real segmentation value. The GLM remained the clean transparent benchmark, but the LightGBM challenger was better at ranking policies by observed loss cost. The autoresearch loop then found a stronger GBM candidate than the initial hand-built challenger.
-
-That does not mean the final GBM is automatically a filed pricing model. A production filing would require broader governance: explainability review, proxy-variable review, stability testing, reasonableness checks, and business signoff. This repo includes baseline explainability through the GLM comparison, feature importance, partial dependence plots, interaction summaries, and decile-level calibration/lift diagnostics, but it remains an exploratory project.
-
-The strongest story is that the project moved from classical actuarial modeling, to GBM challenger modeling, to autonomous model research, while keeping the analysis grounded in expected loss cost, calibration, ranking, and transparent evidence.
+This side project tested whether an automated actuarial research harness could improve pure-premium pricing beyond a transparent GLM and an initial LightGBM challenger. The answer is yes. Our winning LightGBM was produced 100% autonomously and improved capped pure-premium Gini from 0.1684 for the GLM baseline to 0.1909, a 13.4% relative lift, while also improving capped MAE from 219.09 to 218.11. Importantly, the harness also improved on the earlier GBM challenger: capped Gini rose from 0.1827 to 0.1909, raw pure-premium Gini rose from 0.1980 to 0.2140, and absolute capped calibration error improved from 1.45% to 0.97%. The only tradeoff was a very small MAE deterioration versus the first GBM, about 0.22%, which I consider acceptable because the final model delivered stronger risk ranking and better calibration while passing predefined gates. My conclusion is that GBMs added real segmentation value, but the actuarial discipline came from treating them as challengers subject to calibration, stability, and interpretability constraints rather than simply selecting the highest-scoring black-box model.
 
 ## Repository Guide
 
@@ -106,17 +102,3 @@ The strongest story is that the project moved from classical actuarial modeling,
 - `autoresearch/`: autonomous research harness, candidate runner, operating manual, and tracked evidence.
 - `docs/glm.html`: preserved static GLM walkthrough.
 - `docs/index.html`: GitHub Pages-ready static GBM comparison walkthrough.
-
-## GitHub Pages
-
-This project is set up for the simplest static deployment path on GitHub Pages.
-
-1. Create a GitHub repository and push this folder to it.
-2. In GitHub, open `Settings` -> `Pages`.
-3. Under `Build and deployment`, choose `Deploy from a branch`.
-4. Select your main branch and the `/docs` folder.
-5. Save the settings and wait for GitHub Pages to publish the site.
-
-The published site will serve `docs/index.html`, which is the rendered GLM-vs-LightGBM walkthrough. The original GLM-only walkthrough is preserved at `docs/glm.html`.
-
-If you rerender the GBM report later, copy the new `mtpl_gbm_report.html` over `docs/index.html` before pushing. If you rerender the GLM report later, copy the new `mtpl_glm_report.html` over `docs/glm.html`.
