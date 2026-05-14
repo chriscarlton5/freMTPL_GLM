@@ -1,0 +1,20 @@
+{
+  "benchmark_model_id": "lightgbm_regularized_challenger",
+  "candidate_id": "v2_lgb_conservative_feature_fraction",
+  "deltas": {
+    "bad_prediction_count": 0,
+    "candidate_abs_capped_pp_calibration_gap": 0.00357021455114244,
+    "capped_pp_calibration_abs_deterioration": -0.00207204049835041,
+    "capped_pp_mae_deterioration": 0.0009170662606074796,
+    "capped_pp_rmse_deterioration": 5.3080604093813934e-06,
+    "holdout_capped_pp_gini_gain": -0.005607189506066007,
+    "holdout_raw_pp_gini_gain": -0.0059163772659029945,
+    "policy_leakage_count": 0
+  },
+  "gate_failures": [
+    "holdout capped PP Gini did not beat champion by required margin",
+    "raw PP Gini deteriorated beyond tolerance"
+  ],
+  "model_id": "v2_lgb_conservative_feature_fraction",
+  "status": "research_only"
+}

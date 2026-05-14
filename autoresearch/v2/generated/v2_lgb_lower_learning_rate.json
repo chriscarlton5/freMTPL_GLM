@@ -1,0 +1,80 @@
+{
+  "candidate_id": "v2_lgb_lower_learning_rate",
+  "expected_mechanism": "Change regularization structure enough to test generalization, while staying close to the defensible initial GBM basin.",
+  "hypothesis": "Use slower boosting to test whether smoother ensembles improve holdout capped Gini.",
+  "idea_family": "model_structure",
+  "intended_metric_improvements": [
+    "holdout_capped_pp_gini",
+    "calibration",
+    "seed_stability"
+  ],
+  "known_tradeoff_risk": "May reduce useful segmentation by over-regularizing the already strong benchmark.",
+  "model_spec": {
+    "actuarial_rationale": "V2 variant changes model structure or stability constraints relative to the current benchmark; it is not a local search around best_191.",
+    "description": "V2 LightGBM structural variant: lower_learning_rate.",
+    "hypothesis": "Use slower boosting to test whether smoother ensembles improve holdout capped Gini.",
+    "id": "v2_lgb_lower_learning_rate",
+    "is_baseline": false,
+    "lightgbm": {
+      "capped_severity_grid": [
+        {
+          "bagging_fraction": 0.9,
+          "feature_fraction": 0.9,
+          "lambda_l2": 5,
+          "learning_rate": 0.03,
+          "min_data_in_leaf": 150,
+          "num_leaves": 7
+        },
+        {
+          "bagging_fraction": 0.9,
+          "feature_fraction": 0.85,
+          "lambda_l2": 10,
+          "learning_rate": 0.0225,
+          "min_data_in_leaf": 200,
+          "num_leaves": 15
+        }
+      ],
+      "early_stopping_rounds": 20,
+      "frequency_grid": [
+        {
+          "bagging_fraction": 0.9,
+          "feature_fraction": 0.9,
+          "lambda_l2": 5,
+          "learning_rate": 0.03,
+          "min_data_in_leaf": 1200,
+          "num_leaves": 15
+        },
+        {
+          "bagging_fraction": 0.9,
+          "feature_fraction": 0.85,
+          "lambda_l2": 10,
+          "learning_rate": 0.0225,
+          "min_data_in_leaf": 1500,
+          "num_leaves": 31
+        }
+      ],
+      "nrounds": 180,
+      "severity_grid": [
+        {
+          "bagging_fraction": 0.9,
+          "feature_fraction": 0.9,
+          "lambda_l2": 5,
+          "learning_rate": 0.03,
+          "min_data_in_leaf": 150,
+          "num_leaves": 7
+        },
+        {
+          "bagging_fraction": 0.9,
+          "feature_fraction": 0.85,
+          "lambda_l2": 10,
+          "learning_rate": 0.0225,
+          "min_data_in_leaf": 200,
+          "num_leaves": 15
+        }
+      ]
+    },
+    "model_type": "lightgbm"
+  },
+  "parent_candidate_id": "lightgbm_regularized_challenger",
+  "schema_version": 1
+}

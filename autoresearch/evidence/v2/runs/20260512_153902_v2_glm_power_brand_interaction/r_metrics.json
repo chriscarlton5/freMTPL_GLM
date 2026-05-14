@@ -1,0 +1,472 @@
+{
+  "candidate": {
+    "candidate_id": "v2_glm_power_brand_interaction",
+    "expected_mechanism": "Replace local LightGBM tuning with stable, reviewable interactions across frequency and severity components.",
+    "hypothesis": "Vehicle power by brand may capture stable vehicle-risk segmentation without GBM opacity.",
+    "idea_family": "transparent_glm",
+    "intended_metric_improvements": [
+      "holdout_capped_pp_gini",
+      "calibration",
+      "interpretability"
+    ],
+    "known_tradeoff_risk": "Transparent interactions may be too rigid or too parameter-heavy to beat the LightGBM benchmark.",
+    "model_spec": {
+      "actuarial_rationale": "Transparent GLM structure tests whether stable actuarial interactions can improve pricing without black-box search.",
+      "calibration": {
+        "component_scalars": false
+      },
+      "capped_severity": {
+        "interactions": [
+          "Power:Brand"
+        ],
+        "use_splines": true
+      },
+      "description": "V2 transparent GLM with splines=True and interactions=Power:Brand.",
+      "frequency": {
+        "interactions": [
+          "Power:Brand"
+        ],
+        "use_splines": true
+      },
+      "hypothesis": "Vehicle power by brand may capture stable vehicle-risk segmentation without GBM opacity.",
+      "id": "v2_glm_power_brand_interaction",
+      "is_baseline": false,
+      "model_type": "glm",
+      "severity": {
+        "interactions": [
+          "Power:Brand"
+        ],
+        "use_splines": true
+      }
+    },
+    "parent_candidate_id": "baseline_enhanced_glm_splines",
+    "schema_version": 1
+  },
+  "benchmark": {
+    "schema_version": 1,
+    "candidate_id": "lightgbm_regularized_challenger",
+    "idea_family": "model_structure",
+    "hypothesis": "The initial constrained LightGBM remains the current pricing champion and should be the benchmark every v2 candidate must beat.",
+    "expected_mechanism": "Constrained leaves, moderate L2 regularization, and high feature/bagging fractions preserve capped pure-premium ranking without excessive validation overfit.",
+    "intended_metric_improvements": [
+      "benchmark"
+    ],
+    "known_tradeoff_risk": "This is the current benchmark, not an attempted improvement.",
+    "parent_candidate_id": null,
+    "model_spec": {
+      "actuarial_rationale": "The existing report showed LightGBM can find segmentation signal, but it is not accepted as a pricing level unless calibration and stability also pass. This candidate intentionally limits flexibility to avoid a black-box gift.",
+      "description": "Regularized LightGBM challenger using constrained leaf counts and moderate L2 penalties for frequency, raw severity, and capped severity.",
+      "hypothesis": "A constrained LightGBM may improve capped pure premium ranking enough to qualify as a segmentation/research champion while preserving capped calibration and error stability.",
+      "id": "lightgbm_regularized_challenger",
+      "is_baseline": false,
+      "lightgbm": {
+        "capped_severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ],
+        "early_stopping_rounds": 15,
+        "frequency_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 1200,
+            "num_leaves": 15
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 1500,
+            "num_leaves": 31
+          }
+        ],
+        "nrounds": 120,
+        "severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ]
+      },
+      "model_type": "lightgbm"
+    }
+  },
+  "cv_metrics": {
+    "candidate_id": "v2_glm_power_brand_interaction",
+    "candidate": {
+      "actuarial_rationale": "Transparent GLM structure tests whether stable actuarial interactions can improve pricing without black-box search.",
+      "calibration": {
+        "component_scalars": false
+      },
+      "capped_severity": {
+        "interactions": [
+          "Power:Brand"
+        ],
+        "use_splines": true
+      },
+      "description": "V2 transparent GLM with splines=True and interactions=Power:Brand.",
+      "frequency": {
+        "interactions": [
+          "Power:Brand"
+        ],
+        "use_splines": true
+      },
+      "hypothesis": "Vehicle power by brand may capture stable vehicle-risk segmentation without GBM opacity.",
+      "id": "v2_glm_power_brand_interaction",
+      "is_baseline": false,
+      "model_type": "glm",
+      "severity": {
+        "interactions": [
+          "Power:Brand"
+        ],
+        "use_splines": true
+      }
+    },
+    "model_type": "glm",
+    "outer_folds": 3,
+    "seed": 20260423,
+    "severity_cap": 36876.2,
+    "aggregate": {
+      "fold_mean": 2,
+      "fold_sd": 1,
+      "policies_mean": 110178.3333,
+      "policies_sd": 0.5774,
+      "claim_rows_mean": 4313.6667,
+      "claim_rows_sd": 11.5902,
+      "observed_claims_mean": 4313.6667,
+      "observed_claims_sd": 11.5902,
+      "predicted_claims_mean": 4313.8326,
+      "predicted_claims_sd": 5.2093,
+      "frequency_gini_mean": 0.1743,
+      "frequency_gini_sd": 0.0124,
+      "frequency_mae_mean": 0.1323,
+      "frequency_mae_sd": 0.0002,
+      "frequency_rmse_mean": 0.4745,
+      "frequency_rmse_sd": 0.0124,
+      "frequency_poisson_deviance_mean": 0.2517,
+      "frequency_poisson_deviance_sd": 0.0009,
+      "raw_severity_mae_mean": 1963.2158,
+      "raw_severity_mae_sd": 171.7405,
+      "raw_severity_rmse_mean": 13052.2104,
+      "raw_severity_rmse_sd": 9141.3011,
+      "raw_severity_gamma_deviance_mean": 1.7411,
+      "raw_severity_gamma_deviance_sd": 0.2521,
+      "capped_severity_mae_mean": 1254.3933,
+      "capped_severity_mae_sd": 46.7746,
+      "capped_severity_rmse_mean": 3353.255,
+      "capped_severity_rmse_sd": 308.3146,
+      "capped_severity_gamma_deviance_mean": 1.2151,
+      "capped_severity_gamma_deviance_sd": 0.0963,
+      "raw_pp_gini_mean": 0.1635,
+      "raw_pp_gini_sd": 0.103,
+      "raw_pp_mae_mean": 271.1961,
+      "raw_pp_mae_sd": 11.4632,
+      "raw_pp_rmse_mean": 7280.4542,
+      "raw_pp_rmse_sd": 3422.3252,
+      "raw_pp_observed_loss_cost_mean": 143.8666,
+      "raw_pp_observed_loss_cost_sd": 18.3964,
+      "raw_pp_predicted_loss_cost_mean": 141.6438,
+      "raw_pp_predicted_loss_cost_sd": 7.9936,
+      "raw_pp_calibration_gap_mean": 0.0005,
+      "raw_pp_calibration_gap_sd": 0.1872,
+      "capped_pp_gini_mean": 0.1673,
+      "capped_pp_gini_sd": 0.023,
+      "capped_pp_mae_mean": 218.9907,
+      "capped_pp_mae_sd": 2.7836,
+      "capped_pp_rmse_mean": 2533.5572,
+      "capped_pp_rmse_sd": 504.4009,
+      "capped_pp_observed_loss_cost_mean": 115.3648,
+      "capped_pp_observed_loss_cost_sd": 5.0877,
+      "capped_pp_predicted_loss_cost_mean": 115.2553,
+      "capped_pp_predicted_loss_cost_sd": 2.4571,
+      "capped_pp_calibration_gap_mean": 0.001,
+      "capped_pp_calibration_gap_sd": 0.0648,
+      "bad_prediction_count_mean": 0,
+      "bad_prediction_count_sd": 0,
+      "parameter_count_mean": 318,
+      "parameter_count_sd": 0,
+      "frequency_aic_mean": 72007.5061,
+      "frequency_aic_sd": 75.9885,
+      "severity_aic_mean": 147616.2799,
+      "severity_aic_sd": 528.3903,
+      "capped_severity_aic_mean": 145059.2738,
+      "capped_severity_aic_sd": 356.1106,
+      "frequency_bic_mean": 73099.6244,
+      "frequency_bic_sd": 75.9888,
+      "severity_bic_mean": 148353.1534,
+      "severity_bic_sd": 532.3384,
+      "capped_severity_bic_mean": 145796.1473,
+      "capped_severity_bic_sd": 357.8129,
+      "max_abs_coefficient_mean": 10.7185,
+      "max_abs_coefficient_sd": 0.5476,
+      "policy_leakage_count_mean": 0,
+      "policy_leakage_count_sd": 0
+    },
+    "fold_metrics": [
+      {
+        "fold": 1,
+        "policies": 110179,
+        "claim_rows": 4303,
+        "observed_claims": 4303,
+        "predicted_claims": 4308.8279,
+        "frequency_gini": 0.1631,
+        "frequency_mae": 0.1322,
+        "frequency_rmse": 0.4884,
+        "frequency_poisson_deviance": 0.2526,
+        "raw_severity_mae": 2131.7475,
+        "raw_severity_rmse": 23511.374,
+        "raw_severity_gamma_deviance": 1.9489,
+        "capped_severity_mae": 1243.6415,
+        "capped_severity_rmse": 3328.5012,
+        "capped_severity_gamma_deviance": 1.1925,
+        "raw_pp_gini": 0.276,
+        "raw_pp_mae": 282.5908,
+        "raw_pp_rmse": 10001.4164,
+        "raw_pp_observed_loss_cost": 161.7107,
+        "raw_pp_predicted_loss_cost": 133.9938,
+        "raw_pp_calibration_gap": -0.1714,
+        "capped_pp_gini": 0.181,
+        "capped_pp_mae": 218.3779,
+        "capped_pp_rmse": 2873.047,
+        "capped_pp_observed_loss_cost": 114.5376,
+        "capped_pp_predicted_loss_cost": 115.3671,
+        "capped_pp_calibration_gap": 0.0072,
+        "bad_prediction_count": 0,
+        "parameter_count": 318,
+        "frequency_aic": 71934.4039,
+        "severity_aic": 147312.7203,
+        "capped_severity_aic": 145298.2493,
+        "frequency_bic": 73026.5219,
+        "severity_bic": 148047.3686,
+        "capped_severity_bic": 146032.8976,
+        "max_abs_coefficient": 11.0259,
+        "policy_leakage_count": 0
+      },
+      {
+        "fold": 2,
+        "policies": 110178,
+        "claim_rows": 4312,
+        "observed_claims": 4312,
+        "predicted_claims": 4313.4452,
+        "frequency_gini": 0.1723,
+        "frequency_mae": 0.1323,
+        "frequency_rmse": 0.4707,
+        "frequency_poisson_deviance": 0.2509,
+        "raw_severity_mae": 1969.4628,
+        "raw_severity_rmse": 9054.6218,
+        "raw_severity_gamma_deviance": 1.8137,
+        "capped_severity_mae": 1305.6076,
+        "capped_severity_rmse": 3673.2004,
+        "capped_severity_gamma_deviance": 1.3206,
+        "raw_pp_gini": 0.0738,
+        "raw_pp_mae": 271.3319,
+        "raw_pp_rmse": 8401.8239,
+        "raw_pp_observed_loss_cost": 144.9254,
+        "raw_pp_predicted_loss_cost": 140.9961,
+        "raw_pp_calibration_gap": -0.0271,
+        "capped_pp_gini": 0.1408,
+        "capped_pp_mae": 222.0296,
+        "capped_pp_rmse": 2773.6663,
+        "capped_pp_observed_loss_cost": 120.8154,
+        "capped_pp_predicted_loss_cost": 112.7442,
+        "capped_pp_calibration_gap": -0.0668,
+        "bad_prediction_count": 0,
+        "parameter_count": 318,
+        "frequency_aic": 72086.0847,
+        "severity_aic": 147309.7095,
+        "capped_severity_aic": 144649.9882,
+        "frequency_bic": 73178.2031,
+        "severity_bic": 148044.2494,
+        "capped_severity_bic": 145384.5282,
+        "max_abs_coefficient": 11.0434,
+        "policy_leakage_count": 0
+      },
+      {
+        "fold": 3,
+        "policies": 110178,
+        "claim_rows": 4326,
+        "observed_claims": 4326,
+        "predicted_claims": 4319.2248,
+        "frequency_gini": 0.1876,
+        "frequency_mae": 0.1325,
+        "frequency_rmse": 0.4644,
+        "frequency_poisson_deviance": 0.2518,
+        "raw_severity_mae": 1788.437,
+        "raw_severity_rmse": 6590.6353,
+        "raw_severity_gamma_deviance": 1.4607,
+        "capped_severity_mae": 1213.9307,
+        "capped_severity_rmse": 3058.0636,
+        "capped_severity_gamma_deviance": 1.1321,
+        "raw_pp_gini": 0.1409,
+        "raw_pp_mae": 259.6657,
+        "raw_pp_rmse": 3438.1223,
+        "raw_pp_observed_loss_cost": 124.9636,
+        "raw_pp_predicted_loss_cost": 149.9416,
+        "raw_pp_calibration_gap": 0.1999,
+        "capped_pp_gini": 0.1801,
+        "capped_pp_mae": 216.5647,
+        "capped_pp_rmse": 1953.9583,
+        "capped_pp_observed_loss_cost": 110.7413,
+        "capped_pp_predicted_loss_cost": 117.6546,
+        "capped_pp_calibration_gap": 0.0624,
+        "bad_prediction_count": 0,
+        "parameter_count": 318,
+        "frequency_aic": 72002.0296,
+        "severity_aic": 148226.41,
+        "capped_severity_aic": 145229.5839,
+        "frequency_bic": 73094.1481,
+        "severity_bic": 148967.8423,
+        "capped_severity_bic": 145971.0162,
+        "max_abs_coefficient": 10.0863,
+        "policy_leakage_count": 0
+      }
+    ],
+    "integrity": {
+      "policy_leakage_count": 0,
+      "bad_prediction_count": 0,
+      "loss_reconciliation_gap": 0
+    },
+    "diagnostics": {
+      "raw_counts": {
+        "freq_rows": 413169,
+        "sev_rows": 16181
+      }
+    }
+  },
+  "holdout_comparison": [
+    {
+      "role": "benchmark",
+      "model_id": "lightgbm_regularized_challenger",
+      "seed": 20260423,
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3229.4248,
+      "frequency_gini": 0.1774,
+      "raw_pp_gini": 0.386,
+      "raw_pp_mae": 287.1962,
+      "raw_pp_rmse": 20355.7134,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 132.5886,
+      "raw_pp_calibration_gap": -0.2103,
+      "capped_pp_gini": 0.2075,
+      "capped_pp_mae": 215.4846,
+      "capped_pp_rmse": 1755.4406,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 113.0387,
+      "capped_pp_calibration_gap": -0.0056,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0
+    },
+    {
+      "role": "candidate",
+      "model_id": "v2_glm_power_brand_interaction",
+      "seed": 20260423,
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3228.1704,
+      "frequency_gini": 0.1778,
+      "raw_pp_gini": 0.341,
+      "raw_pp_mae": 295.4894,
+      "raw_pp_rmse": 20355.9146,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 141.8246,
+      "raw_pp_calibration_gap": -0.1553,
+      "capped_pp_gini": 0.1912,
+      "capped_pp_mae": 217.1469,
+      "capped_pp_rmse": 1755.6595,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 115.102,
+      "capped_pp_calibration_gap": 0.0125,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0
+    }
+  ],
+  "seed_summary": [
+    {
+      "model_id": "v2_glm_power_brand_interaction",
+      "metric": "capped_pp_gini",
+      "mean": 0.1912,
+      "sd": 0,
+      "min": 0.1912,
+      "max": 0.1912,
+      "worst_abs_delta_from_mean": 0
+    },
+    {
+      "model_id": "v2_glm_power_brand_interaction",
+      "metric": "raw_pp_gini",
+      "mean": 0.341,
+      "sd": 0,
+      "min": 0.341,
+      "max": 0.341,
+      "worst_abs_delta_from_mean": 0
+    },
+    {
+      "model_id": "v2_glm_power_brand_interaction",
+      "metric": "capped_pp_mae",
+      "mean": 217.1469,
+      "sd": 0,
+      "min": 217.1469,
+      "max": 217.1469,
+      "worst_abs_delta_from_mean": 0
+    },
+    {
+      "model_id": "v2_glm_power_brand_interaction",
+      "metric": "capped_pp_calibration_gap",
+      "mean": 0.0125,
+      "sd": 0,
+      "min": 0.0125,
+      "max": 0.0125,
+      "worst_abs_delta_from_mean": 0
+    }
+  ],
+  "prediction_stability_summary": [
+    {
+      "model_id": "v2_glm_power_brand_interaction",
+      "prediction": "capped_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0,
+      "p95_cv": 0,
+      "max_cv": 0
+    },
+    {
+      "model_id": "v2_glm_power_brand_interaction",
+      "prediction": "raw_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0,
+      "p95_cv": 0,
+      "max_cv": 0
+    }
+  ],
+  "feature_importance_summary": []
+}

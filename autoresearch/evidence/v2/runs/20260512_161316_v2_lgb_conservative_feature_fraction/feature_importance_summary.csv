@@ -1,0 +1,4 @@
+"model_id","component","mean_top5_jaccard","status"
+"v2_lgb_conservative_feature_fraction","frequency",1,"stable"
+"v2_lgb_conservative_feature_fraction","severity",1,"stable"
+"v2_lgb_conservative_feature_fraction","capped_severity",1,"stable"

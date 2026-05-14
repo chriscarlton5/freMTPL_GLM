@@ -1,0 +1,4 @@
+"model_id","component","mean_top5_jaccard","status"
+"lightgbm_best_191","frequency",1,"stable"
+"lightgbm_best_191","severity",1,"stable"
+"lightgbm_best_191","capped_severity",1,"stable"

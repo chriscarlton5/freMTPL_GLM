@@ -1,0 +1,7 @@
+"model_id","component","mean_top5_jaccard","most_common_top_feature","status"
+"lightgbm_regularized_challenger","frequency",1,"DriverAge","stable"
+"lightgbm_regularized_challenger","severity",1,"DriverAge","stable"
+"lightgbm_regularized_challenger","capped_severity",1,"DriverAge","stable"
+"lightgbm_best_191","frequency",1,"DriverAge","stable"
+"lightgbm_best_191","severity",1,"DriverAge","stable"
+"lightgbm_best_191","capped_severity",1,"DriverAge","stable"

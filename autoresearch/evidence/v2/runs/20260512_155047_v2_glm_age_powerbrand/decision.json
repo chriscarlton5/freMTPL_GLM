@@ -1,0 +1,22 @@
+{
+  "benchmark_model_id": "lightgbm_regularized_challenger",
+  "candidate_id": "v2_glm_age_powerbrand",
+  "deltas": {
+    "bad_prediction_count": 0,
+    "candidate_abs_capped_pp_calibration_gap": 0.0125386327456107,
+    "capped_pp_calibration_abs_deterioration": 0.006896377696117851,
+    "capped_pp_mae_deterioration": 0.007859051857217823,
+    "capped_pp_rmse_deterioration": 5.96683367793357e-05,
+    "holdout_capped_pp_gini_gain": -0.007449622276464007,
+    "holdout_raw_pp_gini_gain": -0.02189536563732497,
+    "policy_leakage_count": 0
+  },
+  "gate_failures": [
+    "holdout capped PP Gini did not beat champion by required margin",
+    "capped PP MAE deterioration exceeded tolerance",
+    "capped PP calibration deterioration exceeded tolerance",
+    "raw PP Gini deteriorated beyond tolerance"
+  ],
+  "model_id": "v2_glm_age_powerbrand",
+  "status": "research_only"
+}

@@ -1,0 +1,4 @@
+"model_id","component","mean_top5_jaccard","status"
+"v2_lgb_lower_learning_rate","frequency",1,"stable"
+"v2_lgb_lower_learning_rate","severity",1,"stable"
+"v2_lgb_lower_learning_rate","capped_severity",1,"stable"

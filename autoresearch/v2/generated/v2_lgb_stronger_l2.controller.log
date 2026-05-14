@@ -1,0 +1,3 @@
+status: promote
+run_dir: autoresearch\evidence\v2\runs\20260512_161535_v2_lgb_stronger_l2
+report: autoresearch\evidence\v2\runs\20260512_161535_v2_lgb_stronger_l2\promotion_report.md

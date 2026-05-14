@@ -1,0 +1,472 @@
+{
+  "candidate": {
+    "candidate_id": "v2_glm_age_car_interaction",
+    "expected_mechanism": "Replace local LightGBM tuning with stable, reviewable interactions across frequency and severity components.",
+    "hypothesis": "Driver age and vehicle age may interact in a stable, actuarially explainable way.",
+    "idea_family": "transparent_glm",
+    "intended_metric_improvements": [
+      "holdout_capped_pp_gini",
+      "calibration",
+      "interpretability"
+    ],
+    "known_tradeoff_risk": "Transparent interactions may be too rigid or too parameter-heavy to beat the LightGBM benchmark.",
+    "model_spec": {
+      "actuarial_rationale": "Transparent GLM structure tests whether stable actuarial interactions can improve pricing without black-box search.",
+      "calibration": {
+        "component_scalars": false
+      },
+      "capped_severity": {
+        "interactions": [
+          "DriverAgeBand:CarAgeBand"
+        ],
+        "use_splines": true
+      },
+      "description": "V2 transparent GLM with splines=True and interactions=DriverAgeBand:CarAgeBand.",
+      "frequency": {
+        "interactions": [
+          "DriverAgeBand:CarAgeBand"
+        ],
+        "use_splines": true
+      },
+      "hypothesis": "Driver age and vehicle age may interact in a stable, actuarially explainable way.",
+      "id": "v2_glm_age_car_interaction",
+      "is_baseline": false,
+      "model_type": "glm",
+      "severity": {
+        "interactions": [
+          "DriverAgeBand:CarAgeBand"
+        ],
+        "use_splines": true
+      }
+    },
+    "parent_candidate_id": "baseline_enhanced_glm_splines",
+    "schema_version": 1
+  },
+  "benchmark": {
+    "schema_version": 1,
+    "candidate_id": "lightgbm_regularized_challenger",
+    "idea_family": "model_structure",
+    "hypothesis": "The initial constrained LightGBM remains the current pricing champion and should be the benchmark every v2 candidate must beat.",
+    "expected_mechanism": "Constrained leaves, moderate L2 regularization, and high feature/bagging fractions preserve capped pure-premium ranking without excessive validation overfit.",
+    "intended_metric_improvements": [
+      "benchmark"
+    ],
+    "known_tradeoff_risk": "This is the current benchmark, not an attempted improvement.",
+    "parent_candidate_id": null,
+    "model_spec": {
+      "actuarial_rationale": "The existing report showed LightGBM can find segmentation signal, but it is not accepted as a pricing level unless calibration and stability also pass. This candidate intentionally limits flexibility to avoid a black-box gift.",
+      "description": "Regularized LightGBM challenger using constrained leaf counts and moderate L2 penalties for frequency, raw severity, and capped severity.",
+      "hypothesis": "A constrained LightGBM may improve capped pure premium ranking enough to qualify as a segmentation/research champion while preserving capped calibration and error stability.",
+      "id": "lightgbm_regularized_challenger",
+      "is_baseline": false,
+      "lightgbm": {
+        "capped_severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ],
+        "early_stopping_rounds": 15,
+        "frequency_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 1200,
+            "num_leaves": 15
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 1500,
+            "num_leaves": 31
+          }
+        ],
+        "nrounds": 120,
+        "severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ]
+      },
+      "model_type": "lightgbm"
+    }
+  },
+  "cv_metrics": {
+    "candidate_id": "v2_glm_age_car_interaction",
+    "candidate": {
+      "actuarial_rationale": "Transparent GLM structure tests whether stable actuarial interactions can improve pricing without black-box search.",
+      "calibration": {
+        "component_scalars": false
+      },
+      "capped_severity": {
+        "interactions": [
+          "DriverAgeBand:CarAgeBand"
+        ],
+        "use_splines": true
+      },
+      "description": "V2 transparent GLM with splines=True and interactions=DriverAgeBand:CarAgeBand.",
+      "frequency": {
+        "interactions": [
+          "DriverAgeBand:CarAgeBand"
+        ],
+        "use_splines": true
+      },
+      "hypothesis": "Driver age and vehicle age may interact in a stable, actuarially explainable way.",
+      "id": "v2_glm_age_car_interaction",
+      "is_baseline": false,
+      "model_type": "glm",
+      "severity": {
+        "interactions": [
+          "DriverAgeBand:CarAgeBand"
+        ],
+        "use_splines": true
+      }
+    },
+    "model_type": "glm",
+    "outer_folds": 3,
+    "seed": 20260423,
+    "severity_cap": 36876.2,
+    "aggregate": {
+      "fold_mean": 2,
+      "fold_sd": 1,
+      "policies_mean": 110178.3333,
+      "policies_sd": 0.5774,
+      "claim_rows_mean": 4313.6667,
+      "claim_rows_sd": 11.5902,
+      "observed_claims_mean": 4313.6667,
+      "observed_claims_sd": 11.5902,
+      "predicted_claims_mean": 4313.4657,
+      "predicted_claims_sd": 3.67,
+      "frequency_gini_mean": 0.1785,
+      "frequency_gini_sd": 0.0131,
+      "frequency_mae_mean": 0.1323,
+      "frequency_mae_sd": 0.0002,
+      "frequency_rmse_mean": 0.4744,
+      "frequency_rmse_sd": 0.0124,
+      "frequency_poisson_deviance_mean": 0.2511,
+      "frequency_poisson_deviance_sd": 0.0007,
+      "raw_severity_mae_mean": 1969.6767,
+      "raw_severity_mae_sd": 194.4824,
+      "raw_severity_rmse_mean": 13057.2286,
+      "raw_severity_rmse_sd": 9141.9905,
+      "raw_severity_gamma_deviance_mean": 1.8079,
+      "raw_severity_gamma_deviance_sd": 0.357,
+      "capped_severity_mae_mean": 1254.6942,
+      "capped_severity_mae_sd": 42.4319,
+      "capped_severity_rmse_mean": 3352.2171,
+      "capped_severity_rmse_sd": 306.4569,
+      "capped_severity_gamma_deviance_mean": 1.2058,
+      "capped_severity_gamma_deviance_sd": 0.0886,
+      "raw_pp_gini_mean": 0.1433,
+      "raw_pp_gini_sd": 0.1078,
+      "raw_pp_mae_mean": 270.8308,
+      "raw_pp_mae_sd": 11.7221,
+      "raw_pp_rmse_mean": 7280.365,
+      "raw_pp_rmse_sd": 3422.2348,
+      "raw_pp_observed_loss_cost_mean": 143.8666,
+      "raw_pp_observed_loss_cost_sd": 18.3964,
+      "raw_pp_predicted_loss_cost_mean": 141.2054,
+      "raw_pp_predicted_loss_cost_sd": 7.5909,
+      "raw_pp_calibration_gap_mean": -0.0029,
+      "raw_pp_calibration_gap_sd": 0.184,
+      "capped_pp_gini_mean": 0.1578,
+      "capped_pp_gini_sd": 0.0179,
+      "capped_pp_mae_mean": 219.0823,
+      "capped_pp_mae_sd": 2.8274,
+      "capped_pp_rmse_mean": 2533.4015,
+      "capped_pp_rmse_sd": 504.4526,
+      "capped_pp_observed_loss_cost_mean": 115.3648,
+      "capped_pp_observed_loss_cost_sd": 5.0877,
+      "capped_pp_predicted_loss_cost_mean": 115.3408,
+      "capped_pp_predicted_loss_cost_sd": 2.4874,
+      "capped_pp_calibration_gap_mean": 0.0017,
+      "capped_pp_calibration_gap_sd": 0.0651,
+      "bad_prediction_count_mean": 0,
+      "bad_prediction_count_sd": 0,
+      "parameter_count_mean": 195,
+      "parameter_count_sd": 0,
+      "frequency_aic_mean": 71972.0099,
+      "frequency_aic_sd": 63.5923,
+      "severity_aic_mean": 147474.489,
+      "severity_aic_sd": 467.4268,
+      "capped_severity_aic_mean": 145056.0729,
+      "capped_severity_aic_sd": 357.12,
+      "frequency_bic_mean": 72631.4021,
+      "frequency_bic_sd": 63.5924,
+      "severity_bic_mean": 147933.5638,
+      "severity_bic_sd": 467.3506,
+      "capped_severity_bic_mean": 145515.1477,
+      "capped_severity_bic_sd": 357.1203,
+      "max_abs_coefficient_mean": 8.0911,
+      "max_abs_coefficient_sd": 0.3039,
+      "policy_leakage_count_mean": 0,
+      "policy_leakage_count_sd": 0
+    },
+    "fold_metrics": [
+      {
+        "fold": 1,
+        "policies": 110179,
+        "claim_rows": 4303,
+        "observed_claims": 4303,
+        "predicted_claims": 4309.6053,
+        "frequency_gini": 0.1674,
+        "frequency_mae": 0.1322,
+        "frequency_rmse": 0.4883,
+        "frequency_poisson_deviance": 0.2518,
+        "raw_severity_mae": 2169.0098,
+        "raw_severity_rmse": 23518.0329,
+        "raw_severity_gamma_deviance": 2.1696,
+        "capped_severity_mae": 1246.0866,
+        "capped_severity_rmse": 3325.6818,
+        "capped_severity_gamma_deviance": 1.1723,
+        "raw_pp_gini": 0.262,
+        "raw_pp_mae": 282.5085,
+        "raw_pp_rmse": 10001.1452,
+        "raw_pp_observed_loss_cost": 161.7107,
+        "raw_pp_predicted_loss_cost": 134.0796,
+        "raw_pp_calibration_gap": -0.1709,
+        "capped_pp_gini": 0.1696,
+        "capped_pp_mae": 218.415,
+        "capped_pp_rmse": 2872.8196,
+        "capped_pp_observed_loss_cost": 114.5376,
+        "capped_pp_predicted_loss_cost": 115.4766,
+        "capped_pp_calibration_gap": 0.0082,
+        "bad_prediction_count": 0,
+        "parameter_count": 195,
+        "frequency_aic": 71919.2133,
+        "severity_aic": 147258.1122,
+        "capped_severity_aic": 145306.302,
+        "frequency_bic": 72578.6053,
+        "severity_bic": 147717.2674,
+        "capped_severity_bic": 145765.4572,
+        "max_abs_coefficient": 8.0869,
+        "policy_leakage_count": 0
+      },
+      {
+        "fold": 2,
+        "policies": 110178,
+        "claim_rows": 4312,
+        "observed_claims": 4312,
+        "predicted_claims": 4313.8819,
+        "frequency_gini": 0.1752,
+        "frequency_mae": 0.1323,
+        "frequency_rmse": 0.4707,
+        "frequency_poisson_deviance": 0.2504,
+        "raw_severity_mae": 1959.5821,
+        "raw_severity_rmse": 9053.4768,
+        "raw_severity_gamma_deviance": 1.7981,
+        "capped_severity_mae": 1300.7701,
+        "capped_severity_rmse": 3671.0787,
+        "capped_severity_gamma_deviance": 1.3063,
+        "raw_pp_gini": 0.0516,
+        "raw_pp_mae": 270.919,
+        "raw_pp_rmse": 8401.8508,
+        "raw_pp_observed_loss_cost": 144.9254,
+        "raw_pp_predicted_loss_cost": 140.348,
+        "raw_pp_calibration_gap": -0.0316,
+        "capped_pp_gini": 0.1372,
+        "capped_pp_mae": 222.1836,
+        "capped_pp_rmse": 2773.6545,
+        "capped_pp_observed_loss_cost": 120.8154,
+        "capped_pp_predicted_loss_cost": 112.7883,
+        "capped_pp_calibration_gap": -0.0664,
+        "bad_prediction_count": 0,
+        "parameter_count": 195,
+        "frequency_aic": 72042.6052,
+        "severity_aic": 147154.4558,
+        "capped_severity_aic": 144647.1031,
+        "frequency_bic": 72701.9974,
+        "severity_bic": 147613.5433,
+        "capped_severity_bic": 145106.1906,
+        "max_abs_coefficient": 8.3972,
+        "policy_leakage_count": 0
+      },
+      {
+        "fold": 3,
+        "policies": 110178,
+        "claim_rows": 4326,
+        "observed_claims": 4326,
+        "predicted_claims": 4316.9099,
+        "frequency_gini": 0.193,
+        "frequency_mae": 0.1325,
+        "frequency_rmse": 0.4644,
+        "frequency_poisson_deviance": 0.2512,
+        "raw_severity_mae": 1780.4381,
+        "raw_severity_rmse": 6600.1763,
+        "raw_severity_gamma_deviance": 1.4559,
+        "capped_severity_mae": 1217.2261,
+        "capped_severity_rmse": 3059.8906,
+        "capped_severity_gamma_deviance": 1.1389,
+        "raw_pp_gini": 0.1162,
+        "raw_pp_mae": 259.0647,
+        "raw_pp_rmse": 3438.0991,
+        "raw_pp_observed_loss_cost": 124.9636,
+        "raw_pp_predicted_loss_cost": 149.1886,
+        "raw_pp_calibration_gap": 0.1939,
+        "capped_pp_gini": 0.1666,
+        "capped_pp_mae": 216.6482,
+        "capped_pp_rmse": 1953.7304,
+        "capped_pp_observed_loss_cost": 110.7413,
+        "capped_pp_predicted_loss_cost": 117.7575,
+        "capped_pp_calibration_gap": 0.0634,
+        "bad_prediction_count": 0,
+        "parameter_count": 195,
+        "frequency_aic": 71954.2113,
+        "severity_aic": 148010.8989,
+        "capped_severity_aic": 145214.8135,
+        "frequency_bic": 72613.6036,
+        "severity_bic": 148469.8808,
+        "capped_severity_bic": 145673.7954,
+        "max_abs_coefficient": 7.7894,
+        "policy_leakage_count": 0
+      }
+    ],
+    "integrity": {
+      "policy_leakage_count": 0,
+      "bad_prediction_count": 0,
+      "loss_reconciliation_gap": 0
+    },
+    "diagnostics": {
+      "raw_counts": {
+        "freq_rows": 413169,
+        "sev_rows": 16181
+      }
+    }
+  },
+  "holdout_comparison": [
+    {
+      "role": "benchmark",
+      "model_id": "lightgbm_regularized_challenger",
+      "seed": 20260423,
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3229.4248,
+      "frequency_gini": 0.1774,
+      "raw_pp_gini": 0.386,
+      "raw_pp_mae": 287.1962,
+      "raw_pp_rmse": 20355.7134,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 132.5886,
+      "raw_pp_calibration_gap": -0.2103,
+      "capped_pp_gini": 0.2075,
+      "capped_pp_mae": 215.4846,
+      "capped_pp_rmse": 1755.4406,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 113.0387,
+      "capped_pp_calibration_gap": -0.0056,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0
+    },
+    {
+      "role": "candidate",
+      "model_id": "v2_glm_age_car_interaction",
+      "seed": 20260423,
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3226.5445,
+      "frequency_gini": 0.174,
+      "raw_pp_gini": 0.3728,
+      "raw_pp_mae": 295.3414,
+      "raw_pp_rmse": 20355.301,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 141.6239,
+      "raw_pp_calibration_gap": -0.1565,
+      "capped_pp_gini": 0.2101,
+      "capped_pp_mae": 217.0748,
+      "capped_pp_rmse": 1755.3411,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 115.0143,
+      "capped_pp_calibration_gap": 0.0117,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0
+    }
+  ],
+  "seed_summary": [
+    {
+      "model_id": "v2_glm_age_car_interaction",
+      "metric": "capped_pp_gini",
+      "mean": 0.2101,
+      "sd": 0,
+      "min": 0.2101,
+      "max": 0.2101,
+      "worst_abs_delta_from_mean": 0
+    },
+    {
+      "model_id": "v2_glm_age_car_interaction",
+      "metric": "raw_pp_gini",
+      "mean": 0.3728,
+      "sd": 0,
+      "min": 0.3728,
+      "max": 0.3728,
+      "worst_abs_delta_from_mean": 0
+    },
+    {
+      "model_id": "v2_glm_age_car_interaction",
+      "metric": "capped_pp_mae",
+      "mean": 217.0748,
+      "sd": 0,
+      "min": 217.0748,
+      "max": 217.0748,
+      "worst_abs_delta_from_mean": 0
+    },
+    {
+      "model_id": "v2_glm_age_car_interaction",
+      "metric": "capped_pp_calibration_gap",
+      "mean": 0.0117,
+      "sd": 0,
+      "min": 0.0117,
+      "max": 0.0117,
+      "worst_abs_delta_from_mean": 0
+    }
+  ],
+  "prediction_stability_summary": [
+    {
+      "model_id": "v2_glm_age_car_interaction",
+      "prediction": "capped_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0,
+      "p95_cv": 0,
+      "max_cv": 0
+    },
+    {
+      "model_id": "v2_glm_age_car_interaction",
+      "prediction": "raw_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0,
+      "p95_cv": 0,
+      "max_cv": 0
+    }
+  ],
+  "feature_importance_summary": []
+}

@@ -1,0 +1,565 @@
+{
+  "candidate": {
+    "candidate_id": "v2_lgb_stronger_l2",
+    "expected_mechanism": "Change regularization structure enough to test generalization, while staying close to the defensible initial GBM basin.",
+    "hypothesis": "Increase L2 penalties to test whether the benchmark can be stabilized without losing ranking.",
+    "idea_family": "stability",
+    "intended_metric_improvements": [
+      "holdout_capped_pp_gini",
+      "calibration",
+      "seed_stability"
+    ],
+    "known_tradeoff_risk": "May reduce useful segmentation by over-regularizing the already strong benchmark.",
+    "model_spec": {
+      "actuarial_rationale": "V2 variant changes model structure or stability constraints relative to the current benchmark; it is not a local search around best_191.",
+      "description": "V2 LightGBM structural variant: stronger_l2.",
+      "hypothesis": "Increase L2 penalties to test whether the benchmark can be stabilized without losing ranking.",
+      "id": "v2_lgb_stronger_l2",
+      "is_baseline": false,
+      "lightgbm": {
+        "capped_severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 7.5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 15,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ],
+        "early_stopping_rounds": 15,
+        "frequency_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 7.5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 1200,
+            "num_leaves": 15
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 15,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 1500,
+            "num_leaves": 31
+          }
+        ],
+        "nrounds": 120,
+        "severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 7.5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 15,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ]
+      },
+      "model_type": "lightgbm"
+    },
+    "parent_candidate_id": "lightgbm_regularized_challenger",
+    "schema_version": 1
+  },
+  "benchmark": {
+    "schema_version": 1,
+    "candidate_id": "lightgbm_regularized_challenger",
+    "idea_family": "model_structure",
+    "hypothesis": "The initial constrained LightGBM remains the current pricing champion and should be the benchmark every v2 candidate must beat.",
+    "expected_mechanism": "Constrained leaves, moderate L2 regularization, and high feature/bagging fractions preserve capped pure-premium ranking without excessive validation overfit.",
+    "intended_metric_improvements": [
+      "benchmark"
+    ],
+    "known_tradeoff_risk": "This is the current benchmark, not an attempted improvement.",
+    "parent_candidate_id": null,
+    "model_spec": {
+      "actuarial_rationale": "The existing report showed LightGBM can find segmentation signal, but it is not accepted as a pricing level unless calibration and stability also pass. This candidate intentionally limits flexibility to avoid a black-box gift.",
+      "description": "Regularized LightGBM challenger using constrained leaf counts and moderate L2 penalties for frequency, raw severity, and capped severity.",
+      "hypothesis": "A constrained LightGBM may improve capped pure premium ranking enough to qualify as a segmentation/research champion while preserving capped calibration and error stability.",
+      "id": "lightgbm_regularized_challenger",
+      "is_baseline": false,
+      "lightgbm": {
+        "capped_severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ],
+        "early_stopping_rounds": 15,
+        "frequency_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 1200,
+            "num_leaves": 15
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 1500,
+            "num_leaves": 31
+          }
+        ],
+        "nrounds": 120,
+        "severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 10,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ]
+      },
+      "model_type": "lightgbm"
+    }
+  },
+  "cv_metrics": {
+    "candidate_id": "v2_lgb_stronger_l2",
+    "candidate": {
+      "actuarial_rationale": "V2 variant changes model structure or stability constraints relative to the current benchmark; it is not a local search around best_191.",
+      "description": "V2 LightGBM structural variant: stronger_l2.",
+      "hypothesis": "Increase L2 penalties to test whether the benchmark can be stabilized without losing ranking.",
+      "id": "v2_lgb_stronger_l2",
+      "is_baseline": false,
+      "lightgbm": {
+        "capped_severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 7.5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 15,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ],
+        "early_stopping_rounds": 15,
+        "frequency_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 7.5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 1200,
+            "num_leaves": 15
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 15,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 1500,
+            "num_leaves": 31
+          }
+        ],
+        "nrounds": 120,
+        "severity_grid": [
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.9,
+            "lambda_l2": 7.5,
+            "learning_rate": 0.04,
+            "min_data_in_leaf": 150,
+            "num_leaves": 7
+          },
+          {
+            "bagging_fraction": 0.9,
+            "feature_fraction": 0.85,
+            "lambda_l2": 15,
+            "learning_rate": 0.03,
+            "min_data_in_leaf": 200,
+            "num_leaves": 15
+          }
+        ]
+      },
+      "model_type": "lightgbm"
+    },
+    "model_type": "lightgbm",
+    "outer_folds": 3,
+    "seed": 20260423,
+    "severity_cap": 36876.2,
+    "aggregate": {
+      "fold_mean": 2,
+      "fold_sd": 1,
+      "policies_mean": 110178.3333,
+      "policies_sd": 0.5774,
+      "claim_rows_mean": 4313.6667,
+      "claim_rows_sd": 11.5902,
+      "observed_claims_mean": 4313.6667,
+      "observed_claims_sd": 11.5902,
+      "predicted_claims_mean": 4305.8166,
+      "predicted_claims_sd": 5.8671,
+      "frequency_gini_mean": 0.1778,
+      "frequency_gini_sd": 0.0069,
+      "frequency_mae_mean": 0.1324,
+      "frequency_mae_sd": 0.0001,
+      "frequency_rmse_mean": 0.4745,
+      "frequency_rmse_sd": 0.0124,
+      "frequency_poisson_deviance_mean": 0.2512,
+      "frequency_poisson_deviance_sd": 0.0006,
+      "raw_severity_mae_mean": 1853.4426,
+      "raw_severity_mae_sd": 197.8997,
+      "raw_severity_rmse_mean": 13016.1121,
+      "raw_severity_rmse_sd": 9164.882,
+      "raw_severity_gamma_deviance_mean": 1.6335,
+      "raw_severity_gamma_deviance_sd": 0.2316,
+      "capped_severity_mae_mean": 1231.3144,
+      "capped_severity_mae_sd": 39.8841,
+      "capped_severity_rmse_mean": 3339.9633,
+      "capped_severity_rmse_sd": 306.1183,
+      "capped_severity_gamma_deviance_mean": 1.1731,
+      "capped_severity_gamma_deviance_sd": 0.0766,
+      "raw_pp_gini_mean": 0.1918,
+      "raw_pp_gini_sd": 0.1176,
+      "raw_pp_mae_mean": 265.1731,
+      "raw_pp_mae_sd": 13.9198,
+      "raw_pp_rmse_mean": 7279.9237,
+      "raw_pp_rmse_sd": 3422.7713,
+      "raw_pp_observed_loss_cost_mean": 143.8666,
+      "raw_pp_observed_loss_cost_sd": 18.3964,
+      "raw_pp_predicted_loss_cost_mean": 134.5091,
+      "raw_pp_predicted_loss_cost_sd": 14.9777,
+      "raw_pp_calibration_gap_mean": -0.048,
+      "raw_pp_calibration_gap_sd": 0.2199,
+      "capped_pp_gini_mean": 0.1815,
+      "capped_pp_gini_sd": 0.0247,
+      "capped_pp_mae_mean": 217.6556,
+      "capped_pp_mae_sd": 2.9623,
+      "capped_pp_rmse_mean": 2533.3812,
+      "capped_pp_rmse_sd": 504.4857,
+      "capped_pp_observed_loss_cost_mean": 115.3648,
+      "capped_pp_observed_loss_cost_sd": 5.0877,
+      "capped_pp_predicted_loss_cost_mean": 113.4904,
+      "capped_pp_predicted_loss_cost_sd": 3.3549,
+      "capped_pp_calibration_gap_mean": -0.0143,
+      "capped_pp_calibration_gap_sd": 0.0688,
+      "bad_prediction_count_mean": 0,
+      "bad_prediction_count_sd": 0,
+      "parameter_count_mean": null,
+      "parameter_count_sd": null,
+      "frequency_aic_mean": null,
+      "frequency_aic_sd": null,
+      "severity_aic_mean": null,
+      "severity_aic_sd": null,
+      "capped_severity_aic_mean": null,
+      "capped_severity_aic_sd": null,
+      "frequency_bic_mean": null,
+      "frequency_bic_sd": null,
+      "severity_bic_mean": null,
+      "severity_bic_sd": null,
+      "capped_severity_bic_mean": null,
+      "capped_severity_bic_sd": null,
+      "max_abs_coefficient_mean": null,
+      "max_abs_coefficient_sd": null,
+      "policy_leakage_count_mean": 0,
+      "policy_leakage_count_sd": 0
+    },
+    "fold_metrics": [
+      {
+        "fold": 1,
+        "policies": 110179,
+        "claim_rows": 4303,
+        "observed_claims": 4303,
+        "predicted_claims": 4300.7569,
+        "frequency_gini": 0.1734,
+        "frequency_mae": 0.1322,
+        "frequency_rmse": 0.4883,
+        "frequency_poisson_deviance": 0.2514,
+        "raw_severity_mae": 2080.7325,
+        "raw_severity_rmse": 23501.5058,
+        "raw_severity_gamma_deviance": 1.8396,
+        "capped_severity_mae": 1242.9849,
+        "capped_severity_rmse": 3313.9468,
+        "capped_severity_gamma_deviance": 1.1431,
+        "raw_pp_gini": 0.3138,
+        "raw_pp_mae": 280.722,
+        "raw_pp_rmse": 10001.2682,
+        "raw_pp_observed_loss_cost": 161.7107,
+        "raw_pp_predicted_loss_cost": 131.7761,
+        "raw_pp_calibration_gap": -0.1851,
+        "capped_pp_gini": 0.2039,
+        "capped_pp_mae": 219.1292,
+        "capped_pp_rmse": 2872.8991,
+        "capped_pp_observed_loss_cost": 114.5376,
+        "capped_pp_predicted_loss_cost": 115.913,
+        "capped_pp_calibration_gap": 0.012,
+        "bad_prediction_count": 0,
+        "parameter_count": null,
+        "frequency_aic": null,
+        "severity_aic": null,
+        "capped_severity_aic": null,
+        "frequency_bic": null,
+        "severity_bic": null,
+        "capped_severity_bic": null,
+        "max_abs_coefficient": null,
+        "policy_leakage_count": 0
+      },
+      {
+        "fold": 2,
+        "policies": 110178,
+        "claim_rows": 4312,
+        "observed_claims": 4312,
+        "predicted_claims": 4312.2481,
+        "frequency_gini": 0.1743,
+        "frequency_mae": 0.1324,
+        "frequency_rmse": 0.4707,
+        "frequency_poisson_deviance": 0.2505,
+        "raw_severity_mae": 1719.3336,
+        "raw_severity_rmse": 9013.3557,
+        "raw_severity_gamma_deviance": 1.6781,
+        "capped_severity_mae": 1264.0613,
+        "capped_severity_rmse": 3658.2595,
+        "capped_severity_gamma_deviance": 1.2602,
+        "raw_pp_gini": 0.079,
+        "raw_pp_mae": 253.8725,
+        "raw_pp_rmse": 8401.403,
+        "raw_pp_observed_loss_cost": 144.9254,
+        "raw_pp_predicted_loss_cost": 121.0861,
+        "raw_pp_calibration_gap": -0.1645,
+        "capped_pp_gini": 0.155,
+        "capped_pp_mae": 219.5922,
+        "capped_pp_rmse": 2773.5632,
+        "capped_pp_observed_loss_cost": 120.8154,
+        "capped_pp_predicted_loss_cost": 109.6611,
+        "capped_pp_calibration_gap": -0.0923,
+        "bad_prediction_count": 0,
+        "parameter_count": null,
+        "frequency_aic": null,
+        "severity_aic": null,
+        "capped_severity_aic": null,
+        "frequency_bic": null,
+        "severity_bic": null,
+        "capped_severity_bic": null,
+        "max_abs_coefficient": null,
+        "policy_leakage_count": 0
+      },
+      {
+        "fold": 3,
+        "policies": 110178,
+        "claim_rows": 4326,
+        "observed_claims": 4326,
+        "predicted_claims": 4304.4447,
+        "frequency_gini": 0.1858,
+        "frequency_mae": 0.1325,
+        "frequency_rmse": 0.4644,
+        "frequency_poisson_deviance": 0.2516,
+        "raw_severity_mae": 1760.2616,
+        "raw_severity_rmse": 6533.4749,
+        "raw_severity_gamma_deviance": 1.3829,
+        "capped_severity_mae": 1186.8968,
+        "capped_severity_rmse": 3047.6835,
+        "capped_severity_gamma_deviance": 1.116,
+        "raw_pp_gini": 0.1828,
+        "raw_pp_mae": 260.9249,
+        "raw_pp_rmse": 3437.0998,
+        "raw_pp_observed_loss_cost": 124.9636,
+        "raw_pp_predicted_loss_cost": 150.6651,
+        "raw_pp_calibration_gap": 0.2057,
+        "capped_pp_gini": 0.1857,
+        "capped_pp_mae": 214.2455,
+        "capped_pp_rmse": 1953.6814,
+        "capped_pp_observed_loss_cost": 110.7413,
+        "capped_pp_predicted_loss_cost": 114.8971,
+        "capped_pp_calibration_gap": 0.0375,
+        "bad_prediction_count": 0,
+        "parameter_count": null,
+        "frequency_aic": null,
+        "severity_aic": null,
+        "capped_severity_aic": null,
+        "frequency_bic": null,
+        "severity_bic": null,
+        "capped_severity_bic": null,
+        "max_abs_coefficient": null,
+        "policy_leakage_count": 0
+      }
+    ],
+    "integrity": {
+      "policy_leakage_count": 0,
+      "bad_prediction_count": 0,
+      "loss_reconciliation_gap": 0
+    },
+    "diagnostics": {
+      "raw_counts": {
+        "freq_rows": 413169,
+        "sev_rows": 16181
+      }
+    }
+  },
+  "holdout_comparison": [
+    {
+      "role": "benchmark",
+      "model_id": "lightgbm_regularized_challenger",
+      "seed": 20260423,
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3229.4248,
+      "frequency_gini": 0.1774,
+      "raw_pp_gini": 0.386,
+      "raw_pp_mae": 287.1962,
+      "raw_pp_rmse": 20355.7134,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 132.5886,
+      "raw_pp_calibration_gap": -0.2103,
+      "capped_pp_gini": 0.2075,
+      "capped_pp_mae": 215.4846,
+      "capped_pp_rmse": 1755.4406,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 113.0387,
+      "capped_pp_calibration_gap": -0.0056,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0
+    },
+    {
+      "role": "candidate",
+      "model_id": "v2_lgb_stronger_l2",
+      "seed": 20260423,
+      "policies": 82634,
+      "claim_rows": 3240,
+      "observed_claims": 3240,
+      "predicted_claims": 3228.9034,
+      "frequency_gini": 0.1779,
+      "raw_pp_gini": 0.3858,
+      "raw_pp_mae": 287.5434,
+      "raw_pp_rmse": 20355.7675,
+      "raw_pp_observed_loss_cost": 167.9057,
+      "raw_pp_predicted_loss_cost": 132.9575,
+      "raw_pp_calibration_gap": -0.2081,
+      "capped_pp_gini": 0.2089,
+      "capped_pp_mae": 215.5038,
+      "capped_pp_rmse": 1755.4241,
+      "capped_pp_observed_loss_cost": 113.6802,
+      "capped_pp_predicted_loss_cost": 113.0624,
+      "capped_pp_calibration_gap": -0.0054,
+      "bad_prediction_count": 0,
+      "policy_leakage_count": 0
+    }
+  ],
+  "seed_summary": [
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "metric": "capped_pp_gini",
+      "mean": 0.209,
+      "sd": 0.0009,
+      "min": 0.2082,
+      "max": 0.2099,
+      "worst_abs_delta_from_mean": 0.0009
+    },
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "metric": "raw_pp_gini",
+      "mean": 0.3858,
+      "sd": 0.0045,
+      "min": 0.3814,
+      "max": 0.3903,
+      "worst_abs_delta_from_mean": 0.0045
+    },
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "metric": "capped_pp_mae",
+      "mean": 216.1386,
+      "sd": 1.3475,
+      "min": 215.2258,
+      "max": 217.6862,
+      "worst_abs_delta_from_mean": 1.5476
+    },
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "metric": "capped_pp_calibration_gap",
+      "mean": 0.0007,
+      "sd": 0.0131,
+      "min": -0.0082,
+      "max": 0.0158,
+      "worst_abs_delta_from_mean": 0.0151
+    }
+  ],
+  "prediction_stability_summary": [
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "prediction": "capped_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0.0472,
+      "p95_cv": 0.106,
+      "max_cv": 0.1616
+    },
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "prediction": "raw_pp",
+      "sampled_policies": 1000,
+      "median_cv": 0.0569,
+      "p95_cv": 0.1299,
+      "max_cv": 0.213
+    }
+  ],
+  "feature_importance_summary": [
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "component": "frequency",
+      "mean_top5_jaccard": 1,
+      "status": "stable"
+    },
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "component": "severity",
+      "mean_top5_jaccard": 1,
+      "status": "stable"
+    },
+    {
+      "model_id": "v2_lgb_stronger_l2",
+      "component": "capped_severity",
+      "mean_top5_jaccard": 1,
+      "status": "stable"
+    }
+  ]
+}

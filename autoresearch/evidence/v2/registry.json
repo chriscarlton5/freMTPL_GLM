@@ -1,0 +1,130 @@
+{
+  "runs": [
+    {
+      "candidate_id": "lightgbm_regularized_challenger",
+      "created_at": "2026-05-12T15:26:48",
+      "failures": [],
+      "idea_family": "model_structure",
+      "model_id": "lightgbm_regularized_challenger",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_152427_lightgbm_regularized_challenger",
+      "spec_hash": "9649ec77cef2b1d2d21c2fc28cce1cffa1ee608216f3bee58eada797a36721fe",
+      "status": "current_champion"
+    },
+    {
+      "candidate_id": "lightgbm_best_191",
+      "created_at": "2026-05-12T15:29:56",
+      "failures": [
+        "holdout capped PP Gini did not beat champion by required margin"
+      ],
+      "idea_family": "hyperparameter_tuning",
+      "model_id": "lightgbm_best_191",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_152655_lightgbm_best_191",
+      "spec_hash": "df2ab72d9f9338f0459eac158aa3416dfa0d2dcc925b584694f6b13b100c8291",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "lightgbm_best_191_duplicate",
+      "created_at": "2026-05-12T15:30:01",
+      "failures": [
+        "duplicate model spec previously evaluated by lightgbm_best_191"
+      ],
+      "idea_family": "hyperparameter_tuning",
+      "model_id": "lightgbm_best_191",
+      "run_dir": null,
+      "spec_hash": "df2ab72d9f9338f0459eac158aa3416dfa0d2dcc925b584694f6b13b100c8291",
+      "status": "duplicate"
+    },
+    {
+      "candidate_id": "v2_glm_age_car_interaction",
+      "created_at": "2026-05-12T15:39:02",
+      "failures": [
+        "capped PP MAE deterioration exceeded tolerance",
+        "capped PP calibration deterioration exceeded tolerance",
+        "raw PP Gini deteriorated beyond tolerance"
+      ],
+      "idea_family": "transparent_glm",
+      "model_id": "v2_glm_age_car_interaction",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_153459_v2_glm_age_car_interaction",
+      "spec_hash": "f4d4d054d32adfe1ca9edd89e259a604eabca542e6cd2747c461803c70375857",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "v2_glm_power_brand_interaction",
+      "created_at": "2026-05-12T15:49:22",
+      "failures": [
+        "holdout capped PP Gini did not beat champion by required margin",
+        "capped PP MAE deterioration exceeded tolerance",
+        "capped PP calibration deterioration exceeded tolerance",
+        "raw PP Gini deteriorated beyond tolerance"
+      ],
+      "idea_family": "transparent_glm",
+      "model_id": "v2_glm_power_brand_interaction",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_153902_v2_glm_power_brand_interaction",
+      "spec_hash": "a59b2e339802c11e5e03e050f6db77e5d64974a03d9d3b78f9f19653ccba6307",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "v2_glm_age_powerbrand",
+      "created_at": "2026-05-12T16:07:14",
+      "failures": [
+        "holdout capped PP Gini did not beat champion by required margin",
+        "capped PP MAE deterioration exceeded tolerance",
+        "capped PP calibration deterioration exceeded tolerance",
+        "raw PP Gini deteriorated beyond tolerance"
+      ],
+      "idea_family": "transparent_glm",
+      "model_id": "v2_glm_age_powerbrand",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_155047_v2_glm_age_powerbrand",
+      "spec_hash": "b78b2a0cfc4e511a142edd1b5d6d927f2eab42e3878d094730217bcc9018e9c4",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "v2_lgb_higher_leaf_floor",
+      "created_at": "2026-05-12T16:09:53",
+      "failures": [
+        "holdout capped PP Gini did not beat champion by required margin"
+      ],
+      "idea_family": "model_structure",
+      "model_id": "v2_lgb_higher_leaf_floor",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_160732_v2_lgb_higher_leaf_floor",
+      "spec_hash": "290579edc30caf279e30525903ecd03702a9a7c3e14fb22f8ad44749bbb33770",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "v2_lgb_lower_learning_rate",
+      "created_at": "2026-05-12T16:13:08",
+      "failures": [
+        "raw PP Gini deteriorated beyond tolerance"
+      ],
+      "idea_family": "model_structure",
+      "model_id": "v2_lgb_lower_learning_rate",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_160959_v2_lgb_lower_learning_rate",
+      "spec_hash": "aeadf3a9fb7728878a1495d44c58eaf2d58a465ebf83e84b6802e32410d619f2",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "v2_lgb_conservative_feature_fraction",
+      "created_at": "2026-05-12T16:15:29",
+      "failures": [
+        "holdout capped PP Gini did not beat champion by required margin",
+        "raw PP Gini deteriorated beyond tolerance"
+      ],
+      "idea_family": "stability",
+      "model_id": "v2_lgb_conservative_feature_fraction",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_161316_v2_lgb_conservative_feature_fraction",
+      "spec_hash": "cc9bf70a110c3adbf35588fd9a4afa00e64662423cac8713b33ed23247f0af3b",
+      "status": "research_only"
+    },
+    {
+      "candidate_id": "v2_lgb_stronger_l2",
+      "created_at": "2026-05-12T16:17:48",
+      "failures": [],
+      "idea_family": "stability",
+      "model_id": "v2_lgb_stronger_l2",
+      "run_dir": "autoresearch/evidence/v2/runs/20260512_161535_v2_lgb_stronger_l2",
+      "spec_hash": "448b7a0b7bef93def14c2cb25610de5227417022000be025a2ea75c7dae0447a",
+      "status": "promote"
+    }
+  ],
+  "schema_version": 1
+}
